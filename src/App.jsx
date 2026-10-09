@@ -40,6 +40,7 @@ export default function App() {
   const [exporting, setExporting] = useState(false);
   const [status, setStatus] = useState('');
   const [view, setView] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
   const [fitRequest, setFitRequest] = useState(0);
   const notify = useCallback(message => setStatus(message), []);
 
@@ -80,7 +81,7 @@ export default function App() {
       const blob = await compress(selected);
       const place = await location;
       setPending({ id: crypto.randomUUID(), blob, createdAt: Date.now(), caption: '', ...place });
-      if (place) setView(place);
+      if (place) { setView(place); setCurrentLocation(place); }
       notify(place ? '場所を確認して保存してください。' : '現在地を取得できませんでした。地図で場所を選んでください。');
     } catch {
       notify('写真を読み込めません。40MB以下のJPEGまたはPNGをお試しください。');
@@ -120,7 +121,12 @@ export default function App() {
 
   async function locate() {
     setLocating(true);
-    try { setView(await position()); setFitRequest(0); }
+    try {
+      const place = await position();
+      setCurrentLocation(place);
+      setView(place);
+      setFitRequest(0);
+    }
     catch (error) { notify(error.message); }
     finally { setLocating(false); }
   }
@@ -166,7 +172,7 @@ export default function App() {
         <p className="privacy">写真はこの端末のブラウザに保存されます。大切な写真はバックアップしてください。</p>
       </aside>
       <section className="map-wrap" aria-label="写真の地図">
-        <PhotoMap photos={photos} onOpen={openPhoto} onPick={pickPlace} selecting={selecting} view={view} fitRequest={fitRequest} onError={notify} />
+        <PhotoMap photos={photos} onOpen={openPhoto} onPick={pickPlace} selecting={selecting} view={view} currentLocation={currentLocation} fitRequest={fitRequest} onError={notify} />
         <div className="map-tools"><button disabled={locating} onClick={locate}>{locating ? '取得中…' : '⌖ 現在地'}</button><button onClick={() => photos.length ? setFitRequest(value => value + 1) : notify('写真を保存すると地図上に表示されます。')}>すべて表示</button></div>
         {selecting && <div id="place-hint">地図をタップして場所を選んでください <button onClick={() => setSelecting(false)}>戻る</button></div>}
         <div className="capture-bar"><button className="primary" disabled={!ready || busy} onClick={() => pending ? setSelecting(false) : file.current.click()}>{busy ? '処理中…' : pending ? '保存画面に戻る' : '＋ 写真を撮る'}</button><span>今日の景色を、思い出に。</span></div>

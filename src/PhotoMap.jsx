@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 
-export default function PhotoMap({ photos, onOpen, onPick, selecting, view, fitRequest, onError }) {
+export default function PhotoMap({ photos, onOpen, onPick, selecting, view, currentLocation, fitRequest, onError }) {
   const container = useRef(null);
   const mapRef = useRef(null);
   const callbacks = useRef({ onOpen, onPick, selecting, onError });
@@ -9,6 +9,10 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, fitR
   useEffect(() => {
     const map = L.map(container.current).setView([31.5966, 130.5571], 12);
     mapRef.current = map;
+    // Keep the location indicator above photo pins without intercepting map taps.
+    const locationPane = map.createPane('current-location');
+    locationPane.style.zIndex = '650';
+    locationPane.style.pointerEvents = 'none';
     let warned = false;
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -47,6 +51,35 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, fitR
     });
     return () => { group.remove(); urls.forEach(url => URL.revokeObjectURL(url)); };
   }, [photos]);
+  useEffect(() => {
+    if (!currentLocation) return;
+    const map = mapRef.current;
+    const center = [currentLocation.lat, currentLocation.lng];
+    const group = L.layerGroup().addTo(map);
+    if (Number.isFinite(currentLocation.accuracy) && currentLocation.accuracy > 0) {
+      L.circle(center, {
+        radius: currentLocation.accuracy,
+        color: '#4285f4',
+        weight: 1,
+        opacity: 0.25,
+        fillColor: '#4285f4',
+        fillOpacity: 0.12,
+        interactive: false,
+      }).addTo(group);
+    }
+    L.circleMarker(center, {
+      pane: 'current-location',
+      radius: 9,
+      color: '#fff',
+      weight: 3,
+      opacity: 1,
+      fillColor: '#4285f4',
+      fillOpacity: 1,
+      className: 'current-location-dot',
+      interactive: false,
+    }).addTo(group);
+    return () => group.remove();
+  }, [currentLocation]);
   useEffect(() => {
     if (view) mapRef.current.setView([view.lat, view.lng], 16);
   }, [view]);
