@@ -42,6 +42,7 @@ export default function App() {
   const [view, setView] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [fitRequest, setFitRequest] = useState(0);
+  const [memoriesOpen, setMemoriesOpen] = useState(false);
   const notify = useCallback(message => setStatus(message), []);
 
   useEffect(() => {
@@ -162,9 +163,17 @@ export default function App() {
     <header><a className="brand" href={import.meta.env.BASE_URL}><span className="logo">◎</span><span>Memory Map<small>思い出を、地図に。</small></span></a>
       <button className="quiet" disabled={!ready || exporting} onClick={backup}>{exporting ? '書き出し中…' : 'バックアップ'}</button></header>
     <main>
-      <aside><div className="intro"><span className="eyebrow">YOUR PERSONAL ATLAS</span><h1>ここにいた、<br />を残そう。</h1><p>いつもの道も、初めての街も。<br />写真から広がる、あなただけの地図。</p></div>
+      {memoriesOpen && <button className="memories-backdrop" aria-label="思い出の一覧を閉じる" onClick={() => setMemoriesOpen(false)} />}
+      <aside className={'memories-panel' + (memoriesOpen ? ' is-open' : '')} onKeyDown={event => {
+        if (event.key === 'Escape') { setMemoriesOpen(false); event.currentTarget.querySelector('.memories-toggle')?.focus(); }
+      }}>
+        <button className="memories-toggle" aria-expanded={memoriesOpen} aria-controls="memories-list" onClick={() => setMemoriesOpen(value => !value)}>
+          <span className="sheet-handle" aria-hidden="true" />
+          <span className="sheet-title">思い出</span><span className="sheet-count">{photos.length} 枚</span><span className="sheet-chevron" aria-hidden="true">{memoriesOpen ? '⌄' : '⌃'}</span>
+        </button>
+        <div className="intro"><span className="eyebrow">YOUR PERSONAL ATLAS</span><h1>ここにいた、<br />を残そう。</h1><p>いつもの道も、初めての街も。<br />写真から広がる、あなただけの地図。</p></div>
         <div className="section-title"><h2>思い出</h2><span>{photos.length} 枚</span></div>
-        <div className="list">{photos.length ? photos.map(photo =>
+        <div className="list" id="memories-list">{photos.length ? photos.map(photo =>
           <button key={photo.id} className="memory" onClick={() => openPhoto(photo)} disabled={selecting}>
             <Photo blob={photo.blob} alt={photo.caption || '思い出の写真'} loading="lazy" />
             <span>{photo.caption || '名前のない思い出'}<small>{date(photo.createdAt)}</small></span>

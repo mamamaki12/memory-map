@@ -2,3 +2,46 @@
 
 #root{height:100%}
 .current-location-dot{filter:drop-shadow(0 1px 3px #174ea660)}
+
+/* Mobile memories drawer: fixed geometry independent of list text size. */
+.memories-toggle,.memories-backdrop{display:none}
+@media(max-width:700px){
+  :root{--memories-peek:64px;--bottom-inset:env(safe-area-inset-bottom,0px)}
+  main{display:block;position:relative;padding-bottom:calc(var(--memories-peek) + var(--bottom-inset));overflow:hidden}
+  .map-wrap{height:100%;min-height:0;isolation:isolate}
+  aside.memories-panel{
+    position:fixed;inset:auto 0 0;z-index:1100;
+    height:min(65dvh,520px);max-height:calc(100dvh - 80px);
+    padding:0 16px var(--bottom-inset);background:#f6f8f5;
+    border-radius:22px 22px 0 0;box-shadow:0 -4px 24px #203d3720;
+    transform:translateY(calc(100% - var(--memories-peek) - var(--bottom-inset)));
+    transition:transform .25s ease;overflow:hidden;
+  }
+  aside.memories-panel.is-open{transform:translateY(0)}
+  .memories-panel .section-title{display:none}
+  .memories-toggle{
+    position:relative;display:flex;align-items:center;gap:10px;
+    flex:0 0 var(--memories-peek);height:var(--memories-peek);min-height:0;
+    width:100%;padding:14px 4px 0;border:0;background:transparent;
+    border-radius:0;text-align:left;line-height:1.2;overflow:hidden;
+  }
+  .sheet-handle{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:36px;height:4px;background:#bccbc1;border-radius:4px}
+  .sheet-title{font-size:1rem;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .sheet-count{font-size:.75rem;white-space:nowrap;background:#e6eee6;padding:4px 9px;border-radius:16px}
+  .sheet-chevron{margin-left:auto;flex-shrink:0;font-size:24px}
+  .memories-panel .list{
+    display:block;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;
+    padding-bottom:12px;visibility:hidden;
+  }
+  .memories-panel.is-open .list{visibility:visible}
+  .memories-panel .memory{width:100%;min-width:0;margin:8px 0;align-items:flex-start}
+  .memories-panel .memory img{flex-shrink:0}
+  .memories-panel .memory span{font-size:.875rem}
+  .memories-panel .memory small{font-size:.75rem}
+  .memories-panel .empty{font-size:.875rem}
+  .memories-backdrop{
+    display:block;position:fixed;inset:72px 0 0;z-index:1000;
+    border:0;border-radius:0;padding:0;background:#142e292b;
+  }
+}
+@media(prefers-reduced-motion:reduce){aside.memories-panel{transition:none}}
