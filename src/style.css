@@ -45,7 +45,7 @@
   }
 }
 @media(prefers-reduced-motion:reduce){aside.memories-panel{transition:none}}
-.settings-button{display:grid;place-items:center;width:44px;height:44px;padding:0;background:#f7f9f6;flex-shrink:0}
+.settings-button{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;background:transparent;box-shadow:none;flex-shrink:0}
 .settings-item{display:flex;flex-direction:column;gap:6px;width:100%;text-align:left;padding:16px;background:#f7f9f6}
 .settings-item span{font-weight:650}
 .settings-item small,.settings-note{font-size:13px;color:#728176;line-height:1.7}
