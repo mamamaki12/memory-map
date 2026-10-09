@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PhotoMap from './PhotoMap.jsx';
+import useDrawerGesture from './useDrawerGesture.js';
 import { openDB, transaction } from './storage.js';
 import { position, compress, date, download } from './media.js';
 
@@ -43,6 +44,8 @@ export default function App() {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [fitRequest, setFitRequest] = useState(0);
   const [memoriesOpen, setMemoriesOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const drawer = useDrawerGesture(memoriesOpen, setMemoriesOpen);
   const notify = useCallback(message => setStatus(message), []);
 
   useEffect(() => {
@@ -161,19 +164,25 @@ export default function App() {
 
   return <>
     <header><a className="brand" href={import.meta.env.BASE_URL}><span className="logo">◎</span><span>Memory Map<small>思い出を、地図に。</small></span></a>
-      <button className="quiet" disabled={!ready || exporting} onClick={backup}>{exporting ? '書き出し中…' : 'バックアップ'}</button></header>
+      <button className="settings-button" aria-label="設定を開く" aria-haspopup="dialog" onClick={() => setSettingsOpen(true)}>
+        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="m9.5 3-.5 2-2 .9-1.9-.6-2.5 4.3 1.5 1.4v2l-1.5 1.4 2.5 4.3 1.9-.6 2 .9.5 2h5l.5-2 2-.9 1.9.6 2.5-4.3-1.5-1.4v-2l1.5-1.4-2.5-4.3-1.9.6-2-.9-.5-2z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      </button></header>
     <main>
       {memoriesOpen && <button className="memories-backdrop" aria-label="思い出の一覧を閉じる" onClick={() => setMemoriesOpen(false)} />}
-      <aside className={'memories-panel' + (memoriesOpen ? ' is-open' : '')} onKeyDown={event => {
+      <aside className={'memories-panel' + (memoriesOpen ? ' is-open' : '') + (drawer.dragOffset !== null ? ' is-dragging' : '')}
+        style={{ '--drawer-drag': (drawer.dragOffset ?? 0) + 'px' }} onKeyDown={event => {
         if (event.key === 'Escape') { setMemoriesOpen(false); event.currentTarget.querySelector('.memories-toggle')?.focus(); }
       }}>
-        <button className="memories-toggle" aria-expanded={memoriesOpen} aria-controls="memories-list" onClick={() => setMemoriesOpen(value => !value)}>
+        <button className="memories-toggle" aria-expanded={memoriesOpen} aria-controls="memories-list" {...drawer.handleProps}>
           <span className="sheet-handle" aria-hidden="true" />
           <span className="sheet-title">思い出</span><span className="sheet-count">{photos.length} 枚</span><span className="sheet-chevron" aria-hidden="true">{memoriesOpen ? '⌄' : '⌃'}</span>
         </button>
         <div className="intro"><span className="eyebrow">YOUR PERSONAL ATLAS</span><h1>ここにいた、<br />を残そう。</h1><p>いつもの道も、初めての街も。<br />写真から広がる、あなただけの地図。</p></div>
         <div className="section-title"><h2>思い出</h2><span>{photos.length} 枚</span></div>
-        <div className="list" id="memories-list">{photos.length ? photos.map(photo =>
+        <div className="list" id="memories-list" {...drawer.listProps}>{photos.length ? photos.map(photo =>
           <button key={photo.id} className="memory" onClick={() => openPhoto(photo)} disabled={selecting}>
             <Photo blob={photo.blob} alt={photo.caption || '思い出の写真'} loading="lazy" />
             <span>{photo.caption || '名前のない思い出'}<small>{date(photo.createdAt)}</small></span>
@@ -189,6 +198,13 @@ export default function App() {
     </main>
     <input ref={file} type="file" accept="image/*" capture="environment" hidden onChange={capture} />
     <p id="status" role="status" aria-live="polite">{status}</p>
+    {settingsOpen && <Modal title="設定" onClose={() => setSettingsOpen(false)}>
+      <button className="settings-item" disabled={!ready || exporting} onClick={backup}>
+        <span>{exporting ? '書き出し中…' : 'バックアップ'}</span>
+        <small>写真と撮影場所をファイルに保存</small>
+      </button>
+      <p className="settings-note">写真はこのブラウザに保存されています。大切な思い出は定期的にバックアップしてください。</p>
+    </Modal>}
     {pending && !selecting && <Modal title="思い出を保存" onClose={cancel} busy={busy}>
       <form onSubmit={save}><Photo blob={pending.blob} alt="撮影した写真" />
         <label>ひとこと<input value={pending.caption} disabled={busy} maxLength={100} placeholder="例：帰り道で見つけた夕焼け" onChange={event => setPending({ ...pending, caption: event.target.value })} /></label>
