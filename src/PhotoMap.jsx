@@ -4,6 +4,7 @@ import L from 'leaflet';
 export default function PhotoMap({ photos, onOpen, onPick, selecting, view, currentLocation, fitRequest, onError }) {
   const container = useRef(null);
   const mapRef = useRef(null);
+  const locationLayers = useRef(null);
   const callbacks = useRef({ onOpen, onPick, selecting, onError });
   useEffect(() => { callbacks.current = { onOpen, onPick, selecting, onError }; });
   useEffect(() => {
@@ -80,34 +81,48 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, curr
     };
   }, [photos]);
   useEffect(() => {
-    if (!currentLocation) return;
     const map = mapRef.current;
-    const center = [currentLocation.lat, currentLocation.lng];
-    const group = L.layerGroup().addTo(map);
-    if (Number.isFinite(currentLocation.accuracy) && currentLocation.accuracy > 0) {
-      L.circle(center, {
-        radius: currentLocation.accuracy,
-        color: '#4285f4',
-        weight: 1,
-        opacity: 0.25,
-        fillColor: '#4285f4',
-        fillOpacity: 0.12,
-        interactive: false,
-      }).addTo(group);
+    if (!currentLocation) {
+      locationLayers.current?.group.remove();
+      return;
     }
-    L.circleMarker(center, {
-      pane: 'current-location',
-      radius: 9,
-      color: '#fff',
-      weight: 3,
-      opacity: 1,
-      fillColor: '#4285f4',
-      fillOpacity: 1,
-      className: 'current-location-dot',
-      interactive: false,
-    }).addTo(group);
-    return () => group.remove();
+    const center = [currentLocation.lat, currentLocation.lng];
+    let layers = locationLayers.current;
+    if (!layers) {
+      const group = L.layerGroup();
+      const accuracy = L.circle(center, {
+        radius: 0, color: '#4285f4', weight: 1, opacity: 0.25,
+        fillColor: '#4285f4', fillOpacity: 0.10, interactive: false,
+      }).addTo(group);
+      const sonar = document.createElement('div');
+      sonar.className = 'location-sonar';
+      sonar.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < 3; i++) {
+        const ring = document.createElement('span');
+        ring.className = 'location-sonar-ring';
+        sonar.append(ring);
+      }
+      const dot = document.createElement('span');
+      dot.className = 'location-sonar-dot';
+      sonar.append(dot);
+      const marker = L.marker(center, {
+        pane: 'current-location',
+        icon: L.divIcon({ html: sonar, className: 'location-sonar-icon', iconSize: [100, 100], iconAnchor: [50, 50] }),
+        interactive: false, keyboard: false,
+      }).addTo(group);
+      layers = { group, marker, accuracy };
+      locationLayers.current = layers;
+    }
+    layers.group.addTo(map);
+    layers.marker.setLatLng(center);
+    layers.accuracy.setLatLng(center).setRadius(
+      Number.isFinite(currentLocation.accuracy) && currentLocation.accuracy > 0 ? currentLocation.accuracy : 0
+    );
   }, [currentLocation]);
+  useEffect(() => () => {
+    locationLayers.current?.group.remove();
+    locationLayers.current = null;
+  }, []);
   useEffect(() => {
     if (view) mapRef.current.setView([view.lat, view.lng], 16);
   }, [view]);

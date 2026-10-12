@@ -82,3 +82,20 @@ main{height:auto;flex:1;min-height:0}
 .photo-pin{width:62px;height:82px;padding:4px;box-sizing:border-box}
 .photo-pin-caption{display:block;width:54px;height:20px;line-height:20px;font-size:10px;font-weight:650;text-align:center;color:#203d37;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .leaflet-container .photo-pin img{display:block;width:54px!important;height:54px!important;min-width:54px;max-width:none!important;max-height:none!important;object-fit:cover;margin:0;border-radius:8px}
+
+/* Animate inside the icon so Leaflet keeps ownership of its positioning transform. */
+.location-sonar-icon{pointer-events:none!important;background:none;border:0}
+.location-sonar{position:relative;width:100px;height:100px;pointer-events:none}
+.location-sonar-dot{position:absolute;left:40px;top:40px;width:20px;height:20px;background:#4285f4;border:3px solid white;border-radius:50%;box-shadow:0 1px 5px #174ea660;z-index:1}
+.location-sonar-ring{position:absolute;left:0;top:0;width:100px;height:100px;border:1px solid #4285f48c;background:#4285f41c;border-radius:50%;opacity:0;animation:location-sonar-wave 3s linear infinite}
+.location-sonar-ring:nth-child(2){animation-delay:-1s}
+.location-sonar-ring:nth-child(3){animation-delay:-2s}
+@keyframes location-sonar-wave{
+  0%{transform:scale(.2);opacity:.65}
+  75%{opacity:.15}
+  100%{transform:scale(1);opacity:0}
+}
+@media(prefers-reduced-motion:reduce){
+  .location-sonar-ring{animation:none;transform:scale(.6);opacity:.15}
+  .location-sonar-ring:nth-child(n+2){display:none}
+}

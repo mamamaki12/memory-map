@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import InstallNotice from './InstallNotice.jsx';
 import { readBackup, restoreBackup } from './backup.js';
+import { trackLocation } from './locationTracker.js';
 import PhotoMap from './PhotoMap.jsx';
 import useDrawerGesture from './useDrawerGesture.js';
 import { openDB, transaction } from './storage.js';
@@ -36,6 +37,8 @@ export default function App() {
   const [importing, setImporting] = useState(false);
   const [settingsMessage, setSettingsMessage] = useState('');
   const operation = useRef(false);
+  const tracker = useRef(null);
+  const latestLocation = useRef(null);
   const [ready, setReady] = useState(false);
   const [photos, setPhotos] = useState([]);
   const [pending, setPending] = useState(null);
@@ -78,6 +81,27 @@ export default function App() {
     return () => { disposed = true; connection?.close(); };
   }, [notify]);
 
+  useEffect(() => {
+    if (!window.isSecureContext || !navigator.geolocation) {
+      notify('現在地の追跡にはHTTPSと位置情報に対応したブラウザが必要です。');
+      return;
+    }
+    const watcher = trackLocation({
+      geolocation: navigator.geolocation,
+      page: document,
+      onPosition(place) { latestLocation.current = place; setCurrentLocation(place); },
+      onError(error) {
+        if (error.code === 1) {
+          latestLocation.current = null;
+          setCurrentLocation(null);
+          notify('位置情報が許可されていません。許可後に「現在地」を押してください。');
+        } else notify('現在地を取得できません。位置情報の更新を待っています。');
+      },
+    });
+    tracker.current = watcher;
+    return () => { watcher.dispose(); tracker.current = null; };
+  }, [notify]);
+
   async function capture(event) {
     const selected = event.target.files?.[0];
     event.target.value = '';
@@ -85,7 +109,9 @@ export default function App() {
     operation.current = true;
     setBusy(true);
     notify('写真と現在地を準備しています…');
-    const location = position().catch(() => null);
+    const cached = latestLocation.current;
+    const location = cached && Date.now() - cached.timestamp < 15000
+      ? Promise.resolve(cached) : position().catch(() => null);
     try {
       const blob = await compress(selected);
       const place = await location;
@@ -131,7 +157,9 @@ export default function App() {
   async function locate() {
     setLocating(true);
     try {
-      const place = await position();
+      const cached = latestLocation.current;
+      const place = cached && Date.now() - cached.timestamp < 15000 ? cached : await position();
+      tracker.current?.retry();
       setCurrentLocation(place);
       setView(place);
       setFitRequest(0);
