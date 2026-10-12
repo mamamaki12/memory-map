@@ -116,3 +116,35 @@ main{height:auto;flex:1;min-height:0}
 .friend-message{color:#167766;white-space:pre-wrap;overflow-wrap:anywhere}
 .friend-message:empty{display:none}
 @media(max-width:700px){.header-actions{gap:2px}.friends-button{padding:8px}.brand{font-size:17px}.brand small{letter-spacing:1px}}
+
+.map-mode{display:flex;justify-content:center;gap:6px;padding:8px;background:white;flex-shrink:0;border-bottom:1px solid #e3e9e3}
+.map-mode button{min-height:36px;padding:8px 18px;font-size:13px;border:0;background:#f1f5ef}
+.map-mode button[aria-pressed=true]{background:#167766;color:white}
+main.photo-map-hidden{display:none}
+main.photo-map-hidden .memories-panel{display:none}
+.conquest-view{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+.conquest-summary{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:16px 24px;background:#f6f8f5;flex-shrink:0}
+.conquest-summary h2{font-size:19px;margin:5px 0}
+.conquest-summary>strong{font-size:30px;margin-left:auto}
+.conquest-summary strong small{font-size:13px;font-weight:400}
+.conquest-summary progress{width:100%;height:8px;accent-color:#167766}
+.conquest-summary>span{font-size:11px;color:#667c70}
+.conquest-tools{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 20px;background:white;flex-shrink:0}
+.conquest-tools label{display:flex;align-items:center;gap:8px;margin:0}
+.conquest-tools select{padding:8px;border:1px solid #dbe4de;border-radius:10px;font:inherit;color:inherit;background:white}
+.conquest-tools button{min-height:36px;padding:8px 10px;font-size:12px}
+.conquest-legend{display:flex;align-items:center;gap:6px;font-size:11px;margin-left:auto}
+.conquest-legend i{width:10px;height:10px;background:#24ae82;border-radius:3px}
+.conquest-legend i.unvisited{background:#e4ece7;border:1px solid #98afa6;margin-left:8px}
+.conquest-map-wrap{position:relative;flex:1;min-height:100px}
+.conquest-map{width:100%;height:100%}
+.conquest-loading{position:absolute;top:15px;left:50%;transform:translateX(-50%);z-index:800;background:white;border-radius:12px;padding:12px;width:max-content;max-width:90%;font-size:13px}
+.conquest-city{position:absolute;bottom:15px;left:15px;z-index:800;width:260px;max-width:calc(100% - 30px);background:#fff;padding:16px;border-radius:16px;box-shadow:0 4px 20px #203d3720}
+.conquest-city h3{margin:5px 0 12px;font-size:22px}
+.conquest-city strong{color:#167766;font-size:14px}
+.conquest-city p{font-size:12px;margin:6px 0 0}
+.conquest-close{position:absolute;right:4px;top:4px;border:0;background:transparent;font-size:20px;padding:0;width:36px}
+.conquest-footer{padding:8px 20px;background:#f6f8f5;flex-shrink:0;max-height:18dvh;overflow:auto}
+.conquest-footer>span{font-size:13px;font-weight:650}
+.conquest-footer p{font-size:10px;line-height:1.6;margin:4px 0}
+@media(max-width:700px){.conquest-summary{padding:10px 14px}.conquest-summary h2{font-size:15px}.conquest-tools{padding:6px 12px}.conquest-legend{width:100%;margin-left:0}.conquest-summary>strong{font-size:25px}}

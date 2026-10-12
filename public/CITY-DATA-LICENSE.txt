@@ -1,0 +1,7 @@
+出典：国土交通省「国土数値情報（行政区域データ）」を加工して作成。
+https://nlftp.mlit.go.jp/ksj/
+加工済データ：スマートニュース メディア研究所 japan-topography
+https://github.com/smartnews-smri/japan-topography
+データ版：2021年。政令指定都市の行政区を市単位に統合、境界を1%に簡略化。
+データ利用条件：https://nlftp.mlit.go.jp/ksj/other/agreement.html
+境界は概略であり、最新の行政区域・厳密な位置判定を保証するものではありません。

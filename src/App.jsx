@@ -3,6 +3,7 @@ import InstallNotice from './InstallNotice.jsx';
 import { readBackup, restoreBackup } from './backup.js';
 import { trackLocation } from './locationTracker.js';
 import FriendsDialog from './FriendsPanel.jsx';
+import ConquestMap from './ConquestMap.jsx';
 import PhotoMap from './PhotoMap.jsx';
 import useDrawerGesture from './useDrawerGesture.js';
 import { openDB, transaction } from './storage.js';
@@ -42,6 +43,7 @@ export default function App() {
   const latestLocation = useRef(null);
   const [ready, setReady] = useState(false);
   const [photos, setPhotos] = useState([]);
+  const [mapMode, setMapMode] = useState('photos');
   const [sharedPhotos, setSharedPhotos] = useState([]);
   const [friendsOpen, setFriendsOpen] = useState(false);
   const mapPhotos = useMemo(() => [...photos, ...sharedPhotos].sort((a, b) => b.createdAt - a.createdAt), [photos, sharedPhotos]);
@@ -231,7 +233,12 @@ export default function App() {
       </button></div></header>
     <FriendsDialog open={friendsOpen} onClose={() => setFriendsOpen(false)} photos={photos} onPhotos={setSharedPhotos} />
     <InstallNotice />
-    <main>
+    <nav className="map-mode" aria-label="地図の切り替え">
+      <button aria-pressed={mapMode==='photos'} onClick={()=>setMapMode('photos')}>写真の地図</button>
+      <button aria-pressed={mapMode==='conquest'} onClick={()=>{setMapMode('conquest');setMemoriesOpen(false);}}>全国攻略</button>
+    </nav>
+    {mapMode==='conquest' && <ConquestMap photos={photos} />}
+    <main className={mapMode==='conquest'?'photo-map-hidden':''}>
       {memoriesOpen && <button className="memories-backdrop" aria-label="思い出の一覧を閉じる" onClick={() => setMemoriesOpen(false)} />}
       <aside className={'memories-panel' + (memoriesOpen ? ' is-open' : '') + (drawer.dragOffset !== null ? ' is-dragging' : '')}
         style={{ '--drawer-drag': (drawer.dragOffset ?? 0) + 'px' }} onKeyDown={event => {
