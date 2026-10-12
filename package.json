@@ -15,7 +15,8 @@
   "dependencies": {
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "leaflet": "1.9.4"
+    "leaflet": "1.9.4",
+    "@supabase/supabase-js": "^2.0.0"
   },
   "devDependencies": {
     "vite": "^8.0.0",

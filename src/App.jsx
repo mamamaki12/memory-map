@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import InstallNotice from './InstallNotice.jsx';
 import { readBackup, restoreBackup } from './backup.js';
 import { trackLocation } from './locationTracker.js';
+import FriendsDialog from './FriendsPanel.jsx';
 import PhotoMap from './PhotoMap.jsx';
 import useDrawerGesture from './useDrawerGesture.js';
 import { openDB, transaction } from './storage.js';
@@ -41,6 +42,9 @@ export default function App() {
   const latestLocation = useRef(null);
   const [ready, setReady] = useState(false);
   const [photos, setPhotos] = useState([]);
+  const [sharedPhotos, setSharedPhotos] = useState([]);
+  const [friendsOpen, setFriendsOpen] = useState(false);
+  const mapPhotos = useMemo(() => [...photos, ...sharedPhotos].sort((a, b) => b.createdAt - a.createdAt), [photos, sharedPhotos]);
   const [pending, setPending] = useState(null);
   const [active, setActive] = useState(null);
   const [selecting, setSelecting] = useState(false);
@@ -217,12 +221,15 @@ export default function App() {
 
   return <>
     <header><a className="brand" href={import.meta.env.BASE_URL}><span className="logo">◎</span><span>Memory Map<small>思い出を、地図に。</small></span></a>
+      <div className="header-actions">
+      <button className="friends-button" onClick={() => setFriendsOpen(true)}>友達</button>
       <button className="settings-button" aria-label="設定を開く" aria-haspopup="dialog" onClick={() => setSettingsOpen(true)}>
         <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="m9.5 3-.5 2-2 .9-1.9-.6-2.5 4.3 1.5 1.4v2l-1.5 1.4 2.5 4.3 1.9-.6 2 .9.5 2h5l.5-2 2-.9 1.9.6 2.5-4.3-1.5-1.4v-2l1.5-1.4-2.5-4.3-1.9.6-2-.9-.5-2z" />
           <circle cx="12" cy="12" r="3" />
         </svg>
-      </button></header>
+      </button></div></header>
+    <FriendsDialog open={friendsOpen} onClose={() => setFriendsOpen(false)} photos={photos} onPhotos={setSharedPhotos} />
     <InstallNotice />
     <main>
       {memoriesOpen && <button className="memories-backdrop" aria-label="思い出の一覧を閉じる" onClick={() => setMemoriesOpen(false)} />}
@@ -232,20 +239,20 @@ export default function App() {
       }}>
         <button className="memories-toggle" aria-expanded={memoriesOpen} aria-controls="memories-list" {...drawer.handleProps}>
           <span className="sheet-handle" aria-hidden="true" />
-          <span className="sheet-title">思い出</span><span className="sheet-count">{photos.length} 枚</span><span className="sheet-chevron" aria-hidden="true">{memoriesOpen ? '⌄' : '⌃'}</span>
+          <span className="sheet-title">思い出</span><span className="sheet-count">{mapPhotos.length} 枚</span><span className="sheet-chevron" aria-hidden="true">{memoriesOpen ? '⌄' : '⌃'}</span>
         </button>
         <div className="intro"><span className="eyebrow">YOUR PERSONAL ATLAS</span><h1>ここにいた、<br />を残そう。</h1><p>いつもの道も、初めての街も。<br />写真から広がる、あなただけの地図。</p></div>
         <div className="section-title"><h2>思い出</h2><span>{photos.length} 枚</span></div>
-        <div className="list" id="memories-list" {...drawer.listProps}>{photos.length ? photos.map(photo =>
+        <div className="list" id="memories-list" {...drawer.listProps}>{mapPhotos.length ? mapPhotos.map(photo =>
           <button key={photo.id} className="memory" onClick={() => openPhoto(photo)} disabled={selecting}>
             <Photo blob={photo.blob} alt={photo.caption || '思い出の写真'} loading="lazy" />
-            <span>{photo.caption || '名前のない思い出'}<small>{date(photo.createdAt)}</small></span>
+            <span>{photo.caption || '名前のない思い出'}<small>{photo.shared ? '友達の写真 · ' : ''}{date(photo.createdAt)}</small></span>
           </button>) : <p className="empty">{ready ? 'まだ写真がありません。最初の一枚を撮ってみましょう。' : '保存した写真を読み込んでいます…'}</p>}</div>
         <p className="privacy">写真はこの端末のブラウザに保存されます。大切な写真はバックアップしてください。</p>
       </aside>
       <section className="map-wrap" aria-label="写真の地図">
-        <PhotoMap photos={photos} onOpen={openPhoto} onPick={pickPlace} selecting={selecting} view={view} currentLocation={currentLocation} fitRequest={fitRequest} onError={notify} />
-        <div className="map-tools"><button disabled={locating} onClick={locate}>{locating ? '取得中…' : '⌖ 現在地'}</button><button onClick={() => photos.length ? setFitRequest(value => value + 1) : notify('写真を保存すると地図上に表示されます。')}>すべて表示</button></div>
+        <PhotoMap photos={mapPhotos} onOpen={openPhoto} onPick={pickPlace} selecting={selecting} view={view} currentLocation={currentLocation} fitRequest={fitRequest} onError={notify} />
+        <div className="map-tools"><button disabled={locating} onClick={locate}>{locating ? '取得中…' : '⌖ 現在地'}</button><button onClick={() => mapPhotos.length ? setFitRequest(value => value + 1) : notify('写真を保存すると地図上に表示されます。')}>すべて表示</button></div>
         {selecting && <div id="place-hint">地図をタップして場所を選んでください <button onClick={() => setSelecting(false)}>戻る</button></div>}
         <div className="capture-bar"><button className="primary" disabled={!ready || busy} onClick={() => pending ? setSelecting(false) : file.current.click()}>{busy ? '処理中…' : pending ? '保存画面に戻る' : '＋ 写真を撮る'}</button><span>今日の景色を、思い出に。</span></div>
       </section>
@@ -276,7 +283,7 @@ export default function App() {
     {active && <Modal title={active.caption || '名前のない思い出'} onClose={() => setActive(null)} busy={busy}>
       <Photo blob={active.blob} alt={active.caption || '思い出の写真'} /><p id="detail-date">{date(active.createdAt)}</p>
       <button className="quiet" onClick={() => download(active.blob, 'memory-' + active.id + '.jpg')}>写真をダウンロード</button>
-      <button className="danger" disabled={busy} onClick={remove}>この写真を削除</button>
+      {active.shared ? <p className="settings-note">友達が共有した写真です。</p> : <button className="danger" disabled={busy} onClick={remove}>この写真を削除</button>}
     </Modal>}
   </>;
 }

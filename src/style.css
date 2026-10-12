@@ -99,3 +99,20 @@ main{height:auto;flex:1;min-height:0}
   .location-sonar-ring{animation:none;transform:scale(.6);opacity:.15}
   .location-sonar-ring:nth-child(n+2){display:none}
 }
+
+.header-actions{display:flex;align-items:center;gap:8px}
+.friends-button{font-size:13px;padding:8px 12px;background:#eaf3ee;border:0}
+.friend-dialog{max-width:540px}
+.friend-panel p,.friend-section p{font-size:13px;line-height:1.7}
+.friend-panel form{margin:16px 0}
+.friend-panel form button{margin-top:10px}
+.friend-section{padding:16px 0;border-top:1px solid #dbe4de}
+.friend-section h3{font-size:16px;margin:0 0 12px}
+.friend-code{display:block;font-size:13px;overflow-wrap:anywhere;background:#eaf3ee;padding:12px;border-radius:10px;margin-bottom:8px}
+.friend-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #edf1ec}
+.friend-row>span{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px}
+.friend-row button{flex-shrink:0;font-size:12px;padding:8px 10px}
+.friend-toolbar{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.friend-message{color:#167766;white-space:pre-wrap;overflow-wrap:anywhere}
+.friend-message:empty{display:none}
+@media(max-width:700px){.header-actions{gap:2px}.friends-button{padding:8px}.brand{font-size:17px}.brand small{letter-spacing:1px}}
