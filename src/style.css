@@ -77,3 +77,8 @@ main{height:auto;flex:1;min-height:0}
   .install-message p{font-size:11px}
   .install-notice .quiet{padding:8px;white-space:nowrap;flex-shrink:0}
 }
+
+/* Fixed inner geometry prevents Leaflet image constraints from leaving a right-hand gap. */
+.photo-pin{width:62px;height:82px;padding:4px;box-sizing:border-box}
+.photo-pin-caption{display:block;width:54px;height:20px;line-height:20px;font-size:10px;font-weight:650;text-align:center;color:#203d37;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leaflet-container .photo-pin img{display:block;width:54px!important;height:54px!important;min-width:54px;max-width:none!important;max-height:none!important;object-fit:cover;margin:0;border-radius:8px}

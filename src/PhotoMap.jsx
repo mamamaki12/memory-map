@@ -38,14 +38,14 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, curr
       const scale = Math.max(0.32, Math.min(1.15, 2 ** ((map.getZoom() - 16) / 6)));
       pins.forEach(({ marker, pin }) => {
         pin.style.width = '62px';
-        pin.style.height = '62px';
+        pin.style.height = '82px';
         pin.style.transformOrigin = '0 0';
         pin.style.transform = 'scale(' + scale + ')';
         marker.setIcon(L.divIcon({
           html: pin,
           className: '',
-          iconSize: [62 * scale, 62 * scale],
-          iconAnchor: [31 * scale, 70 * scale],
+          iconSize: [62 * scale, 82 * scale],
+          iconAnchor: [31 * scale, 90 * scale],
         }));
       });
     };
@@ -57,9 +57,13 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, curr
       const image = document.createElement('img');
       image.src = url;
       image.alt = photo.caption || '思い出の写真';
-      pin.append(image);
+      const caption = document.createElement('span');
+      caption.className = 'photo-pin-caption';
+      caption.textContent = photo.caption || '';
+      caption.title = photo.caption || '';
+      pin.append(caption, image);
       const marker = L.marker([photo.lat, photo.lng], {
-        icon: L.divIcon({ html: pin, className: '', iconSize: [62, 62], iconAnchor: [31, 70] }),
+        icon: L.divIcon({ html: pin, className: '', iconSize: [62, 82], iconAnchor: [31, 90] }),
         title: photo.caption || '写真を開く',
       }).addTo(group).on('click', event => {
         L.DomEvent.stopPropagation(event);
