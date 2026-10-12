@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
+import { animateLocation } from './animateLocation.js';
 
 export default function PhotoMap({ photos, onOpen, onPick, selecting, view, currentLocation, fitRequest, onError }) {
   const container = useRef(null);
   const mapRef = useRef(null);
   const locationLayers = useRef(null);
+  const stopLocationAnimation = useRef(null);
   const callbacks = useRef({ onOpen, onPick, selecting, onError });
   useEffect(() => { callbacks.current = { onOpen, onPick, selecting, onError }; });
   useEffect(() => {
@@ -82,6 +84,8 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, curr
   }, [photos]);
   useEffect(() => {
     const map = mapRef.current;
+    stopLocationAnimation.current?.();
+    stopLocationAnimation.current = null;
     if (!currentLocation) {
       locationLayers.current?.group.remove();
       return;
@@ -113,13 +117,33 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, curr
       layers = { group, marker, accuracy };
       locationLayers.current = layers;
     }
+    const wasVisible = map.hasLayer(layers.group);
+    const start = layers.marker.getLatLng();
+    const target = {
+      lat: currentLocation.lat, lng: currentLocation.lng,
+      accuracy: Number.isFinite(currentLocation.accuracy) && currentLocation.accuracy > 0 ? currentLocation.accuracy : 0,
+    };
     layers.group.addTo(map);
-    layers.marker.setLatLng(center);
-    layers.accuracy.setLatLng(center).setRadius(
-      Number.isFinite(currentLocation.accuracy) && currentLocation.accuracy > 0 ? currentLocation.accuracy : 0
-    );
+    const draw = point => {
+      const position = [point.lat, point.lng];
+      layers.marker.setLatLng(position);
+      layers.accuracy.setLatLng(position).setRadius(point.accuracy);
+    };
+    if (!wasVisible || window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+        map.distance(start, center) > 5000) {
+      draw(target);
+    } else {
+      // Retarget from the currently displayed position, even if the previous movement is unfinished.
+      stopLocationAnimation.current = animateLocation({
+        from: { lat: start.lat, lng: start.lng, accuracy: layers.accuracy.getRadius() },
+        to: target, onFrame: draw,
+      });
+    }
+    return () => { stopLocationAnimation.current?.(); stopLocationAnimation.current = null; };
   }, [currentLocation]);
   useEffect(() => () => {
+    stopLocationAnimation.current?.();
+    stopLocationAnimation.current = null;
     locationLayers.current?.group.remove();
     locationLayers.current = null;
   }, []);
