@@ -32,6 +32,23 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, curr
     const map = mapRef.current;
     const group = L.layerGroup().addTo(map);
     const urls = [];
+    const pins = [];
+    // Shrink at regional/world zooms, with a readable minimum and a capped close-up size.
+    const updatePinSizes = () => {
+      const scale = Math.max(0.32, Math.min(1.15, 2 ** ((map.getZoom() - 16) / 6)));
+      pins.forEach(({ marker, pin }) => {
+        pin.style.width = '62px';
+        pin.style.height = '62px';
+        pin.style.transformOrigin = '0 0';
+        pin.style.transform = 'scale(' + scale + ')';
+        marker.setIcon(L.divIcon({
+          html: pin,
+          className: '',
+          iconSize: [62 * scale, 62 * scale],
+          iconAnchor: [31 * scale, 70 * scale],
+        }));
+      });
+    };
     photos.forEach(photo => {
       const url = URL.createObjectURL(photo.blob);
       urls.push(url);
@@ -41,15 +58,22 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, curr
       image.src = url;
       image.alt = photo.caption || '思い出の写真';
       pin.append(image);
-      L.marker([photo.lat, photo.lng], {
+      const marker = L.marker([photo.lat, photo.lng], {
         icon: L.divIcon({ html: pin, className: '', iconSize: [62, 62], iconAnchor: [31, 70] }),
         title: photo.caption || '写真を開く',
       }).addTo(group).on('click', event => {
         L.DomEvent.stopPropagation(event);
         if (!callbacks.current.selecting) callbacks.current.onOpen(photo);
       });
+      pins.push({ marker, pin });
     });
-    return () => { group.remove(); urls.forEach(url => URL.revokeObjectURL(url)); };
+    updatePinSizes();
+    map.on('zoomend', updatePinSizes);
+    return () => {
+      map.off('zoomend', updatePinSizes);
+      group.remove();
+      urls.forEach(url => URL.revokeObjectURL(url));
+    };
   }, [photos]);
   useEffect(() => {
     if (!currentLocation) return;
