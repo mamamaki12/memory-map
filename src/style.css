@@ -57,3 +57,23 @@
   .memories-panel.is-dragging .memories-toggle{cursor:grabbing}
   .memories-panel.is-dragging .list{visibility:visible}
 }
+
+/* The notice participates in layout instead of covering map controls. */
+#root{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+header{flex-shrink:0}
+main{height:auto;flex:1;min-height:0}
+.install-notice{display:flex;align-items:center;gap:10px;padding:12px 24px;background:#eaf3ee;border-bottom:1px solid #d6e5db;flex-shrink:0;max-height:30dvh;overflow:auto}
+.install-message{flex:1;min-width:0}
+.install-message strong{font-size:14px}
+.install-message p{font-size:12px;line-height:1.5;margin:4px 0 0}
+.install-dismiss{border:0;background:transparent;font-size:22px;padding:0;width:44px;flex-shrink:0}
+.settings-item{margin-top:12px}
+.settings-result{font-size:13px;line-height:1.7;color:#167766}
+.settings-result:empty{display:none}
+@media(max-width:700px){
+  main{height:auto}
+  .install-notice{padding:8px 12px;gap:6px}
+  .install-message strong{font-size:12px}
+  .install-message p{font-size:11px}
+  .install-notice .quiet{padding:8px;white-space:nowrap;flex-shrink:0}
+}

@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import InstallNotice from './InstallNotice.jsx';
+import { readBackup, restoreBackup } from './backup.js';
 import PhotoMap from './PhotoMap.jsx';
 import useDrawerGesture from './useDrawerGesture.js';
 import { openDB, transaction } from './storage.js';
@@ -30,6 +32,9 @@ function Modal({ title, onClose, busy, children }) {
 export default function App() {
   const db = useRef(null);
   const file = useRef(null);
+  const importFile = useRef(null);
+  const [importing, setImporting] = useState(false);
+  const [settingsMessage, setSettingsMessage] = useState('');
   const operation = useRef(false);
   const [ready, setReady] = useState(false);
   const [photos, setPhotos] = useState([]);
@@ -135,8 +140,28 @@ export default function App() {
     finally { setLocating(false); }
   }
 
+  async function importBackup(event) {
+    const selected = event.target.files?.[0];
+    event.target.value = '';
+    if (!selected || operation.current) return;
+    operation.current = true;
+    setImporting(true);
+    setSettingsMessage('バックアップを確認しています…');
+    try {
+      const incoming = await readBackup(selected);
+      if (!incoming.length) { setSettingsMessage('このバックアップには写真がありません。'); return; }
+      setSettingsMessage('写真を復元しています…');
+      const result = await restoreBackup(db.current, incoming);
+      setPhotos(result.photos.sort((a, b) => b.createdAt - a.createdAt));
+      setFitRequest(value => value + 1);
+      setSettingsMessage(result.added + '枚を復元しました。' + (result.skipped ? result.skipped + '枚は保存済みのためスキップしました。' : ''));
+    } catch (error) {
+      setSettingsMessage(error?.name === 'QuotaExceededError' ? '空き容量が不足しています。復元は行っていません。' : error?.message || '復元できませんでした。既存の写真は変更していません。');
+    } finally { operation.current = false; setImporting(false); }
+  }
+
   async function backup() {
-    if (!photos.length) return notify('保存した写真がありません。');
+    if (!photos.length) return setSettingsMessage('保存した写真がありません。');
     setExporting(true);
     try {
       const output = await Promise.all(photos.map(photo => new Promise((resolve, reject) => {
@@ -146,8 +171,8 @@ export default function App() {
         reader.readAsDataURL(photo.blob);
       })));
       download(new Blob([JSON.stringify({ version: 1, photos: output })], { type: 'application/json' }), 'memory-map-backup.json');
-      notify('写真と場所をJSON形式で書き出しました。');
-    } catch { notify('書き出しに失敗しました。写真を個別にダウンロードしてください。'); }
+      setSettingsMessage('写真と場所をJSON形式で書き出しました。');
+    } catch { setSettingsMessage('書き出しに失敗しました。写真を個別にダウンロードしてください。'); }
     finally { setExporting(false); }
   }
 
@@ -170,6 +195,7 @@ export default function App() {
           <circle cx="12" cy="12" r="3" />
         </svg>
       </button></header>
+    <InstallNotice />
     <main>
       {memoriesOpen && <button className="memories-backdrop" aria-label="思い出の一覧を閉じる" onClick={() => setMemoriesOpen(false)} />}
       <aside className={'memories-panel' + (memoriesOpen ? ' is-open' : '') + (drawer.dragOffset !== null ? ' is-dragging' : '')}
@@ -198,11 +224,17 @@ export default function App() {
     </main>
     <input ref={file} type="file" accept="image/*" capture="environment" hidden onChange={capture} />
     <p id="status" role="status" aria-live="polite">{status}</p>
-    {settingsOpen && <Modal title="設定" onClose={() => setSettingsOpen(false)}>
-      <button className="settings-item" disabled={!ready || exporting} onClick={backup}>
+    {settingsOpen && <Modal title="設定" busy={importing || exporting} onClose={() => setSettingsOpen(false)}>
+      <button className="settings-item" disabled={!ready || exporting || importing} onClick={backup}>
         <span>{exporting ? '書き出し中…' : 'バックアップ'}</span>
         <small>写真と撮影場所をファイルに保存</small>
       </button>
+      <input ref={importFile} type="file" accept=".json,application/json" hidden onChange={importBackup} />
+      <button className="settings-item" disabled={!ready || exporting || importing} onClick={() => importFile.current.click()}>
+        <span>{importing ? '復元中…' : 'バックアップをインポート'}</span>
+        <small>JSONから写真と場所を復元（100MBまで・既存写真は保持）</small>
+      </button>
+      <p className="settings-result" role="status" aria-live="polite">{settingsMessage}</p>
       <p className="settings-note">写真はこのブラウザに保存されています。大切な思い出は定期的にバックアップしてください。</p>
     </Modal>}
     {pending && !selecting && <Modal title="思い出を保存" onClose={cancel} busy={busy}>
