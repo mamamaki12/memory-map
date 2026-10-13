@@ -148,8 +148,7 @@ main.photo-map-hidden .memories-panel{display:none}
 
 
 /* A header toggle keeps both map views accessible without using map height. */
-.map-toggle-button{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;background:transparent;box-shadow:none;flex-shrink:0}
-.map-toggle-button[aria-pressed=true]{color:#167766;background:#eaf3ee}
+.map-toggle-button{position:relative;isolation:isolate;width:44px;height:44px;padding:0;border:0;background:transparent;box-shadow:none;flex-shrink:0}
 .map-toggle-button:disabled{cursor:default}
 .header-actions{flex-shrink:0}
 .brand{min-width:0}
@@ -159,3 +158,18 @@ main.photo-map-hidden .memories-panel{display:none}
   .brand{gap:6px;font-size:15px}
   .brand small{font-size:9px;letter-spacing:0}
 }
+
+/* Both symbols stay mounted so repeated taps smoothly reverse the transition. */
+.map-mode-card{
+  position:absolute;left:6px;top:6px;display:grid;place-items:center;
+  width:32px;height:32px;border-radius:8px;background:#edf2ef;color:#637b71;
+  pointer-events:none;z-index:1;opacity:.7;
+  transform:translate(7px,-7px) scale(.72);
+  transition:transform .36s cubic-bezier(.4,0,.2,1),opacity .36s ease,
+    background-color .36s ease,color .36s ease,box-shadow .36s ease,z-index 0s .18s;
+}
+.map-mode-card[data-active=true]{
+  z-index:2;opacity:1;transform:translate(-4px,4px) scale(1);
+  background:#fff;color:#167766;box-shadow:0 2px 5px #203d3726;
+}
+@media(prefers-reduced-motion:reduce){.map-mode-card{transition:none}}

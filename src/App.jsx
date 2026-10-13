@@ -225,19 +225,23 @@ export default function App() {
     <header><a className="brand" href={import.meta.env.BASE_URL}><img className="logo" src={import.meta.env.BASE_URL + 'icon-landscape.svg'} width="45" height="45" alt="" /><span>Memory Map<small>思い出を、地図に。</small></span></a>
       <div className="header-actions">
       <button className="friends-button" onClick={() => setFriendsOpen(true)}>友達</button>
-      <button className="map-toggle-button" aria-label="全国攻略マップ" aria-pressed={mapMode === 'conquest'}
+      <button className="map-toggle-button"
+        aria-label={mapMode === 'conquest' ? '現在は全国攻略。写真の地図に切り替える' : '現在は写真の地図。全国攻略に切り替える'}
         title={mapMode === 'conquest' ? '写真の地図に切り替え' : '全国攻略に切り替え'}
         disabled={busy || selecting}
         onClick={() => { setMapMode(mode => mode === 'photos' ? 'conquest' : 'photos'); setMemoriesOpen(false); }}>
-        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          {mapMode === 'conquest' ? <>
+        <span className="map-mode-card" data-active={mapMode === 'photos'} aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 6h4l2-3h4l2 3h4a1 1 0 0 1 1 1v13H3V7a1 1 0 0 1 1-1Z" />
             <circle cx="12" cy="13" r="4" />
-          </> : <>
+          </svg>
+        </span>
+        <span className="map-mode-card" data-active={mapMode === 'conquest'} aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Z" />
             <path d="M9 3v16M15 5v16" />
-          </>}
-        </svg>
+          </svg>
+        </span>
       </button>
       <button className="settings-button" aria-label="設定を開く" aria-haspopup="dialog" onClick={() => setSettingsOpen(true)}>
         <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
