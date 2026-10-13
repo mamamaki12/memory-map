@@ -162,14 +162,14 @@ main.photo-map-hidden .memories-panel{display:none}
 /* Both symbols stay mounted so repeated taps smoothly reverse the transition. */
 .map-mode-card{
   position:absolute;left:6px;top:6px;display:grid;place-items:center;
-  width:32px;height:32px;border-radius:8px;background:#edf2ef;color:#637b71;
+  width:32px;height:32px;background:transparent;color:#637b71;
   pointer-events:none;z-index:1;opacity:.7;
   transform:translate(7px,-7px) scale(.72);
   transition:transform .36s cubic-bezier(.4,0,.2,1),opacity .36s ease,
-    background-color .36s ease,color .36s ease,box-shadow .36s ease,z-index 0s .18s;
+    color .36s ease,z-index 0s .18s;
 }
 .map-mode-card[data-active=true]{
   z-index:2;opacity:1;transform:translate(-4px,4px) scale(1);
-  background:#fff;color:#167766;box-shadow:0 2px 5px #203d3726;
+  color:#167766;
 }
 @media(prefers-reduced-motion:reduce){.map-mode-card{transition:none}}
