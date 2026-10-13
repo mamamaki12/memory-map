@@ -45,14 +45,22 @@ export default function ConquestMap({ photos }) {
   },[dataset,visibleCities,progress,prefecture]);
   const entry=selection?progress.completed.get(selection.code):null;
   return <section className="conquest-view" aria-label="全国の市の攻略マップ">
-    <div className="conquest-summary"><div><span className="eyebrow">CITY QUEST</span><h2>全国の市を、旅して埋めよう。</h2></div>
-      <strong>{dataset?progress.completed.size:'—'} <small>/ {index.length||'—'} 市</small></strong>
-      <progress value={progress.completed.size} max={index.length||1} aria-label="全国の攻略率" />
-      <span>{index.length?((progress.completed.size/index.length)*100).toFixed(1):'0'}% コンプリート</span>
-    </div>
-    <div className="conquest-tools"><label>都道府県<select value={prefecture} onChange={e=>{setPrefecture(e.target.value);setSelection(null);}}><option value="">全国</option>{prefectures.map(p=><option key={p}>{p}</option>)}</select></label>
-      <button onClick={()=>{setPrefecture('');mapRef.current.setView([37,137],5);}}>全国を表示</button>
-      <span className="conquest-legend"><i />攻略済み <i className="unvisited" />未攻略</span>
+    <div className="quest-dashboard">
+      <div className="quest-progress-row">
+        <h2>全国攻略</h2>
+        <strong>{dataset?progress.completed.size:'—'}<small> / {index.length||'—'} 市</small></strong>
+        <span>{index.length?((progress.completed.size/index.length)*100).toFixed(1):'0'}%</span>
+        <progress value={progress.completed.size} max={index.length||1} aria-label="全国の攻略率" />
+      </div>
+      <div className="quest-filter-row">
+        <select aria-label="都道府県を選択" value={prefecture} onChange={e=>{setPrefecture(e.target.value);setSelection(null);}}>
+          <option value="">全国</option>{prefectures.map(p=><option key={p}>{p}</option>)}
+        </select>
+        <button title="全国を表示" aria-label="全国を表示" onClick={()=>{setPrefecture('');setSelection(null);mapRef.current.setView([37,137],5);}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6M3 3l6 6m12-6-6 6M3 21l6-6m12 6-6-6" /></svg>
+        </button>
+        <span className="quest-legend"><i />攻略済 <i className="unvisited" />未攻略</span>
+      </div>
     </div>
     <div className="conquest-map-wrap"><div ref={host} className="conquest-map" />
       {!dataset&&!error&&<p className="conquest-loading" role="status">全国の市を読み込んでいます…</p>}
@@ -62,9 +70,9 @@ export default function ConquestMap({ photos }) {
         {entry&&<p>最初の記録：{new Date(Math.min(...entry.photos.map(p=>p.createdAt))).toLocaleDateString('ja-JP')}</p>}
       </div>}
     </div>
-    <div className="conquest-footer"><span>{prefecture||'全国'}：{completedVisible} / {visibleCities.length} 市</span>
+    <details className="quest-info"><summary><span>{prefecture||'全国'}：{completedVisible} / {visibleCities.length} 市</span><span className="quest-info-label">攻略について</span></summary><div className="quest-info-body">
       <p>自分の保存写真の撮影場所から判定します。町・村・東京23区は対象外。政令指定都市は市全体で1つです。</p>
       <p>境界は2021年の行政区域データを簡略化したものです。境界付近や海岸では判定できない場合があります。{dataset&&progress.unmatched>0? '市として判定されなかった写真：'+progress.unmatched+'枚。':''}</p>
-    </div>
+    </div></details>
   </section>;
 }

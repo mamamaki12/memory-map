@@ -273,7 +273,13 @@ export default function App() {
       </aside>
       <section className="map-wrap" aria-label="写真の地図">
         <PhotoMap photos={mapPhotos} onOpen={openPhoto} onPick={pickPlace} selecting={selecting} view={view} currentLocation={currentLocation} fitRequest={fitRequest} onError={notify} />
-        <div className="map-tools"><button disabled={locating} onClick={locate}>{locating ? '取得中…' : '⌖ 現在地'}</button><button onClick={() => mapPhotos.length ? setFitRequest(value => value + 1) : notify('写真を保存すると地図上に表示されます。')}>すべて表示</button></div>
+        <div className="map-tools"><button onClick={() => mapPhotos.length ? setFitRequest(value => value + 1) : notify('写真を保存すると地図上に表示されます。')}>すべて表示</button></div>
+        <button className="locate-fab" disabled={locating} onClick={locate} aria-label={locating ? '現在地を取得中' : '現在地を表示'} title="現在地を表示" aria-busy={locating}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+            <path d="M12 1v4m0 14v4M1 12h4m14 0h4" />
+          </svg>
+        </button>
         {selecting && <div id="place-hint">地図をタップして場所を選んでください <button onClick={() => setSelecting(false)}>戻る</button></div>}
         <div className="capture-bar"><button className="primary" disabled={!ready || busy} onClick={() => pending ? setSelecting(false) : file.current.click()}>{busy ? '処理中…' : pending ? '保存画面に戻る' : '＋ 写真を撮る'}</button><span>今日の景色を、思い出に。</span></div>
       </section>
