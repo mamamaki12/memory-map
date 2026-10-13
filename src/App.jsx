@@ -233,10 +233,6 @@ export default function App() {
       </button></div></header>
     <FriendsDialog open={friendsOpen} onClose={() => setFriendsOpen(false)} photos={photos} onPhotos={setSharedPhotos} />
     <InstallNotice />
-    <nav className="map-mode" aria-label="地図の切り替え">
-      <button aria-pressed={mapMode==='photos'} onClick={()=>setMapMode('photos')}>写真の地図</button>
-      <button aria-pressed={mapMode==='conquest'} onClick={()=>{setMapMode('conquest');setMemoriesOpen(false);}}>全国攻略</button>
-    </nav>
     {mapMode==='conquest' && <ConquestMap photos={photos} />}
     <main className={mapMode==='conquest'?'photo-map-hidden':''}>
       {memoriesOpen && <button className="memories-backdrop" aria-label="思い出の一覧を閉じる" onClick={() => setMemoriesOpen(false)} />}
@@ -267,6 +263,17 @@ export default function App() {
     <input ref={file} type="file" accept="image/*" capture="environment" hidden onChange={capture} />
     <p id="status" role="status" aria-live="polite">{status}</p>
     {settingsOpen && <Modal title="設定" busy={importing || exporting} onClose={() => setSettingsOpen(false)}>
+      <section className="settings-map-mode" aria-labelledby="settings-map-title">
+        <h3 id="settings-map-title">表示する地図</h3>
+        <div className="settings-map-options">
+          <button aria-pressed={mapMode === 'photos'} disabled={importing || exporting} onClick={() => { setMapMode('photos'); setMemoriesOpen(false); setSettingsOpen(false); }}>
+            写真の地図{mapMode === 'photos' && <span aria-hidden="true"> ✓</span>}
+          </button>
+          <button aria-pressed={mapMode === 'conquest'} disabled={importing || exporting || selecting} onClick={() => { setMapMode('conquest'); setMemoriesOpen(false); setSettingsOpen(false); }}>
+            全国攻略{mapMode === 'conquest' && <span aria-hidden="true"> ✓</span>}
+          </button>
+        </div>
+      </section>
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={backup}>
         <span>{exporting ? '書き出し中…' : 'バックアップ'}</span>
         <small>写真と撮影場所をファイルに保存</small>

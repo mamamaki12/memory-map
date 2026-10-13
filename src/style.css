@@ -117,9 +117,6 @@ main{height:auto;flex:1;min-height:0}
 .friend-message:empty{display:none}
 @media(max-width:700px){.header-actions{gap:2px}.friends-button{padding:8px}.brand{font-size:17px}.brand small{letter-spacing:1px}}
 
-.map-mode{display:flex;justify-content:center;gap:6px;padding:8px;background:white;flex-shrink:0;border-bottom:1px solid #e3e9e3}
-.map-mode button{min-height:36px;padding:8px 18px;font-size:13px;border:0;background:#f1f5ef}
-.map-mode button[aria-pressed=true]{background:#167766;color:white}
 main.photo-map-hidden{display:none}
 main.photo-map-hidden .memories-panel{display:none}
 .conquest-view{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
@@ -148,3 +145,10 @@ main.photo-map-hidden .memories-panel{display:none}
 .conquest-footer>span{font-size:13px;font-weight:650}
 .conquest-footer p{font-size:10px;line-height:1.6;margin:4px 0}
 @media(max-width:700px){.conquest-summary{padding:10px 14px}.conquest-summary h2{font-size:15px}.conquest-tools{padding:6px 12px}.conquest-legend{width:100%;margin-left:0}.conquest-summary>strong{font-size:25px}}
+
+/* Map switching lives in settings, leaving the map's full layout height available. */
+.settings-map-mode{margin:4px 0 20px}
+.settings-map-mode h3{font-size:14px;margin:0 0 10px}
+.settings-map-options{display:flex;flex-wrap:wrap;gap:8px}
+.settings-map-options button{flex:1 1 130px;font-size:14px;min-height:44px}
+.settings-map-options button[aria-pressed=true]{background:#167766;color:white;border-color:#167766}
