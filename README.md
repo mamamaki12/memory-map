@@ -46,7 +46,7 @@ IndexedDBの名前 `memory-map`、バージョン1、ストア `photos` は旧�
 ブラウザのデータ削除で写真は消えます。ホーム画面からの起動時に保存領域が異なる端末では、バックアップのインポートで移してください。
 画像のEXIF位置は読み取らず、選択時の現在地を使います。必要なら地図で変更してください。
 カメラ・位置情報にはHTTPS（開発時はlocalhost）が必要です。地図タイルの取得にはインターネット接続が必要です。
-ReactとLeafletはビルドに含まれ、地図タイルはOpenStreetMapから取得します。
+ReactとLeafletはビルドに含まれ、地図タイルはCARTO Voyager（キー未設定時はOpenStreetMap）から取得します。
 
 ## テスト
 `npm test` で保存・再読込・削除・中断と、バックアップの変換・不正データの拒否・重複処理・途中失敗時のロールバックを確認します。
@@ -54,3 +54,14 @@ ReactとLeafletはビルドに含まれ、地図タイルはOpenStreetMapから�
 
 ## 友達交換
 友達コードで申請・承認し、選んだ写真を友達の地図に共有できます。共有にはSupabaseの接続設定が必要です。設定手順は [supabase/README.md](supabase/README.md) を参照してください。未設定時は友達画面に接続待ちを表示します。
+
+## 地図のデザイン（CARTO Voyager）
+写真の地図・全国攻略の両方でVoyagerを使用します。
+1. https://carto.com/basemaps/apikey/ でBasemaps用のAPIキーを取得します。
+2. キーの利用先を `mamamaki12.github.io` に制限してください。
+3. `src/map-config.json` の `cartoApiKey` にブラウザ用キーを設定してmainに反映します。
+4. GitHub Actionsの公開完了後にアプリを再読み込みします。
+
+ブラウザ用キーは公開サイトから参照されます。管理用トークン・秘密鍵は設定しないでください。
+キー未設定時は従来のOpenStreetMapを表示します。設定済みキーのエラー時は無断で別サービスへ切り替えません。
+CARTOとOpenStreetMapの出典表示は地図内に保持します。

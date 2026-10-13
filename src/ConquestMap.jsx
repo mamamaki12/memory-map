@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
+import { addBaseMap } from './baseMap.js';
 import { computeProgress, indexCities } from './cityProgress.js';
 export default function ConquestMap({ photos }) {
   const host = useRef(null), mapRef=useRef(null), citiesLayer=useRef(null);
@@ -25,16 +26,14 @@ export default function ConquestMap({ photos }) {
   useEffect(()=>{
     const map=L.map(host.current,{preferCanvas:true}).setView([37,137],5);
     mapRef.current=map;
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-      maxZoom:18,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors · <a href="https://nlftp.mlit.go.jp/ksj/">国土数値情報（加工）</a>',
-    }).addTo(map);
+    addBaseMap(map, { attribution: ' · <a href="https://nlftp.mlit.go.jp/ksj/">国土数値情報（加工）</a>' });
     const resize=new ResizeObserver(()=>map.invalidateSize());resize.observe(host.current);
     return()=>{resize.disconnect();map.remove();mapRef.current=null;};
   },[]);
   useEffect(()=>{
     if(!dataset)return;
     const layer=L.geoJSON({type:'FeatureCollection',features:visibleCities.map(c=>c.feature)},{
-      style:feature=>({color:progress.completed.has(feature.properties.code)?'#11765f':'#98afa6',weight:1,fillColor:progress.completed.has(feature.properties.code)?'#24ae82':'#e4ece7',fillOpacity:.7}),
+      style:feature=>({color:progress.completed.has(feature.properties.code)?'#11765f':'#98afa6',weight:1,fillColor:progress.completed.has(feature.properties.code)?'#24ae82':'#e4ece7',fillOpacity:progress.completed.has(feature.properties.code)?.55:.15}),
       onEachFeature(feature,polygon){
         polygon.on('click',()=>setSelection(feature.properties));
         polygon.bindTooltip(feature.properties.name);

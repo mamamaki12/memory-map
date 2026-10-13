@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
+import { addBaseMap } from './baseMap.js';
 import { animateLocation } from './animateLocation.js';
 
 export default function PhotoMap({ photos, onOpen, onPick, selecting, view, currentLocation, fitRequest, onError }) {
@@ -16,14 +17,7 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, curr
     const locationPane = map.createPane('current-location');
     locationPane.style.zIndex = '650';
     locationPane.style.pointerEvents = 'none';
-    let warned = false;
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map).on('tileerror', () => {
-      if (!warned) callbacks.current.onError('地図を読み込めません。通信状態を確認してください。');
-      warned = true;
-    });
+    addBaseMap(map, { onError: message => callbacks.current.onError(message) });
     map.on('click', event => {
       if (callbacks.current.selecting) callbacks.current.onPick(event.latlng);
     });
