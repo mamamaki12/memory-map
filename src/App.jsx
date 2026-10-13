@@ -222,7 +222,7 @@ export default function App() {
   const cancel = () => { setPending(null); setSelecting(false); };
 
   return <>
-    <header><a className="brand" href={import.meta.env.BASE_URL}><span className="logo">◎</span><span>Memory Map<small>思い出を、地図に。</small></span></a>
+    <header><a className="brand" href={import.meta.env.BASE_URL}><img className="logo" src={import.meta.env.BASE_URL + 'icon-192.png'} width="45" height="45" alt="" /><span>Memory Map<small>思い出を、地図に。</small></span></a>
       <div className="header-actions">
       <button className="friends-button" onClick={() => setFriendsOpen(true)}>友達</button>
       <button className="settings-button" aria-label="設定を開く" aria-haspopup="dialog" onClick={() => setSettingsOpen(true)}>
