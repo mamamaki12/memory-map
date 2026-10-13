@@ -225,6 +225,20 @@ export default function App() {
     <header><a className="brand" href={import.meta.env.BASE_URL}><img className="logo" src={import.meta.env.BASE_URL + 'icon-landscape.svg'} width="45" height="45" alt="" /><span>Memory Map<small>思い出を、地図に。</small></span></a>
       <div className="header-actions">
       <button className="friends-button" onClick={() => setFriendsOpen(true)}>友達</button>
+      <button className="map-toggle-button" aria-label="全国攻略マップ" aria-pressed={mapMode === 'conquest'}
+        title={mapMode === 'conquest' ? '写真の地図に切り替え' : '全国攻略に切り替え'}
+        disabled={busy || selecting}
+        onClick={() => { setMapMode(mode => mode === 'photos' ? 'conquest' : 'photos'); setMemoriesOpen(false); }}>
+        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          {mapMode === 'conquest' ? <>
+            <path d="M4 6h4l2-3h4l2 3h4a1 1 0 0 1 1 1v13H3V7a1 1 0 0 1 1-1Z" />
+            <circle cx="12" cy="13" r="4" />
+          </> : <>
+            <path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Z" />
+            <path d="M9 3v16M15 5v16" />
+          </>}
+        </svg>
+      </button>
       <button className="settings-button" aria-label="設定を開く" aria-haspopup="dialog" onClick={() => setSettingsOpen(true)}>
         <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="m9.5 3-.5 2-2 .9-1.9-.6-2.5 4.3 1.5 1.4v2l-1.5 1.4 2.5 4.3 1.9-.6 2 .9.5 2h5l.5-2 2-.9 1.9.6 2.5-4.3-1.5-1.4v-2l1.5-1.4-2.5-4.3-1.9.6-2-.9-.5-2z" />
@@ -263,17 +277,6 @@ export default function App() {
     <input ref={file} type="file" accept="image/*" capture="environment" hidden onChange={capture} />
     <p id="status" role="status" aria-live="polite">{status}</p>
     {settingsOpen && <Modal title="設定" busy={importing || exporting} onClose={() => setSettingsOpen(false)}>
-      <section className="settings-map-mode" aria-labelledby="settings-map-title">
-        <h3 id="settings-map-title">表示する地図</h3>
-        <div className="settings-map-options">
-          <button aria-pressed={mapMode === 'photos'} disabled={importing || exporting} onClick={() => { setMapMode('photos'); setMemoriesOpen(false); setSettingsOpen(false); }}>
-            写真の地図{mapMode === 'photos' && <span aria-hidden="true"> ✓</span>}
-          </button>
-          <button aria-pressed={mapMode === 'conquest'} disabled={importing || exporting || selecting} onClick={() => { setMapMode('conquest'); setMemoriesOpen(false); setSettingsOpen(false); }}>
-            全国攻略{mapMode === 'conquest' && <span aria-hidden="true"> ✓</span>}
-          </button>
-        </div>
-      </section>
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={backup}>
         <span>{exporting ? '書き出し中…' : 'バックアップ'}</span>
         <small>写真と撮影場所をファイルに保存</small>
