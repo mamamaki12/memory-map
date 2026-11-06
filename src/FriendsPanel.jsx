@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { loadFriendsClient, loadFriendsData, friendPhotos, sharePhoto, unsharePhoto, result } from './friendsApi.js';
+import { loadFriendsClient, loadFriendsData, friendPhotos, sharePhoto, unsharePhoto, result, friendlyMessage } from './friendsApi.js';
 
 function FriendsPanel({ photos, onPhotos }) {
   const [client, setClient] = useState(null);
@@ -14,6 +14,8 @@ function FriendsPanel({ photos, onPhotos }) {
   const mounted = useRef(true);
   const version = useRef(0);
   const currentUser = useRef(null);
+  const images = useRef(new Map());
+  const shownPhotos = useRef('');
   useEffect(() => {
     mounted.current = true;
     let subscription;
@@ -30,40 +32,55 @@ function FriendsPanel({ photos, onPhotos }) {
           if (currentUser.current !== next?.id) {
             currentUser.current = next?.id;
             version.current++;
+            images.current.clear(); shownPhotos.current = '';
             setData(null); onPhotos([]);
           }
           setUser(next);
         }).data.subscription;
         const session = result(await value.auth.getSession()).session;
         if (!cancelled) { currentUser.current = session?.user?.id; setUser(session?.user ?? null); }
-      } catch (error) { if (!cancelled) setMessage(error.message); }
+      } catch (error) { if (!cancelled) setMessage(friendlyMessage(error)); }
     })();
     return () => { cancelled = true; mounted.current = false; version.current++; subscription?.unsubscribe(); };
   }, [onPhotos]);
 
+  // Returns how many friends' photos could not be loaded this time.
   async function refresh() {
-    if (!client || !user) return;
+    if (!client || !user) return 0;
     const token = ++version.current;
-    const loaded = await loadFriendsData(client);
-    const shared = await friendPhotos(client, loaded.shared, user.id);
-    if (!mounted.current || token !== version.current) return;
-    setData(loaded); setName(loaded.profile.display_name); onPhotos(shared);
+    const loaded = await loadFriendsData(client, user.id);
+    const shared = await friendPhotos(client, loaded.shared, user.id, images.current);
+    if (!mounted.current || token !== version.current) return 0;
+    setData(loaded); setName(loaded.profile.display_name);
+    // Redraw the map only when the set of friends' photos actually changed.
+    const key = shared.photos.map(photo => photo.id).join();
+    if (key !== shownPhotos.current) { shownPhotos.current = key; onPhotos(shared.photos); }
+    return shared.failed;
   }
+  const missingMessage = count => '友達の写真のうち' + count + '枚を読み込めませんでした。あとでもう一度読み込みます。';
   useEffect(() => {
     if (!client || !user) return;
     let stopped = false;
-    const update = () => { if (!stopped && document.visibilityState !== 'hidden') refresh().catch(error => { if (!stopped) setMessage(error.message); }); };
+    const update = () => {
+      if (stopped || document.visibilityState === 'hidden' || navigator.onLine === false) return;
+      refresh().then(failed => { if (!stopped && failed) setMessage(missingMessage(failed)); })
+        .catch(error => { if (!stopped) setMessage(friendlyMessage(error)); });
+    };
     update();
     const timer = setInterval(update, 60000);
     document.addEventListener('visibilitychange', update);
-    return () => { stopped = true; version.current++; clearInterval(timer); document.removeEventListener('visibilitychange', update); };
+    window.addEventListener('online', update);
+    return () => {
+      stopped = true; version.current++; clearInterval(timer);
+      document.removeEventListener('visibilitychange', update); window.removeEventListener('online', update);
+    };
   }, [client, user?.id]);
 
   async function action(task, success) {
     if (busy) return;
     setBusy(true); setMessage('');
     try { const message = await task(); if (mounted.current) setMessage(message || success || '完了しました。'); }
-    catch (error) { if (mounted.current) setMessage(error.message || '処理に失敗しました。'); }
+    catch (error) { if (mounted.current) setMessage(friendlyMessage(error)); }
     finally { if (mounted.current) setBusy(false); }
   }
   if (configured === null) return <p role="status">{message || '共有機能を読み込んでいます…'}</p>;
@@ -84,7 +101,7 @@ function FriendsPanel({ photos, onPhotos }) {
       <button className="primary" disabled={busy}>ログイン用メールを送る</button>
     </form> : <>
       <div className="friend-toolbar"><span>ログイン中</span><button disabled={busy} onClick={() => action(async () => {
-        result(await client.auth.signOut()); onPhotos([]); setData(null); setUser(null);
+        result(await client.auth.signOut()); images.current.clear(); shownPhotos.current = ''; onPhotos([]); setData(null); setUser(null);
       }, 'ログアウトしました。')}>ログアウト</button></div>
       <form onSubmit={event => { event.preventDefault(); action(async () => {
         result(await client.rpc('rename_memory_profile', { new_name: name.trim() })); await refresh();
@@ -94,7 +111,8 @@ function FriendsPanel({ photos, onPhotos }) {
       </form>
       {data && <section className="friend-section"><h3>あなたの友達コード</h3><code className="friend-code">{data.profile.friend_code}</code>
         <button disabled={busy} onClick={() => action(() => navigator.clipboard.writeText(data.profile.friend_code), 'コードをコピーしました。')}>コピー</button>
-        <p>このコードを友達に渡してください。申請を承認するまで写真は共有されません。</p></section>}
+        <p>このコードを友達に渡してください。申請を承認するまで写真は共有されません。知らない人から申請が届くときは、コードを作り直せます（今の友達はそのままです）。</p>
+        <button disabled={busy} onClick={() => { if (confirm('今の友達コードは使えなくなります。新しいコードを作りますか？')) action(async () => { result(await client.rpc('regenerate_memory_friend_code')); await refresh(); }, '新しい友達コードを作りました。前のコードはもう使えません。'); }}>コードを作り直す</button></section>}
       <form onSubmit={event => { event.preventDefault(); action(async () => {
         result(await client.rpc('request_memory_friend', { code: code.trim() })); setCode(''); await refresh();
       }, '友達申請を送りました。'); }}>
@@ -122,7 +140,7 @@ function FriendsPanel({ photos, onPhotos }) {
         })}
         {data?.shared.filter(row => row.owner === user.id && !photos.some(p => p.id === row.local_id)).map(row => <div className="friend-row" key={row.id}><span>{row.caption || '端末にない共有写真'}</span><button disabled={busy} onClick={() => action(async () => { const message = await unsharePhoto(client, row); await refresh(); return message; })}>共有を停止</button></div>)}
       </section>
-      <button disabled={busy} onClick={() => action(refresh, '友達の写真を更新しました。')}>写真・申請を更新</button>
+      <button disabled={busy} onClick={() => action(async () => { const failed = await refresh(); if (failed) return missingMessage(failed); }, '友達の写真を更新しました。')}>写真・申請を更新</button>
     </>}
   </div>;
 }

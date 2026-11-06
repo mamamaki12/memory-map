@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import InstallNotice from './InstallNotice.jsx';
 import { readBackup, restoreBackup } from './backup.js';
+import { loadBackupState, saveBackupState, unbackedCount, backupReminder, backupFileName } from './backupReminder.js';
 import { trackLocation } from './locationTracker.js';
 import FriendsDialog from './FriendsPanel.jsx';
 import ConquestMap from './ConquestMap.jsx';
@@ -8,6 +9,14 @@ import PhotoMap from './PhotoMap.jsx';
 import useDrawerGesture from './useDrawerGesture.js';
 import { openDB, transaction } from './storage.js';
 import { position, compress, date, download } from './media.js';
+
+// Ask once per visit that the browser keep the photos even when it is short of space.
+let persistRequested = false;
+function keepPhotos() {
+  if (persistRequested || !navigator.storage?.persist) return;
+  persistRequested = true;
+  navigator.storage.persisted().then(done => done || navigator.storage.persist()).catch(() => {});
+}
 
 function Photo({ blob, ...props }) {
   const [url, setUrl] = useState('');
@@ -59,12 +68,14 @@ export default function App() {
   const [fitRequest, setFitRequest] = useState(0);
   const [memoriesOpen, setMemoriesOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [backupState, setBackupState] = useState(loadBackupState);
   const drawer = useDrawerGesture(memoriesOpen, setMemoriesOpen);
   const notify = useCallback(message => setStatus(message), []);
 
   useEffect(() => {
     if (!status) return;
-    const timer = setTimeout(() => setStatus(''), 6500);
+    // Longer messages stay a little longer so they can be read to the end.
+    const timer = setTimeout(() => setStatus(''), Math.min(12000, Math.max(6500, status.length * 130)));
     return () => clearTimeout(timer);
   }, [status]);
   useEffect(() => {
@@ -100,12 +111,17 @@ export default function App() {
         if (error.code === 1) {
           latestLocation.current = null;
           setCurrentLocation(null);
-          notify('位置情報が許可されていません。許可後に「現在地」を押してください。');
+          notify('位置情報が許可されていません。ブラウザやスマホの設定で許可したあと、右下の現在地ボタンを押してください。');
         } else notify('現在地を取得できません。位置情報の更新を待っています。');
       },
     });
     tracker.current = watcher;
     return () => { watcher.dispose(); tracker.current = null; };
+  }, [notify]);
+  useEffect(() => {
+    const offline = () => notify('インターネットに接続されていません。写真は保存できますが、地図が表示されないことがあります。');
+    window.addEventListener('offline', offline);
+    return () => window.removeEventListener('offline', offline);
   }, [notify]);
 
   async function capture(event) {
@@ -116,14 +132,18 @@ export default function App() {
     setBusy(true);
     notify('写真と現在地を準備しています…');
     const cached = latestLocation.current;
+    let locationProblem = '';
     const location = cached && Date.now() - cached.timestamp < 15000
-      ? Promise.resolve(cached) : position().catch(() => null);
+      ? Promise.resolve(cached) : position().catch(error => {
+        locationProblem = error.code === 1 ? '位置情報が許可されていないため、現在地を使えません。' : '現在地を取得できませんでした。';
+        return null;
+      });
     try {
       const blob = await compress(selected);
       const place = await location;
-      setPending({ id: crypto.randomUUID(), blob, createdAt: Date.now(), caption: '', ...place });
+      setPending({ id: crypto.randomUUID(), blob, createdAt: Date.now(), caption: '', ...place, ...(place ? {} : { locationProblem }) });
       if (place) { setView(place); setCurrentLocation(place); }
-      notify(place ? '場所を確認して保存してください。' : '現在地を取得できませんでした。地図で場所を選んでください。');
+      notify(place ? '場所を確認して保存してください。' : locationProblem + '地図で場所を選んでください。');
     } catch {
       notify('写真を読み込めません。40MB以下のJPEGまたはPNGをお試しください。');
     } finally { operation.current = false; setBusy(false); }
@@ -134,14 +154,18 @@ export default function App() {
     if (operation.current || !pending || !Number.isFinite(pending.lat) || !Number.isFinite(pending.lng)) return;
     operation.current = true;
     setBusy(true);
-    const photo = { ...pending, caption: pending.caption.trim() };
+    const { locationProblem, ...photo } = { ...pending, caption: pending.caption.trim() };
     try {
       await transaction(db.current, 'readwrite', store => store.put(photo));
       setPhotos(previous => [photo, ...previous]);
       setPending(null);
       setFitRequest(0);
       setView({ lat: photo.lat, lng: photo.lng });
-      notify('思い出を地図に保存しました。');
+      const nextBackup = { ...backupState, added: backupState.added + 1 };
+      setBackupState(nextBackup);
+      saveBackupState(nextBackup);
+      notify('思い出を地図に保存しました。' + backupReminder(nextBackup, photos.length + 1));
+      keepPhotos();
     } catch {
       notify('保存できません。端末の空き容量やブラウザの保存設定を確認してください。');
     } finally { operation.current = false; setBusy(false); }
@@ -204,8 +228,11 @@ export default function App() {
         reader.onerror = reject;
         reader.readAsDataURL(photo.blob);
       })));
-      download(new Blob([JSON.stringify({ version: 1, photos: output })], { type: 'application/json' }), 'memory-map-backup.json');
-      setSettingsMessage('写真と場所をJSON形式で書き出しました。');
+      download(new Blob([JSON.stringify({ version: 1, photos: output })], { type: 'application/json' }), backupFileName());
+      const done = { at: Date.now(), added: 0 };
+      setBackupState(done);
+      saveBackupState(done);
+      setSettingsMessage('写真と場所をJSON形式で書き出しました。ファイルは端末の「ダウンロード」などに保存されます。');
     } catch { setSettingsMessage('書き出しに失敗しました。写真を個別にダウンロードしてください。'); }
     finally { setExporting(false); }
   }
@@ -216,7 +243,7 @@ export default function App() {
     setActive(photo);
   }, []);
   const pickPlace = useCallback(place => {
-    setPending(previous => previous ? { ...previous, lat: place.lat, lng: place.lng, accuracy: undefined } : null);
+    setPending(previous => previous ? { ...previous, lat: place.lat, lng: place.lng, accuracy: undefined, locationProblem: undefined } : null);
     setSelecting(false);
   }, []);
   const cancel = () => { setPending(null); setSelecting(false); };
@@ -291,6 +318,8 @@ export default function App() {
         <span>{exporting ? '書き出し中…' : 'バックアップ'}</span>
         <small>写真と撮影場所をファイルに保存</small>
       </button>
+      {photos.length > 0 && <p className="settings-note">{backupState.at === null ? 'バックアップの記録はまだありません。'
+        : '前回のバックアップ：' + date(backupState.at) + (unbackedCount(backupState, photos.length) ? '（その後に保存した写真 ' + unbackedCount(backupState, photos.length) + '枚）' : '')}</p>}
       <input ref={importFile} type="file" accept=".json,application/json" hidden onChange={importBackup} />
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={() => importFile.current.click()}>
         <span>{importing ? '復元中…' : 'バックアップをインポート'}</span>
@@ -302,7 +331,8 @@ export default function App() {
     {pending && !selecting && <Modal title="思い出を保存" onClose={cancel} busy={busy}>
       <form onSubmit={save}><Photo blob={pending.blob} alt="撮影した写真" />
         <label>ひとこと<input value={pending.caption} disabled={busy} maxLength={100} placeholder="例：帰り道で見つけた夕焼け" onChange={event => setPending({ ...pending, caption: event.target.value })} /></label>
-        <p id="location-label">{Number.isFinite(pending.lat) ? '保存場所：' + pending.lat.toFixed(5) + ', ' + pending.lng.toFixed(5) + (pending.accuracy ? '（精度 約' + Math.round(pending.accuracy) + 'm）' : '') : '保存する場所を地図で選んでください。'}</p>
+        <p id="location-label">{Number.isFinite(pending.lat) ? '保存場所：' + pending.lat.toFixed(5) + ', ' + pending.lng.toFixed(5) + (pending.accuracy ? '（精度 約' + Math.round(pending.accuracy) + 'm）' : '') : (pending.locationProblem || '') + '保存する場所を地図で選んでください。'}</p>
+        {pending.accuracy > 100 && <p className="location-warning">現在地が実際の場所とずれているかもしれません。違うときは「地図で場所を選び直す」で直してください。</p>}
         <button type="button" className="quiet" disabled={busy} onClick={() => setSelecting(true)}>地図で場所を選び直す</button>
         <button id="save" className="primary" disabled={busy || !Number.isFinite(pending.lat)} type="submit">{busy ? '保存中…' : 'この場所に保存'}</button>
       </form>
