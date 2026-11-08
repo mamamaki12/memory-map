@@ -19,5 +19,9 @@ export function addBaseMap(map, { attribution = '', onError } = {}) {
     if (!warned) onError?.('地図を読み込めません。通信状態を確認してください。');
     warned = true;
   });
+  // Fill in tiles that failed while offline as soon as the connection is back.
+  const online = () => { warned = false; layer.redraw(); };
+  window.addEventListener('online', online);
+  map.on('unload', () => window.removeEventListener('online', online));
   return layer.addTo(map);
 }

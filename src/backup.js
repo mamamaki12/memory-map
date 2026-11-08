@@ -1,3 +1,5 @@
+import { imageType } from './imageType.js';
+
 export const MAX_BACKUP_BYTES = 100 * 1024 * 1024;
 export function parseBackup(text) {
   let data;
@@ -20,10 +22,7 @@ export function parseBackup(text) {
     try { bytes = Uint8Array.from(atob(match[2]), c => c.charCodeAt(0)); } catch { fail(); }
     if (!bytes.length || bytes.length > 40 * 1024 * 1024) fail();
     const type = match[1];
-    const signatureOK = type === 'jpeg' ? bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255
-      : type === 'png' ? [137,80,78,71,13,10,26,10].every((b,i) => bytes[i] === b)
-      : String.fromCharCode(...bytes.slice(0,4)) === 'RIFF' && String.fromCharCode(...bytes.slice(8,12)) === 'WEBP';
-    if (!signatureOK) fail();
+    if (imageType(bytes) !== type) fail();
     if (p.accuracy != null && (!Number.isFinite(p.accuracy) || p.accuracy < 0)) fail();
     return { id: p.id, lat: p.lat, lng: p.lng, caption: p.caption, createdAt: p.createdAt,
       ...(p.accuracy != null ? { accuracy: p.accuracy } : {}),
