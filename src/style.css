@@ -264,3 +264,41 @@ dialog .danger{display:block;margin-top:24px}
   .settings-item .has-icon{justify-content:flex-start;gap:8px}
   .friend-panel .has-icon{font-size:14px}
 }
+
+/* Text only for screen readers. */
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+
+/* Save screen: a small still map instead of numbers. */
+.place-preview{height:160px;margin-top:14px;border-radius:12px;overflow:hidden;background:#e8ede4;position:relative;z-index:0}
+.place-preview img{max-height:none;border-radius:0;background:none;object-fit:fill}
+#location-label{display:flex;align-items:center;gap:6px;margin:8px 0 12px;font-size:13px;color:#203d37;position:relative}
+#location-label .btn-icon{display:block;flex-shrink:0;color:#167766}
+
+/* Choosing the place on the big map: a bar with two clear buttons and a mark in the middle. */
+#place-hint{position:absolute;top:0;left:0;right:0;transform:none;width:auto;max-width:none;z-index:700;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;background:#fff;border-radius:0 0 16px 16px;box-shadow:0 4px 16px #203d3720}
+#place-hint p{flex:1 1 200px;margin:0;font-size:13px;line-height:1.4}
+#place-hint button{flex:0 0 auto;min-height:44px;padding:8px 18px;font-size:14px}
+.map-wrap.is-picking .leaflet-top{top:var(--pick-bar,60px)}
+.map-wrap.is-picking .map-tools{top:calc(var(--pick-bar,60px) + 14px)}
+.pick-target{position:absolute;left:50%;top:50%;z-index:650;transform:translate(-50%,calc(-100% + 3px));color:#167766;pointer-events:none;filter:drop-shadow(0 1px 1px #fff) drop-shadow(0 3px 6px #203d3770)}
+.pick-target .btn-icon{display:block;fill:#ffffffd9}
+@media(max-width:700px){
+  .map-wrap.is-picking{--pick-bar:92px}
+  #place-hint{padding:8px 12px}
+  #place-hint p{flex-basis:100%;font-size:12.5px}
+  #place-hint button{flex:1 1 0}
+}
+/* Leave room for the small map so the save button stays near. */
+dialog img.save-photo{max-height:30dvh}
+/* Photo above the small map; on low screens they sit side by side. */
+.save-visuals{display:grid;gap:12px}
+.save-visuals .place-preview{margin-top:0}
+@media(max-height:700px){
+  .save-visuals.has-map{grid-template-columns:1fr 1fr}
+  .save-visuals.has-map img.save-photo,.save-visuals.has-map .place-preview{height:130px;max-height:none}
+  .save-visuals.has-map img.save-photo{object-fit:cover}
+}
+.place-preview .leaflet-control-attribution{line-height:2.2}
+@media(max-height:700px){
+  .save-visuals.has-map .place-preview .photo-pin{transform:scale(.7);transform-origin:31px 90px}
+}

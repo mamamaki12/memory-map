@@ -6,11 +6,19 @@ import { trackLocation } from './locationTracker.js';
 import FriendsDialog from './FriendsPanel.jsx';
 import ConquestMap from './ConquestMap.jsx';
 import PhotoMap from './PhotoMap.jsx';
+import PlacePreview from './PlacePreview.jsx';
 import useDrawerGesture from './useDrawerGesture.js';
 import { openDB, transaction } from './storage.js';
 import { position, compress, date, download } from './media.js';
 import { readPhotoLocation } from './exifLocation.js';
 import { Icon, IconLabel } from './Icon.jsx';
+
+// A short line saying where the saved place came from.
+function placeLabel(pending) {
+  if (pending.placeSource === 'photo') return '写真の撮影場所';
+  if (pending.placeSource === 'map') return '地図で選んだ場所';
+  return '現在地' + (pending.accuracy ? '（精度 約' + Math.round(pending.accuracy) + 'm）' : '');
+}
 
 // Ask once per visit that the browser keep the photos even when it is short of space.
 let persistRequested = false;
@@ -151,9 +159,9 @@ export default function App() {
     try {
       const blob = await compress(selected);
       const place = await location;
-      const locationNote = !fromAlbum ? undefined : photoPlace ? '写真の撮影場所を入れました。'
-        : place ? '写真に撮影場所の情報がなかったので、現在地を入れました。' : '写真に撮影場所の情報がありませんでした。';
-      setPending({ id: crypto.randomUUID(), blob, createdAt: Date.now(), caption: '', ...place, ...(place ? {} : { locationProblem }), locationNote });
+      // placeSource says where the place came from; noPhotoPlace marks album photos without a recorded place.
+      setPending({ id: crypto.randomUUID(), blob, createdAt: Date.now(), caption: '', ...place, ...(place ? {} : { locationProblem }),
+        placeSource: photoPlace ? 'photo' : 'current', noPhotoPlace: fromAlbum && !photoPlace });
       if (place) { setView(place); if (!photoPlace) setCurrentLocation(place); }
       notify(place ? '場所を確認して保存してください。' : locationProblem + '地図で場所を選んでください。');
     } catch {
@@ -166,7 +174,7 @@ export default function App() {
     if (operation.current || !pending || !Number.isFinite(pending.lat) || !Number.isFinite(pending.lng)) return;
     operation.current = true;
     setBusy(true);
-    const { locationProblem, locationNote, ...photo } = { ...pending, caption: pending.caption.trim() };
+    const { locationProblem, placeSource, noPhotoPlace, ...photo } = { ...pending, caption: pending.caption.trim() };
     try {
       await transaction(db.current, 'readwrite', store => store.put(photo));
       setPhotos(previous => [photo, ...previous]);
@@ -254,10 +262,26 @@ export default function App() {
     setView({ lat: photo.lat, lng: photo.lng });
     setActive(photo);
   }, []);
-  const pickPlace = useCallback(place => {
-    setPending(previous => previous ? { ...previous, lat: place.lat, lng: place.lng, accuracy: undefined, locationProblem: undefined, locationNote: undefined } : null);
+  const mapCenter = useRef(null);
+  const reportCenter = useCallback(center => { mapCenter.current = center; }, []);
+  // Choosing a place again: show the current choice in the middle of the big map.
+  const startPicking = () => {
+    if (Number.isFinite(pending?.lat)) { setFitRequest(0); setView({ lat: pending.lat, lng: pending.lng }); }
+    setSelecting(true);
+  };
+  const pickPlace = () => {
+    const place = mapCenter.current;
+    if (!place) return;
+    setPending(previous => previous ? { ...previous, lat: place.lat, lng: place.lng, accuracy: undefined, locationProblem: undefined, placeSource: 'map', noPhotoPlace: false } : null);
     setSelecting(false);
-  }, []);
+  };
+  useEffect(() => {
+    if (!selecting) return;
+    // Return after this key press has finished, so the same Escape does not also close the save screen.
+    const escape = event => { if (event.key === 'Escape') { event.preventDefault(); setTimeout(() => setSelecting(false)); } };
+    window.addEventListener('keydown', escape);
+    return () => window.removeEventListener('keydown', escape);
+  }, [selecting]);
   const cancel = () => { setPending(null); setSelecting(false); };
   const addPhoto = () => touchDevice() ? setSourceOpen(true) : albumFile.current.click();
   // Open the picker during the tap itself so phones allow it, then close the sheet.
@@ -313,8 +337,8 @@ export default function App() {
           </button>) : <p className="empty">{ready ? 'まだ写真がありません。最初の一枚を撮ってみましょう。' : '保存した写真を読み込んでいます…'}</p>}</div>
         <p className="privacy">写真はこの端末のブラウザに保存されます。大切な写真はバックアップしてください。</p>
       </aside>
-      <section className="map-wrap" aria-label="写真の地図">
-        <PhotoMap photos={mapPhotos} onOpen={openPhoto} onPick={pickPlace} selecting={selecting} view={view} currentLocation={currentLocation} fitRequest={fitRequest} onError={notify} />
+      <section className={'map-wrap' + (selecting ? ' is-picking' : '')} aria-label="写真の地図">
+        <PhotoMap photos={mapPhotos} onOpen={openPhoto} onCenter={reportCenter} selecting={selecting} view={view} currentLocation={currentLocation} fitRequest={fitRequest} onError={notify} />
         <div className="map-tools"><button className="has-icon icon-only" title="すべて表示" onClick={() => mapPhotos.length ? setFitRequest(value => value + 1) : notify('写真を保存すると地図上に表示されます。')}><IconLabel icon="fit" label="すべて表示" /></button></div>
         <button className="locate-fab" disabled={locating} onClick={locate} aria-label={locating ? '現在地を取得中' : '現在地を表示'} title="現在地を表示" aria-busy={locating}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
@@ -322,8 +346,15 @@ export default function App() {
             <path d="M12 1v4m0 14v4M1 12h4m14 0h4" />
           </svg>
         </button>
-        {selecting && <div id="place-hint">地図をタップして場所を選んでください <button className="has-icon icon-only" title="戻る" onClick={() => setSelecting(false)}><IconLabel icon="back" label="戻る" /></button></div>}
-        <div className="capture-bar"><button className="primary has-icon" disabled={!ready || busy} onClick={() => pending ? setSelecting(false) : addPhoto()}>{busy ? '処理中…' : pending ? <IconLabel icon="back" label="保存画面に戻る" short="戻る" /> : <IconLabel icon="camera" label="＋ 写真を撮る" short="写真" />}</button><span>今日の景色を、思い出に。</span></div>
+        {selecting && <>
+          <div className="pick-target" aria-hidden="true"><Icon name="pin" size={40} /></div>
+          <div id="place-hint" role="group" aria-label="保存場所を選ぶ">
+            <p>地図を動かして、印を保存する場所に合わせてください</p>
+            <button className="has-icon" onClick={() => setSelecting(false)}><IconLabel icon="close" label="やめる" short="やめる" /></button>
+            <button className="primary has-icon" onClick={pickPlace}><IconLabel icon="check" label="ここに決める" short="決める" /></button>
+          </div>
+        </>}
+        {!selecting && <div className="capture-bar"><button className="primary has-icon" disabled={!ready || busy} onClick={addPhoto}>{busy ? '処理中…' : <IconLabel icon="camera" label="＋ 写真を撮る" short="写真" />}</button><span>今日の景色を、思い出に。</span></div>}
       </section>
     </main>
     <input ref={cameraFile} type="file" accept="image/*" capture="environment" hidden onChange={event => capture(event, 'camera')} />
@@ -352,12 +383,18 @@ export default function App() {
       <p className="settings-note">写真はこのブラウザに保存されています。大切な思い出は定期的にバックアップしてください。</p>
     </Modal>}
     {pending && !selecting && <Modal title="思い出を保存" onClose={cancel} busy={busy}>
-      <form onSubmit={save}><Photo blob={pending.blob} alt="撮影した写真" />
+      <form onSubmit={save}>
+        <div className={'save-visuals' + (Number.isFinite(pending.lat) ? ' has-map' : '')}>
+          <Photo className="save-photo" blob={pending.blob} alt="撮影した写真" />
+          {Number.isFinite(pending.lat) && <PlacePreview lat={pending.lat} lng={pending.lng} blob={pending.blob} />}
+        </div>
+        {Number.isFinite(pending.lat) ? <>
+          <p id="location-label"><Icon name="pin" size={16} />{placeLabel(pending)}<span className="visually-hidden">。保存場所：緯度 {pending.lat.toFixed(5)}、経度 {pending.lng.toFixed(5)}</span></p>
+          {pending.noPhotoPlace && <p className="location-note">写真に撮影場所の情報がなかったので、現在地を入れました。</p>}
+        </> : <p id="location-label">{(pending.locationProblem || '') + (pending.noPhotoPlace ? '写真に撮影場所の情報もありませんでした。' : '') + '保存する場所を地図で選んでください。'}</p>}
+        {pending.accuracy > 100 && <p className="location-warning">現在地が実際の場所とずれているかもしれません。違うときは「選び直す」で直してください。</p>}
+        <button type="button" className="quiet has-icon" disabled={busy} onClick={startPicking}><IconLabel icon="pin" label="地図で場所を選び直す" short="選び直す" /></button>
         <label>ひとこと<input value={pending.caption} disabled={busy} maxLength={100} placeholder="例：帰り道で見つけた夕焼け" onChange={event => setPending({ ...pending, caption: event.target.value })} /></label>
-        <p id="location-label">{Number.isFinite(pending.lat) ? '保存場所：' + pending.lat.toFixed(5) + ', ' + pending.lng.toFixed(5) + (pending.accuracy ? '（精度 約' + Math.round(pending.accuracy) + 'm）' : '') : (pending.locationProblem || '') + '保存する場所を地図で選んでください。'}</p>
-        {pending.locationNote && <p className="location-note">{pending.locationNote}</p>}
-        {pending.accuracy > 100 && <p className="location-warning">現在地が実際の場所とずれているかもしれません。違うときは「地図で場所を選び直す」で直してください。</p>}
-        <button type="button" className="quiet has-icon" disabled={busy} onClick={() => setSelecting(true)}><IconLabel icon="pin" label="地図で場所を選び直す" short="選び直す" /></button>
         <button id="save" className="primary has-icon" disabled={busy || !Number.isFinite(pending.lat)} type="submit">{busy ? '保存中…' : <IconLabel icon="check" label="この場所に保存" short="保存" />}</button>
       </form>
     </Modal>}
