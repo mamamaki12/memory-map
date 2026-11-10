@@ -9,6 +9,7 @@ import PhotoMap from './PhotoMap.jsx';
 import useDrawerGesture from './useDrawerGesture.js';
 import { openDB, transaction } from './storage.js';
 import { position, compress, date, download } from './media.js';
+import { readPhotoLocation } from './exifLocation.js';
 
 // Ask once per visit that the browser keep the photos even when it is short of space.
 let persistRequested = false;
@@ -28,22 +29,27 @@ function Photo({ blob, ...props }) {
   return url ? <img {...props} src={url} /> : null;
 }
 
-function Modal({ title, onClose, busy, children }) {
+function Modal({ title, onClose, busy, className, children }) {
   const ref = useRef(null);
   useEffect(() => {
     const dialog = ref.current;
     dialog.showModal();
     return () => dialog.close();
   }, []);
-  return <dialog ref={ref} onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}>
+  return <dialog ref={ref} className={className} onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}>
     <div className="dialog-head"><h2>{title}</h2><button disabled={busy} onClick={onClose} aria-label="閉じる">×</button></div>
     {children}
   </dialog>;
 }
 
+// Phones choose between the camera and the album; a mouse-only computer has no camera mode for file inputs.
+const touchDevice = () => window.matchMedia?.('(pointer: coarse)').matches ?? false;
+
 export default function App() {
   const db = useRef(null);
-  const file = useRef(null);
+  const cameraFile = useRef(null);
+  const albumFile = useRef(null);
+  const [sourceOpen, setSourceOpen] = useState(false);
   const importFile = useRef(null);
   const [importing, setImporting] = useState(false);
   const [settingsMessage, setSettingsMessage] = useState('');
@@ -124,16 +130,19 @@ export default function App() {
     return () => window.removeEventListener('offline', offline);
   }, [notify]);
 
-  async function capture(event) {
+  async function capture(event, source) {
     const selected = event.target.files?.[0];
     event.target.value = '';
     if (!selected || operation.current) return;
     operation.current = true;
     setBusy(true);
     notify('写真と現在地を準備しています…');
+    // Album photos carry where they were taken; read it before compress() drops the EXIF.
+    const fromAlbum = source === 'album';
+    const photoPlace = fromAlbum ? await readPhotoLocation(selected) : null;
     const cached = latestLocation.current;
     let locationProblem = '';
-    const location = cached && Date.now() - cached.timestamp < 15000
+    const location = photoPlace ? Promise.resolve(photoPlace) : cached && Date.now() - cached.timestamp < 15000
       ? Promise.resolve(cached) : position().catch(error => {
         locationProblem = error.code === 1 ? '位置情報が許可されていないため、現在地を使えません。' : '現在地を取得できませんでした。';
         return null;
@@ -141,8 +150,10 @@ export default function App() {
     try {
       const blob = await compress(selected);
       const place = await location;
-      setPending({ id: crypto.randomUUID(), blob, createdAt: Date.now(), caption: '', ...place, ...(place ? {} : { locationProblem }) });
-      if (place) { setView(place); setCurrentLocation(place); }
+      const locationNote = !fromAlbum ? undefined : photoPlace ? '写真の撮影場所を入れました。'
+        : place ? '写真に撮影場所の情報がなかったので、現在地を入れました。' : '写真に撮影場所の情報がありませんでした。';
+      setPending({ id: crypto.randomUUID(), blob, createdAt: Date.now(), caption: '', ...place, ...(place ? {} : { locationProblem }), locationNote });
+      if (place) { setView(place); if (!photoPlace) setCurrentLocation(place); }
       notify(place ? '場所を確認して保存してください。' : locationProblem + '地図で場所を選んでください。');
     } catch {
       notify('写真を読み込めません。40MB以下のJPEGまたはPNGをお試しください。');
@@ -154,7 +165,7 @@ export default function App() {
     if (operation.current || !pending || !Number.isFinite(pending.lat) || !Number.isFinite(pending.lng)) return;
     operation.current = true;
     setBusy(true);
-    const { locationProblem, ...photo } = { ...pending, caption: pending.caption.trim() };
+    const { locationProblem, locationNote, ...photo } = { ...pending, caption: pending.caption.trim() };
     try {
       await transaction(db.current, 'readwrite', store => store.put(photo));
       setPhotos(previous => [photo, ...previous]);
@@ -243,10 +254,13 @@ export default function App() {
     setActive(photo);
   }, []);
   const pickPlace = useCallback(place => {
-    setPending(previous => previous ? { ...previous, lat: place.lat, lng: place.lng, accuracy: undefined, locationProblem: undefined } : null);
+    setPending(previous => previous ? { ...previous, lat: place.lat, lng: place.lng, accuracy: undefined, locationProblem: undefined, locationNote: undefined } : null);
     setSelecting(false);
   }, []);
   const cancel = () => { setPending(null); setSelecting(false); };
+  const addPhoto = () => touchDevice() ? setSourceOpen(true) : albumFile.current.click();
+  // Open the picker during the tap itself so phones allow it, then close the sheet.
+  const pickSource = input => { input.current.click(); setSourceOpen(false); };
 
   return <>
     <header><a className="brand" href={import.meta.env.BASE_URL}><img className="logo" src={import.meta.env.BASE_URL + 'icon-landscape.svg'} width="45" height="45" alt="" /><span>Memory Map<small>思い出を、地図に。</small></span></a>
@@ -308,10 +322,18 @@ export default function App() {
           </svg>
         </button>
         {selecting && <div id="place-hint">地図をタップして場所を選んでください <button onClick={() => setSelecting(false)}>戻る</button></div>}
-        <div className="capture-bar"><button className="primary" disabled={!ready || busy} onClick={() => pending ? setSelecting(false) : file.current.click()}>{busy ? '処理中…' : pending ? '保存画面に戻る' : '＋ 写真を撮る'}</button><span>今日の景色を、思い出に。</span></div>
+        <div className="capture-bar"><button className="primary" disabled={!ready || busy} onClick={() => pending ? setSelecting(false) : addPhoto()}>{busy ? '処理中…' : pending ? '保存画面に戻る' : '＋ 写真を撮る'}</button><span>今日の景色を、思い出に。</span></div>
       </section>
     </main>
-    <input ref={file} type="file" accept="image/*" capture="environment" hidden onChange={capture} />
+    <input ref={cameraFile} type="file" accept="image/*" capture="environment" hidden onChange={event => capture(event, 'camera')} />
+    <input ref={albumFile} type="file" accept="image/*" hidden onChange={event => capture(event, 'album')} />
+    {sourceOpen && <Modal title="写真を追加" className="photo-source-sheet" onClose={() => setSourceOpen(false)}>
+      <div className="photo-source-actions">
+        <button className="primary" onClick={() => pickSource(cameraFile)}>カメラで撮る</button>
+        <button onClick={() => pickSource(albumFile)}>アルバムから選ぶ</button>
+        <button className="quiet" onClick={() => setSourceOpen(false)}>やめる</button>
+      </div>
+    </Modal>}
     <p id="status" role="status" aria-live="polite">{status}</p>
     {settingsOpen && <Modal title="設定" busy={importing || exporting} onClose={() => setSettingsOpen(false)}>
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={backup}>
@@ -332,6 +354,7 @@ export default function App() {
       <form onSubmit={save}><Photo blob={pending.blob} alt="撮影した写真" />
         <label>ひとこと<input value={pending.caption} disabled={busy} maxLength={100} placeholder="例：帰り道で見つけた夕焼け" onChange={event => setPending({ ...pending, caption: event.target.value })} /></label>
         <p id="location-label">{Number.isFinite(pending.lat) ? '保存場所：' + pending.lat.toFixed(5) + ', ' + pending.lng.toFixed(5) + (pending.accuracy ? '（精度 約' + Math.round(pending.accuracy) + 'm）' : '') : (pending.locationProblem || '') + '保存する場所を地図で選んでください。'}</p>
+        {pending.locationNote && <p className="location-note">{pending.locationNote}</p>}
         {pending.accuracy > 100 && <p className="location-warning">現在地が実際の場所とずれているかもしれません。違うときは「地図で場所を選び直す」で直してください。</p>}
         <button type="button" className="quiet" disabled={busy} onClick={() => setSelecting(true)}>地図で場所を選び直す</button>
         <button id="save" className="primary" disabled={busy || !Number.isFinite(pending.lat)} type="submit">{busy ? '保存中…' : 'この場所に保存'}</button>

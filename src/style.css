@@ -208,3 +208,37 @@ main.photo-map-hidden .memories-panel{display:none}
 #status{width:max-content;max-width:min(90vw,600px)}
 /* A gentle note when the current location may be far from the real place. */
 .location-warning{font-size:12px;line-height:1.6;color:#8a5a14;margin:-6px 0 12px}
+
+/* Choosing between the camera and the album: a bottom sheet on phones. */
+.photo-source-actions{display:flex;flex-direction:column;gap:10px}
+.photo-source-actions button{width:100%;min-height:52px;font-size:15px}
+.photo-source-actions .quiet{font-size:14px}
+@media(max-width:700px){
+  dialog.photo-source-sheet{margin:auto auto 0;width:100%;max-width:none;border-radius:22px 22px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+}
+/* Says where the saved place came from when a photo is picked from the album. */
+.location-note{font-size:12px;line-height:1.6;color:#167766;margin:-6px 0 12px}
+
+/* Keep neighbouring tap targets at least 8px apart so the intended one is pressed. */
+.friends-button{min-width:44px}
+@media(max-width:700px){
+  .header-actions{gap:8px}
+  .install-notice{gap:8px}
+  /* Room under the photo button for the lifted map credits. */
+  .capture-bar{bottom:32px}
+}
+/* Zoom buttons are a joined pair, so each needs a full 44px tap area. */
+.leaflet-bar a,.leaflet-touch .leaflet-bar a{width:44px;height:44px;line-height:44px;font-size:24px}
+/* Lift the map credits off the drawer and the conquest summary; keep each link on one line. */
+.leaflet-control-attribution{margin-bottom:8px!important}
+.leaflet-control-attribution a{white-space:nowrap}
+.conquest-map .leaflet-control-attribution{line-height:2.2}
+/* Deleting a photo sits on its own row, away from the download button. */
+dialog .danger{display:block;margin-top:24px}
+/* On short screens (phones held sideways) the zoom pair sits side by side to fit the low map. */
+@media(max-height:500px){
+  .leaflet-bar{display:flex}
+  .leaflet-bar a,.leaflet-touch .leaflet-bar a{border-bottom:0;border-right:1px solid #ccc}
+  .leaflet-bar a:first-child,.leaflet-touch .leaflet-bar a:first-child{border-radius:4px 0 0 4px}
+  .leaflet-bar a:last-child,.leaflet-touch .leaflet-bar a:last-child{border-right:0;border-radius:0 4px 4px 0}
+}
