@@ -338,6 +338,11 @@ export default function App() {
       </aside>
       <section className={'map-wrap' + (selecting ? ' is-picking' : '')} aria-label="写真の地図">
         <PhotoMap photos={mapPhotos} onOpen={openPhoto} onCenter={reportCenter} selecting={selecting} view={view} currentLocation={currentLocation} fitRequest={fitRequest} onError={notify} />
+        {ready && !mapPhotos.length && !selecting && <div className="map-empty">
+          <Icon name="pin" size={28} />
+          <h2>撮った場所に、写真を残す地図</h2>
+          <p>下の「写真を追加」から始めましょう</p>
+        </div>}
         <div className="map-tools"><button className="has-icon icon-only" title="すべて表示" onClick={() => mapPhotos.length ? setFitRequest(value => value + 1) : notify('写真を保存すると地図上に表示されます。')}><IconLabel icon="fit" label="すべて表示" /></button></div>
         <button className="locate-fab" disabled={locating} onClick={locate} aria-label={locating ? '現在地を取得中' : '現在地を表示'} title="現在地を表示" aria-busy={locating}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
@@ -353,7 +358,7 @@ export default function App() {
             <button className="primary has-icon" onClick={pickPlace}><IconLabel icon="check" label="ここに決める" short="決める" /></button>
           </div>
         </>}
-        {!selecting && <div className="capture-bar"><button className="primary has-icon" disabled={!ready || busy} onClick={addPhoto}>{busy ? '処理中…' : <IconLabel icon="camera" label="＋ 写真を撮る" short="写真" />}</button><span>今日の景色を、思い出に。</span></div>}
+        {!selecting && <div className="capture-bar"><button className="primary has-icon" disabled={!ready || busy} onClick={addPhoto}>{busy ? '処理中…' : <IconLabel icon="camera" label="＋ 写真を追加" short="写真を追加" />}</button><span>今日の景色を、思い出に。</span></div>}
       </section>
     </main>
     <input ref={cameraFile} type="file" accept="image/*" capture="environment" hidden onChange={event => capture(event, 'camera')} />

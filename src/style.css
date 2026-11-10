@@ -323,3 +323,11 @@ dialog.confirm-dialog{max-width:380px}
   .conquest-map .leaflet-bar a:first-child{border-radius:4px 0 0 4px}
   .conquest-map .leaflet-bar a:last-child{border-right:0;border-radius:0 4px 4px 0}
 }
+/* First visit: say what the map is for and where to start, instead of an empty map. */
+.map-empty{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);z-index:500;width:min(320px,calc(100% - 32px));padding:16px 18px;background:#fffffff2;border-radius:16px;box-shadow:0 4px 20px #203d3722;text-align:center;pointer-events:none}
+.map-empty .btn-icon{display:block;margin:0 auto 6px;color:#167766}
+.map-empty h2{margin:0;font-size:16px;line-height:1.5}
+.map-empty p{margin:6px 0 0;font-size:13px;line-height:1.6;color:#46564f}
+/* Low screens: no icon, so the card stays clear of the zoom, current-place and add buttons. */
+@media(max-height:600px){.map-empty{padding:12px 14px}.map-empty .btn-icon{display:none}.map-empty p{margin-top:4px}}
+@media(max-height:500px){.map-empty{top:14px;transform:translateX(-50%);width:min(290px,calc(100% - 140px))}}
