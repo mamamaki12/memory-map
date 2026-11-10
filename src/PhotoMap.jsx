@@ -3,13 +3,13 @@ import L from 'leaflet';
 import { addBaseMap } from './baseMap.js';
 import { animateLocation } from './animateLocation.js';
 
-export default function PhotoMap({ photos, onOpen, onPick, selecting, view, currentLocation, fitRequest, onError }) {
+export default function PhotoMap({ photos, onOpen, onCenter, selecting, view, currentLocation, fitRequest, onError }) {
   const container = useRef(null);
   const mapRef = useRef(null);
   const locationLayers = useRef(null);
   const stopLocationAnimation = useRef(null);
-  const callbacks = useRef({ onOpen, onPick, selecting, onError });
-  useEffect(() => { callbacks.current = { onOpen, onPick, selecting, onError }; });
+  const callbacks = useRef({ onOpen, onCenter, selecting, onError });
+  useEffect(() => { callbacks.current = { onOpen, onCenter, selecting, onError }; });
   useEffect(() => {
     const map = L.map(container.current).setView([31.5966, 130.5571], 12);
     mapRef.current = map;
@@ -18,9 +18,12 @@ export default function PhotoMap({ photos, onOpen, onPick, selecting, view, curr
     locationPane.style.zIndex = '650';
     locationPane.style.pointerEvents = 'none';
     addBaseMap(map, { onError: message => callbacks.current.onError(message) });
+    // While choosing a place, a tap moves the centre mark there; the place is decided with a button.
     map.on('click', event => {
-      if (callbacks.current.selecting) callbacks.current.onPick(event.latlng);
+      if (callbacks.current.selecting) map.panTo(event.latlng);
     });
+    map.on('moveend', () => callbacks.current.onCenter?.(map.getCenter()));
+    callbacks.current.onCenter?.(map.getCenter());
     const observer = new ResizeObserver(() => map.invalidateSize());
     observer.observe(container.current);
     return () => { observer.disconnect(); map.remove(); mapRef.current = null; };
