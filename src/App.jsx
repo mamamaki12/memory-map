@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import InstallNotice from './InstallNotice.jsx';
 import { readBackup, restoreBackup } from './backup.js';
 import { loadBackupState, saveBackupState, unbackedCount, backupReminder, backupFileName } from './backupReminder.js';
@@ -38,18 +38,30 @@ function Photo({ blob, ...props }) {
   return url ? <img {...props} src={url} /> : null;
 }
 
-function Modal({ title, onClose, busy, className, children }) {
+function Modal({ title, onClose, busy, className, closeButton = true, role, children }) {
   const ref = useRef(null);
+  const titleId = useId();
   useEffect(() => {
     const dialog = ref.current;
     dialog.showModal();
     return () => dialog.close();
   }, []);
-  return <dialog ref={ref} className={className} onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}>
-    <div className="dialog-head"><h2>{title}</h2><button disabled={busy} onClick={onClose} aria-label="閉じる">×</button></div>
+  return <dialog ref={ref} className={className} role={role} aria-labelledby={titleId} onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}>
+    <div className="dialog-head"><h2 id={titleId}>{title}</h2>{closeButton && <button disabled={busy} onClick={onClose} aria-label="閉じる">×</button>}</div>
     {children}
   </dialog>;
 }
+
+// The photo count reads the same everywhere: just the number, or yours and your friends' when friends share photos.
+function photoCount(own, friends) {
+  return friends ? '自分 ' + own + '・友達 ' + friends : own + ' 枚';
+}
+
+// The two maps, each with a word, so it is clear which one is showing.
+const mapModes = [
+  { mode: 'photos', icon: 'album', label: '写真の地図', short: '写真' },
+  { mode: 'conquest', icon: 'map', label: '全国攻略', short: '攻略' },
+];
 
 // Phones choose between the camera and the album; a mouse-only computer has no camera mode for file inputs.
 const touchDevice = () => window.matchMedia?.('(pointer: coarse)').matches ?? false;
@@ -73,6 +85,7 @@ export default function App() {
   const mapPhotos = useMemo(() => [...photos, ...sharedPhotos].sort((a, b) => b.createdAt - a.createdAt), [photos, sharedPhotos]);
   const [pending, setPending] = useState(null);
   const [active, setActive] = useState(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [selecting, setSelecting] = useState(false);
   const [busy, setBusy] = useState(false);
   const [locating, setLocating] = useState(false);
@@ -192,7 +205,7 @@ export default function App() {
   }
 
   async function remove() {
-    if (!active || operation.current || !confirm('この写真をこのブラウザから削除しますか？')) return;
+    if (!active || operation.current) return;
     operation.current = true;
     setBusy(true);
     try {
@@ -201,7 +214,7 @@ export default function App() {
       setActive(null);
       notify('写真を削除しました。');
     } catch { notify('削除に失敗しました。もう一度お試しください。'); }
-    finally { operation.current = false; setBusy(false); }
+    finally { operation.current = false; setBusy(false); setConfirmingDelete(false); }
   }
 
   async function locate() {
@@ -291,24 +304,10 @@ export default function App() {
     <header><a className="brand" href={import.meta.env.BASE_URL}><img className="logo" src={import.meta.env.BASE_URL + 'icon-landscape.svg'} width="45" height="45" alt="" /><span>Memory Map<small>思い出を、地図に。</small></span></a>
       <div className="header-actions">
       <button className="friends-button has-icon icon-only" title="友達" onClick={() => setFriendsOpen(true)}><IconLabel icon="friends" label="友達" /></button>
-      <button className="map-toggle-button"
-        aria-label={mapMode === 'conquest' ? '現在は全国攻略。写真の地図に切り替える' : '現在は写真の地図。全国攻略に切り替える'}
-        title={mapMode === 'conquest' ? '写真の地図に切り替え' : '全国攻略に切り替え'}
-        disabled={busy || selecting}
-        onClick={() => { setMapMode(mode => mode === 'photos' ? 'conquest' : 'photos'); setMemoriesOpen(false); }}>
-        <span className="map-mode-card" data-active={mapMode === 'photos'} aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 6h4l2-3h4l2 3h4a1 1 0 0 1 1 1v13H3V7a1 1 0 0 1 1-1Z" />
-            <circle cx="12" cy="13" r="4" />
-          </svg>
-        </span>
-        <span className="map-mode-card" data-active={mapMode === 'conquest'} aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Z" />
-            <path d="M9 3v16M15 5v16" />
-          </svg>
-        </span>
-      </button>
+      <div className="map-switch" role="group" aria-label="地図の切り替え">{mapModes.map(item =>
+        <button key={item.mode} className="has-icon" aria-pressed={mapMode === item.mode} disabled={busy || selecting}
+          onClick={() => { if (mapMode !== item.mode) { setMapMode(item.mode); setMemoriesOpen(false); } }}>
+          <IconLabel icon={item.icon} label={item.label} short={item.short} /></button>)}</div>
       <button className="settings-button" aria-label="設定を開く" aria-haspopup="dialog" onClick={() => setSettingsOpen(true)}>
         <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="m9.5 3-.5 2-2 .9-1.9-.6-2.5 4.3 1.5 1.4v2l-1.5 1.4 2.5 4.3 1.9-.6 2 .9.5 2h5l.5-2 2-.9 1.9.6 2.5-4.3-1.5-1.4v-2l1.5-1.4-2.5-4.3-1.9.6-2-.9-.5-2z" />
@@ -326,10 +325,10 @@ export default function App() {
       }}>
         <button className="memories-toggle" aria-expanded={memoriesOpen} aria-controls="memories-list" {...drawer.handleProps}>
           <span className="sheet-handle" aria-hidden="true" />
-          <span className="sheet-title">思い出</span><span className="sheet-count">{mapPhotos.length} 枚</span><span className="sheet-chevron" aria-hidden="true">{memoriesOpen ? '⌄' : '⌃'}</span>
+          <span className="sheet-title">思い出</span><span className="sheet-count">{photoCount(photos.length, sharedPhotos.length)}</span><span className="sheet-chevron" aria-hidden="true">{memoriesOpen ? '⌄' : '⌃'}</span>
         </button>
         <div className="intro"><span className="eyebrow">YOUR PERSONAL ATLAS</span><h1>ここにいた、<br />を残そう。</h1><p>いつもの道も、初めての街も。<br />写真から広がる、あなただけの地図。</p></div>
-        <div className="section-title"><h2>思い出</h2><span>{photos.length} 枚</span></div>
+        <div className="section-title"><h2>思い出</h2><span>{photoCount(photos.length, sharedPhotos.length)}</span></div>
         <div className="list" id="memories-list" {...drawer.listProps}>{mapPhotos.length ? mapPhotos.map(photo =>
           <button key={photo.id} className="memory" onClick={() => openPhoto(photo)} disabled={selecting}>
             <Photo blob={photo.blob} alt={photo.caption || '思い出の写真'} loading="lazy" />
@@ -401,7 +400,14 @@ export default function App() {
     {active && <Modal title={active.caption || '名前のない思い出'} onClose={() => setActive(null)} busy={busy}>
       <Photo blob={active.blob} alt={active.caption || '思い出の写真'} /><p id="detail-date">{date(active.createdAt)}</p>
       <button className="quiet has-icon icon-only" title="写真をダウンロード" onClick={() => download(active.blob, 'memory-' + active.id + '.jpg')}><IconLabel icon="download" label="写真をダウンロード" /></button>
-      {active.shared ? <p className="settings-note">友達が共有した写真です。</p> : <button className="danger has-icon" disabled={busy} onClick={remove}><IconLabel icon="trash" label="この写真を削除" short="削除" /></button>}
+      {active.shared ? <p className="settings-note">友達が共有した写真です。</p> : <button className="danger has-icon" disabled={busy} onClick={() => setConfirmingDelete(true)}><IconLabel icon="trash" label="この写真を削除" short="削除" /></button>}
+    </Modal>}
+    {active && confirmingDelete && <Modal title="この写真を削除しますか？" className="confirm-dialog" role="alertdialog" closeButton={false} busy={busy} onClose={() => setConfirmingDelete(false)}>
+      <p className="confirm-text">このブラウザから消え、元に戻せません。</p>
+      <div className="confirm-actions">
+        <button autoFocus disabled={busy} onClick={() => setConfirmingDelete(false)}>やめる</button>
+        <button className="danger-fill" disabled={busy} onClick={remove}>{busy ? '削除中…' : '削除する'}</button>
+      </div>
     </Modal>}
   </>;
 }
