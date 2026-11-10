@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import { addBaseMap } from './baseMap.js';
 import { computeProgress, indexCities } from './cityProgress.js';
+import { IconLabel } from './Icon.jsx';
 export default function ConquestMap({ photos }) {
   const host = useRef(null), mapRef=useRef(null), citiesLayer=useRef(null);
   const [dataset,setDataset]=useState(null), [error,setError]=useState(''), [retry,setRetry]=useState(0);
@@ -64,7 +65,7 @@ export default function ConquestMap({ photos }) {
     </div>
     <div className="conquest-map-wrap"><div ref={host} className="conquest-map" />
       {!dataset&&!error&&<p className="conquest-loading" role="status">全国の市を読み込んでいます…</p>}
-      {error&&<div className="conquest-loading" role="alert">{error}<button onClick={()=>setRetry(n=>n+1)}>再読み込み</button></div>}
+      {error&&<div className="conquest-loading" role="alert">{error}<button className="has-icon icon-only" title="再読み込み" onClick={()=>setRetry(n=>n+1)}><IconLabel icon="refresh" label="再読み込み" /></button></div>}
       {selection&&<div className="conquest-city"><button className="conquest-close" aria-label="市の詳細を閉じる" onClick={()=>setSelection(null)}>×</button><small>{selection.prefecture}</small><h3>{selection.name}</h3>
         <strong>{entry?'✓ コンプリート':'まだ訪れていません'}</strong><p>{entry?entry.photos.length+'枚の写真があります。':'この市で写真を保存すると攻略済みになります。'}</p>
         {entry&&<p>最初の記録：{new Date(Math.min(...entry.photos.map(p=>p.createdAt))).toLocaleDateString('ja-JP')}</p>}
