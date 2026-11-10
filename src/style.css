@@ -216,3 +216,5 @@ main.photo-map-hidden .memories-panel{display:none}
 @media(max-width:700px){
   dialog.photo-source-sheet{margin:auto auto 0;width:100%;max-width:none;border-radius:22px 22px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom,0px))}
 }
+/* Says where the saved place came from when a photo is picked from the album. */
+.location-note{font-size:12px;line-height:1.6;color:#167766;margin:-6px 0 12px}
