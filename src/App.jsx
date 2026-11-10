@@ -10,6 +10,7 @@ import useDrawerGesture from './useDrawerGesture.js';
 import { openDB, transaction } from './storage.js';
 import { position, compress, date, download } from './media.js';
 import { readPhotoLocation } from './exifLocation.js';
+import { Icon, IconLabel } from './Icon.jsx';
 
 // Ask once per visit that the browser keep the photos even when it is short of space.
 let persistRequested = false;
@@ -265,7 +266,7 @@ export default function App() {
   return <>
     <header><a className="brand" href={import.meta.env.BASE_URL}><img className="logo" src={import.meta.env.BASE_URL + 'icon-landscape.svg'} width="45" height="45" alt="" /><span>Memory Map<small>思い出を、地図に。</small></span></a>
       <div className="header-actions">
-      <button className="friends-button" onClick={() => setFriendsOpen(true)}>友達</button>
+      <button className="friends-button has-icon icon-only" title="友達" onClick={() => setFriendsOpen(true)}><IconLabel icon="friends" label="友達" /></button>
       <button className="map-toggle-button"
         aria-label={mapMode === 'conquest' ? '現在は全国攻略。写真の地図に切り替える' : '現在は写真の地図。全国攻略に切り替える'}
         title={mapMode === 'conquest' ? '写真の地図に切り替え' : '全国攻略に切り替え'}
@@ -314,37 +315,37 @@ export default function App() {
       </aside>
       <section className="map-wrap" aria-label="写真の地図">
         <PhotoMap photos={mapPhotos} onOpen={openPhoto} onPick={pickPlace} selecting={selecting} view={view} currentLocation={currentLocation} fitRequest={fitRequest} onError={notify} />
-        <div className="map-tools"><button onClick={() => mapPhotos.length ? setFitRequest(value => value + 1) : notify('写真を保存すると地図上に表示されます。')}>すべて表示</button></div>
+        <div className="map-tools"><button className="has-icon icon-only" title="すべて表示" onClick={() => mapPhotos.length ? setFitRequest(value => value + 1) : notify('写真を保存すると地図上に表示されます。')}><IconLabel icon="fit" label="すべて表示" /></button></div>
         <button className="locate-fab" disabled={locating} onClick={locate} aria-label={locating ? '現在地を取得中' : '現在地を表示'} title="現在地を表示" aria-busy={locating}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
             <circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
             <path d="M12 1v4m0 14v4M1 12h4m14 0h4" />
           </svg>
         </button>
-        {selecting && <div id="place-hint">地図をタップして場所を選んでください <button onClick={() => setSelecting(false)}>戻る</button></div>}
-        <div className="capture-bar"><button className="primary" disabled={!ready || busy} onClick={() => pending ? setSelecting(false) : addPhoto()}>{busy ? '処理中…' : pending ? '保存画面に戻る' : '＋ 写真を撮る'}</button><span>今日の景色を、思い出に。</span></div>
+        {selecting && <div id="place-hint">地図をタップして場所を選んでください <button className="has-icon icon-only" title="戻る" onClick={() => setSelecting(false)}><IconLabel icon="back" label="戻る" /></button></div>}
+        <div className="capture-bar"><button className="primary has-icon" disabled={!ready || busy} onClick={() => pending ? setSelecting(false) : addPhoto()}>{busy ? '処理中…' : pending ? <IconLabel icon="back" label="保存画面に戻る" short="戻る" /> : <IconLabel icon="camera" label="＋ 写真を撮る" short="写真" />}</button><span>今日の景色を、思い出に。</span></div>
       </section>
     </main>
     <input ref={cameraFile} type="file" accept="image/*" capture="environment" hidden onChange={event => capture(event, 'camera')} />
     <input ref={albumFile} type="file" accept="image/*" hidden onChange={event => capture(event, 'album')} />
     {sourceOpen && <Modal title="写真を追加" className="photo-source-sheet" onClose={() => setSourceOpen(false)}>
       <div className="photo-source-actions">
-        <button className="primary" onClick={() => pickSource(cameraFile)}>カメラで撮る</button>
-        <button onClick={() => pickSource(albumFile)}>アルバムから選ぶ</button>
+        <button className="primary has-icon" onClick={() => pickSource(cameraFile)}><IconLabel icon="camera" label="カメラで撮る" short="カメラ" /></button>
+        <button className="has-icon" onClick={() => pickSource(albumFile)}><IconLabel icon="album" label="アルバムから選ぶ" short="アルバム" /></button>
         <button className="quiet" onClick={() => setSourceOpen(false)}>やめる</button>
       </div>
     </Modal>}
     <p id="status" role="status" aria-live="polite">{status}</p>
     {settingsOpen && <Modal title="設定" busy={importing || exporting} onClose={() => setSettingsOpen(false)}>
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={backup}>
-        <span>{exporting ? '書き出し中…' : 'バックアップ'}</span>
+        <span className="has-icon"><Icon name="download" />{exporting ? '書き出し中…' : 'バックアップ'}</span>
         <small>写真と撮影場所をファイルに保存</small>
       </button>
       {photos.length > 0 && <p className="settings-note">{backupState.at === null ? 'バックアップの記録はまだありません。'
         : '前回のバックアップ：' + date(backupState.at) + (unbackedCount(backupState, photos.length) ? '（その後に保存した写真 ' + unbackedCount(backupState, photos.length) + '枚）' : '')}</p>}
       <input ref={importFile} type="file" accept=".json,application/json" hidden onChange={importBackup} />
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={() => importFile.current.click()}>
-        <span>{importing ? '復元中…' : 'バックアップをインポート'}</span>
+        <span className="has-icon"><Icon name="upload" />{importing ? '復元中…' : <><span className="btn-label">バックアップをインポート</span><span className="btn-short" aria-hidden="true">インポート</span></>}</span>
         <small>JSONから写真と場所を復元（100MBまで・既存写真は保持）</small>
       </button>
       <p className="settings-result" role="status" aria-live="polite">{settingsMessage}</p>
@@ -356,14 +357,14 @@ export default function App() {
         <p id="location-label">{Number.isFinite(pending.lat) ? '保存場所：' + pending.lat.toFixed(5) + ', ' + pending.lng.toFixed(5) + (pending.accuracy ? '（精度 約' + Math.round(pending.accuracy) + 'm）' : '') : (pending.locationProblem || '') + '保存する場所を地図で選んでください。'}</p>
         {pending.locationNote && <p className="location-note">{pending.locationNote}</p>}
         {pending.accuracy > 100 && <p className="location-warning">現在地が実際の場所とずれているかもしれません。違うときは「地図で場所を選び直す」で直してください。</p>}
-        <button type="button" className="quiet" disabled={busy} onClick={() => setSelecting(true)}>地図で場所を選び直す</button>
-        <button id="save" className="primary" disabled={busy || !Number.isFinite(pending.lat)} type="submit">{busy ? '保存中…' : 'この場所に保存'}</button>
+        <button type="button" className="quiet has-icon" disabled={busy} onClick={() => setSelecting(true)}><IconLabel icon="pin" label="地図で場所を選び直す" short="選び直す" /></button>
+        <button id="save" className="primary has-icon" disabled={busy || !Number.isFinite(pending.lat)} type="submit">{busy ? '保存中…' : <IconLabel icon="check" label="この場所に保存" short="保存" />}</button>
       </form>
     </Modal>}
     {active && <Modal title={active.caption || '名前のない思い出'} onClose={() => setActive(null)} busy={busy}>
       <Photo blob={active.blob} alt={active.caption || '思い出の写真'} /><p id="detail-date">{date(active.createdAt)}</p>
-      <button className="quiet" onClick={() => download(active.blob, 'memory-' + active.id + '.jpg')}>写真をダウンロード</button>
-      {active.shared ? <p className="settings-note">友達が共有した写真です。</p> : <button className="danger" disabled={busy} onClick={remove}>この写真を削除</button>}
+      <button className="quiet has-icon icon-only" title="写真をダウンロード" onClick={() => download(active.blob, 'memory-' + active.id + '.jpg')}><IconLabel icon="download" label="写真をダウンロード" /></button>
+      {active.shared ? <p className="settings-note">友達が共有した写真です。</p> : <button className="danger has-icon" disabled={busy} onClick={remove}><IconLabel icon="trash" label="この写真を削除" short="削除" /></button>}
     </Modal>}
   </>;
 }

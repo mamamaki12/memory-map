@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { IconLabel } from './Icon.jsx';
 import { loadFriendsClient, loadFriendsData, friendPhotos, sharePhoto, unsharePhoto, result, friendlyMessage } from './friendsApi.js';
 
 function FriendsPanel({ photos, onPhotos }) {
@@ -98,7 +99,7 @@ function FriendsPanel({ photos, onPhotos }) {
     }, 'ログイン用リンクを送りました。メールを確認してください。'); }}>
       <p>友達共有にはメールでログインしてください。端末内の写真はそのまま使えます。</p>
       <label>メールアドレス<input type="email" required value={email} onChange={event => setEmail(event.target.value)} /></label>
-      <button className="primary" disabled={busy}>ログイン用メールを送る</button>
+      <button className="primary has-icon" disabled={busy}><IconLabel icon="mail" label="ログイン用メールを送る" short="送る" /></button>
     </form> : <>
       <div className="friend-toolbar"><span>ログイン中</span><button disabled={busy} onClick={() => action(async () => {
         result(await client.auth.signOut()); images.current.clear(); shownPhotos.current = ''; onPhotos([]); setData(null); setUser(null);
@@ -107,17 +108,17 @@ function FriendsPanel({ photos, onPhotos }) {
         result(await client.rpc('rename_memory_profile', { new_name: name.trim() })); await refresh();
       }, '名前を保存しました。'); }}>
         <label>友達に表示する名前<input required maxLength={30} value={name} onChange={event => setName(event.target.value)} /></label>
-        <button disabled={busy || !data}>名前を保存</button>
+        <button className="has-icon" disabled={busy || !data}><IconLabel icon="check" label="名前を保存" short="保存" /></button>
       </form>
       {data && <section className="friend-section"><h3>あなたの友達コード</h3><code className="friend-code">{data.profile.friend_code}</code>
-        <button disabled={busy} onClick={() => action(() => navigator.clipboard.writeText(data.profile.friend_code), 'コードをコピーしました。')}>コピー</button>
+        <button className="has-icon icon-only" title="コピー" disabled={busy} onClick={() => action(() => navigator.clipboard.writeText(data.profile.friend_code), 'コードをコピーしました。')}><IconLabel icon="copy" label="コピー" /></button>
         <p>このコードを友達に渡してください。申請を承認するまで写真は共有されません。知らない人から申請が届くときは、コードを作り直せます（今の友達はそのままです）。</p>
-        <button disabled={busy} onClick={() => { if (confirm('今の友達コードは使えなくなります。新しいコードを作りますか？')) action(async () => { result(await client.rpc('regenerate_memory_friend_code')); await refresh(); }, '新しい友達コードを作りました。前のコードはもう使えません。'); }}>コードを作り直す</button></section>}
+        <button className="has-icon" disabled={busy} onClick={() => { if (confirm('今の友達コードは使えなくなります。新しいコードを作りますか？')) action(async () => { result(await client.rpc('regenerate_memory_friend_code')); await refresh(); }, '新しい友達コードを作りました。前のコードはもう使えません。'); }}><IconLabel icon="refresh" label="コードを作り直す" short="作り直す" /></button></section>}
       <form onSubmit={event => { event.preventDefault(); action(async () => {
         result(await client.rpc('request_memory_friend', { code: code.trim() })); setCode(''); await refresh();
       }, '友達申請を送りました。'); }}>
         <label>友達のコード<input required value={code} onChange={event => setCode(event.target.value)} placeholder="友達から受け取ったコード" /></label>
-        <button disabled={busy}>友達申請を送る</button>
+        <button className="has-icon" disabled={busy}><IconLabel icon="send" label="友達申請を送る" short="申請" /></button>
       </form>
       <section className="friend-section"><h3>届いた申請</h3>{!incoming.length && <p>申請はありません。</p>}
         {incoming.map(f => <div key={f.id} className="friend-row"><span>{profileName(f.requester)}</span>
@@ -133,14 +134,14 @@ function FriendsPanel({ photos, onPhotos }) {
       <section className="friend-section"><h3>写真を共有</h3><p>共有した写真と撮影場所は、承認済みの友達全員が見られます。共有はいつでも停止できます。</p>
         {!photos.length && <p>撮影した写真がありません。</p>}
         {photos.map(photo => { const row = data?.shared.find(r => r.owner === user.id && r.local_id === photo.id);
-          return <div key={photo.id} className="friend-row"><span>{photo.caption || '名前のない思い出'}</span><button disabled={busy || !data} onClick={() => action(async () => {
+          return <div key={photo.id} className="friend-row"><span>{photo.caption || '名前のない思い出'}</span><button className="has-icon" disabled={busy || !data} onClick={() => action(async () => {
             if (row) { const message = await unsharePhoto(client, row); await refresh(); return message; }
             await sharePhoto(client, user, photo); await refresh();
-          }, '写真を共有しました。')}>{row ? '共有を停止' : '友達に共有'}</button></div>;
+          }, '写真を共有しました。')}>{row ? <IconLabel icon="stop" label="共有を停止" short="停止" /> : <IconLabel icon="share" label="友達に共有" short="共有" />}</button></div>;
         })}
-        {data?.shared.filter(row => row.owner === user.id && !photos.some(p => p.id === row.local_id)).map(row => <div className="friend-row" key={row.id}><span>{row.caption || '端末にない共有写真'}</span><button disabled={busy} onClick={() => action(async () => { const message = await unsharePhoto(client, row); await refresh(); return message; })}>共有を停止</button></div>)}
+        {data?.shared.filter(row => row.owner === user.id && !photos.some(p => p.id === row.local_id)).map(row => <div className="friend-row" key={row.id}><span>{row.caption || '端末にない共有写真'}</span><button className="has-icon" disabled={busy} onClick={() => action(async () => { const message = await unsharePhoto(client, row); await refresh(); return message; })}><IconLabel icon="stop" label="共有を停止" short="停止" /></button></div>)}
       </section>
-      <button disabled={busy} onClick={() => action(async () => { const failed = await refresh(); if (failed) return missingMessage(failed); }, '友達の写真を更新しました。')}>写真・申請を更新</button>
+      <button className="has-icon" disabled={busy} onClick={() => action(async () => { const failed = await refresh(); if (failed) return missingMessage(failed); }, '友達の写真を更新しました。')}><IconLabel icon="refresh" label="写真・申請を更新" short="更新" /></button>
     </>}
   </div>;
 }

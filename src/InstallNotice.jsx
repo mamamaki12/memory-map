@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { IconLabel } from './Icon.jsx';
 function standalone() {
   return window.matchMedia('(display-mode: standalone)').matches ||
     window.matchMedia('(display-mode: minimal-ui)').matches || navigator.standalone === true;
@@ -39,7 +40,7 @@ export default function InstallNotice() {
       <p>思い出の地図を、アプリのようにすぐ開けます。</p>
       {help && <p>{ios ? '共有メニュー →「ホーム画面に追加」→「追加」を選んでください。項目がない場合はSafariで開いてください。' : 'ブラウザのメニューから「ホーム画面に追加」または「アプリをインストール」を選んでください。項目がない場合はChromeなどの対応ブラウザで開いてください。'}</p>}
     </div>
-    <button className="quiet" disabled={installing} onClick={install}>{prompt ? '追加する' : '追加方法'}</button>
+    <button className="quiet has-icon" disabled={installing} onClick={install}><IconLabel icon="add" label={prompt ? '追加する' : '追加方法'} short="追加" /></button>
     <button className="install-dismiss" aria-label="追加案内を閉じる" onClick={() => setHidden(true)}>×</button>
   </section>;
 }
