@@ -149,7 +149,10 @@ export default function PhotoMap({ photos, onOpen, onCenter, selecting, view, cu
   }, [view]);
   useEffect(() => {
     if (fitRequest && photos.length) {
-      mapRef.current.fitBounds(L.latLngBounds(photos.map(p => [p.lat, p.lng])).pad(.2), { maxZoom: 16 });
+      // Room above for the photo on each pin, and below for the add button, so no pin hides under it.
+      const bar = container.current.parentElement?.querySelector('.capture-bar');
+      const below = bar ? Math.max(0, container.current.getBoundingClientRect().bottom - bar.getBoundingClientRect().top) + 12 : 24;
+      mapRef.current.fitBounds(L.latLngBounds(photos.map(p => [p.lat, p.lng])).pad(.2), { maxZoom: 16, paddingTopLeft: [24, 80], paddingBottomRight: [24, below] });
     }
   }, [fitRequest, photos]);
   return <div id="map" ref={container} />;
