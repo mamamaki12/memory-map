@@ -10,13 +10,24 @@ function FriendsPanel({ photos, onPhotos }) {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [data, setData] = useState(null);
-  const [message, setMessage] = useState('');
+  // The result of the last action, shown at the bottom of the screen; `error` paints it red.
+  const [notice, setNotice] = useState({ text: '', error: false });
+  // Why the friends' information could not be read yet (shown instead of empty lists).
+  const [loadProblem, setLoadProblem] = useState('');
+  const [attempt, setAttempt] = useState(0);
   const [busy, setBusy] = useState(false);
   const mounted = useRef(true);
   const version = useRef(0);
   const currentUser = useRef(null);
   const images = useRef(new Map());
   const shownPhotos = useRef('');
+  const say = (text, error = false) => setNotice({ text, error });
+  // On the long logged-in screen, successful results fade after a while; problems stay until the next action.
+  useEffect(() => {
+    if (!notice.text || notice.error || !user) return;
+    const timer = setTimeout(() => setNotice({ text: '', error: false }), 8000);
+    return () => clearTimeout(timer);
+  }, [notice, user]);
   useEffect(() => {
     mounted.current = true;
     let subscription;
@@ -34,16 +45,16 @@ function FriendsPanel({ photos, onPhotos }) {
             currentUser.current = next?.id;
             version.current++;
             images.current.clear(); shownPhotos.current = '';
-            setData(null); onPhotos([]);
+            setData(null); setLoadProblem(''); onPhotos([]);
           }
           setUser(next);
         }).data.subscription;
         const session = result(await value.auth.getSession()).session;
         if (!cancelled) { currentUser.current = session?.user?.id; setUser(session?.user ?? null); }
-      } catch (error) { if (!cancelled) setMessage(friendlyMessage(error)); }
+      } catch (error) { if (!cancelled) say(friendlyMessage(error), true); }
     })();
     return () => { cancelled = true; mounted.current = false; version.current++; subscription?.unsubscribe(); };
-  }, [onPhotos]);
+  }, [onPhotos, attempt]);
 
   // Returns how many friends' photos could not be loaded this time.
   async function refresh() {
@@ -52,20 +63,30 @@ function FriendsPanel({ photos, onPhotos }) {
     const loaded = await loadFriendsData(client, user.id);
     const shared = await friendPhotos(client, loaded.shared, user.id, images.current);
     if (!mounted.current || token !== version.current) return 0;
-    setData(loaded); setName(loaded.profile.display_name);
+    setData(loaded); setLoadProblem(''); setName(loaded.profile.display_name);
     // Redraw the map only when the set of friends' photos actually changed.
     const key = shared.photos.map(photo => photo.id).join();
     if (key !== shownPhotos.current) { shownPhotos.current = key; onPhotos(shared.photos); }
     return shared.failed;
   }
   const missingMessage = count => '友達の写真のうち' + count + '枚を読み込めませんでした。あとでもう一度読み込みます。';
+  const hasData = useRef(false);
+  hasData.current = Boolean(data);
+  // Before anything has been read, a problem replaces the lists; afterwards the old lists stay and the problem is shown below.
+  const loadFailed = text => { if (hasData.current) say(text, true); else setLoadProblem(text); };
+  const offlineMessage = 'インターネットにつながっていません。つながると自動で読み込みます。';
+  function load(isStopped = () => false) {
+    if (navigator.onLine === false) { loadFailed(offlineMessage); return; }
+    refresh().then(failed => { if (!isStopped() && failed) say(missingMessage(failed), true); })
+      .catch(error => { if (!isStopped()) loadFailed(friendlyMessage(error)); });
+  }
   useEffect(() => {
     if (!client || !user) return;
     let stopped = false;
     const update = () => {
-      if (stopped || document.visibilityState === 'hidden' || navigator.onLine === false) return;
-      refresh().then(failed => { if (!stopped && failed) setMessage(missingMessage(failed)); })
-        .catch(error => { if (!stopped) setMessage(friendlyMessage(error)); });
+      if (stopped || document.visibilityState === 'hidden') return;
+      if (navigator.onLine === false && hasData.current) return;
+      load(() => stopped);
     };
     update();
     const timer = setInterval(update, 60000);
@@ -79,12 +100,15 @@ function FriendsPanel({ photos, onPhotos }) {
 
   async function action(task, success) {
     if (busy) return;
-    setBusy(true); setMessage('');
-    try { const message = await task(); if (mounted.current) setMessage(message || success || '完了しました。'); }
-    catch (error) { if (mounted.current) setMessage(friendlyMessage(error)); }
+    setBusy(true); setNotice({ text: '', error: false });
+    try { const message = await task(); if (mounted.current) say(message?.text ?? (message || success || '完了しました。'), Boolean(message?.error)); }
+    catch (error) { if (mounted.current) say(friendlyMessage(error), true); }
     finally { if (mounted.current) setBusy(false); }
   }
-  if (configured === null) return <p role="status">{message || '共有機能を読み込んでいます…'}</p>;
+  if (configured === null) return <div className="friend-state">
+    <p role="status" className={notice.error ? 'friend-problem' : ''}>{notice.text || '共有機能を読み込んでいます…'}</p>
+    {notice.error && <button className="has-icon" onClick={() => { say(''); setAttempt(value => value + 1); }}><IconLabel icon="refresh" label="もう一度読み込む" short="読み込む" /></button>}
+  </div>;
   if (!configured) return <div className="friend-section"><h3>友達と写真・地図を共有</h3>
     <p>共有サーバーの接続設定がまだ完了していません。設定後、メールでログインして友達交換ができます。</p>
     <p>友達コードで申請 → 相手が承認 → 選んだ写真を友達の地図へ共有できます。</p>
@@ -92,8 +116,9 @@ function FriendsPanel({ photos, onPhotos }) {
   const profileName = id => data?.profiles.find(p => p.id === id)?.display_name || '友達';
   const incoming = data?.relationships.filter(f => f.recipient === user?.id && f.status === 'pending') || [];
   const accepted = data?.relationships.filter(f => f.status === 'accepted') || [];
+  // The result line sits at the end and sticks to the bottom of the screen, so it shows next to whichever button was pressed.
+  const resultLine = <p className={'friend-message' + (notice.error ? ' is-error' : '')} role="status" aria-live="polite">{notice.text}</p>;
   return <div className="friend-panel">
-    <p className="friend-message" role="status" aria-live="polite">{message}</p>
     {!user ? <form onSubmit={event => { event.preventDefault(); action(async () => {
       result(await client.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin + import.meta.env.BASE_URL } }));
     }, 'ログイン用リンクを送りました。メールを確認してください。'); }}>
@@ -102,8 +127,13 @@ function FriendsPanel({ photos, onPhotos }) {
       <button className="primary has-icon" disabled={busy}><IconLabel icon="mail" label="ログイン用メールを送る" short="送る" /></button>
     </form> : <>
       <div className="friend-toolbar"><span>ログイン中</span><button disabled={busy} onClick={() => action(async () => {
-        result(await client.auth.signOut()); images.current.clear(); shownPhotos.current = ''; onPhotos([]); setData(null); setUser(null);
+        result(await client.auth.signOut()); images.current.clear(); shownPhotos.current = ''; onPhotos([]); setData(null); setLoadProblem(''); setUser(null);
       }, 'ログアウトしました。')}>ログアウト</button></div>
+      {!data ? <div className="friend-state">{loadProblem ? <>
+        <p className="friend-problem" role="alert">{loadProblem}</p>
+        <p>友達・届いた申請・共有した写真は、読み込めたら表示します。</p>
+        <button className="has-icon" onClick={() => { setLoadProblem(''); load(); }}><IconLabel icon="refresh" label="もう一度読み込む" short="読み込む" /></button>
+      </> : <p role="status">友達の情報を読み込んでいます…</p>}</div> : <>
       <form onSubmit={event => { event.preventDefault(); action(async () => {
         result(await client.rpc('rename_memory_profile', { new_name: name.trim() })); await refresh();
       }, '名前を保存しました。'); }}>
@@ -141,8 +171,9 @@ function FriendsPanel({ photos, onPhotos }) {
         })}
         {data?.shared.filter(row => row.owner === user.id && !photos.some(p => p.id === row.local_id)).map(row => <div className="friend-row" key={row.id}><span>{row.caption || '端末にない共有写真'}</span><button className="has-icon" disabled={busy} onClick={() => action(async () => { const message = await unsharePhoto(client, row); await refresh(); return message; })}><IconLabel icon="stop" label="共有を停止" short="停止" /></button></div>)}
       </section>
-      <button className="has-icon" disabled={busy} onClick={() => action(async () => { const failed = await refresh(); if (failed) return missingMessage(failed); }, '友達の写真を更新しました。')}><IconLabel icon="refresh" label="写真・申請を更新" short="更新" /></button>
-    </>}
+      <button className="has-icon" disabled={busy} onClick={() => action(async () => { const failed = await refresh(); if (failed) return { text: missingMessage(failed), error: true }; }, '友達の写真を更新しました。')}><IconLabel icon="refresh" label="写真・申請を更新" short="更新" /></button>
+    </>}</>}
+    {resultLine}
   </div>;
 }
 

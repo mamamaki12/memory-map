@@ -113,8 +113,12 @@ main{height:auto;flex:1;min-height:0}
 .friend-row>span{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px}
 .friend-row button{flex-shrink:0;font-size:12px;padding:8px 10px}
 .friend-toolbar{display:flex;justify-content:space-between;align-items:center;font-size:12px}
-.friend-message{color:#167766;white-space:pre-wrap;overflow-wrap:anywhere}
+.friend-message{position:sticky;bottom:0;z-index:2;margin:14px 0 0;padding:12px 14px;border-radius:12px;background:#e3f1ea;color:#14594c;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 6px 18px #23472b26}
+.friend-message.is-error{background:#fbeceb;color:#9b3434}
 .friend-message:empty{display:none}
+.friend-state{padding:16px 0;border-top:1px solid #dbe4de}
+.friend-state p{margin:0 0 10px}
+.friend-problem{color:#9b3434;font-weight:600}
 @media(max-width:700px){.header-actions{gap:2px}.friends-button{padding:8px}.brand{font-size:17px}.brand small{letter-spacing:1px}}
 
 main.photo-map-hidden{display:none}
