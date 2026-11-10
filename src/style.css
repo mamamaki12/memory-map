@@ -208,3 +208,11 @@ main.photo-map-hidden .memories-panel{display:none}
 #status{width:max-content;max-width:min(90vw,600px)}
 /* A gentle note when the current location may be far from the real place. */
 .location-warning{font-size:12px;line-height:1.6;color:#8a5a14;margin:-6px 0 12px}
+
+/* Choosing between the camera and the album: a bottom sheet on phones. */
+.photo-source-actions{display:flex;flex-direction:column;gap:10px}
+.photo-source-actions button{width:100%;min-height:52px;font-size:15px}
+.photo-source-actions .quiet{font-size:14px}
+@media(max-width:700px){
+  dialog.photo-source-sheet{margin:auto auto 0;width:100%;max-width:none;border-radius:22px 22px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+}

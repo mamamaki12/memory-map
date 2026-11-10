@@ -28,22 +28,27 @@ function Photo({ blob, ...props }) {
   return url ? <img {...props} src={url} /> : null;
 }
 
-function Modal({ title, onClose, busy, children }) {
+function Modal({ title, onClose, busy, className, children }) {
   const ref = useRef(null);
   useEffect(() => {
     const dialog = ref.current;
     dialog.showModal();
     return () => dialog.close();
   }, []);
-  return <dialog ref={ref} onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}>
+  return <dialog ref={ref} className={className} onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}>
     <div className="dialog-head"><h2>{title}</h2><button disabled={busy} onClick={onClose} aria-label="閉じる">×</button></div>
     {children}
   </dialog>;
 }
 
+// Phones choose between the camera and the album; a mouse-only computer has no camera mode for file inputs.
+const touchDevice = () => window.matchMedia?.('(pointer: coarse)').matches ?? false;
+
 export default function App() {
   const db = useRef(null);
-  const file = useRef(null);
+  const cameraFile = useRef(null);
+  const albumFile = useRef(null);
+  const [sourceOpen, setSourceOpen] = useState(false);
   const importFile = useRef(null);
   const [importing, setImporting] = useState(false);
   const [settingsMessage, setSettingsMessage] = useState('');
@@ -247,6 +252,9 @@ export default function App() {
     setSelecting(false);
   }, []);
   const cancel = () => { setPending(null); setSelecting(false); };
+  const addPhoto = () => touchDevice() ? setSourceOpen(true) : albumFile.current.click();
+  // Open the picker during the tap itself so phones allow it, then close the sheet.
+  const pickSource = input => { input.current.click(); setSourceOpen(false); };
 
   return <>
     <header><a className="brand" href={import.meta.env.BASE_URL}><img className="logo" src={import.meta.env.BASE_URL + 'icon-landscape.svg'} width="45" height="45" alt="" /><span>Memory Map<small>思い出を、地図に。</small></span></a>
@@ -308,10 +316,18 @@ export default function App() {
           </svg>
         </button>
         {selecting && <div id="place-hint">地図をタップして場所を選んでください <button onClick={() => setSelecting(false)}>戻る</button></div>}
-        <div className="capture-bar"><button className="primary" disabled={!ready || busy} onClick={() => pending ? setSelecting(false) : file.current.click()}>{busy ? '処理中…' : pending ? '保存画面に戻る' : '＋ 写真を撮る'}</button><span>今日の景色を、思い出に。</span></div>
+        <div className="capture-bar"><button className="primary" disabled={!ready || busy} onClick={() => pending ? setSelecting(false) : addPhoto()}>{busy ? '処理中…' : pending ? '保存画面に戻る' : '＋ 写真を撮る'}</button><span>今日の景色を、思い出に。</span></div>
       </section>
     </main>
-    <input ref={file} type="file" accept="image/*" capture="environment" hidden onChange={capture} />
+    <input ref={cameraFile} type="file" accept="image/*" capture="environment" hidden onChange={capture} />
+    <input ref={albumFile} type="file" accept="image/*" hidden onChange={capture} />
+    {sourceOpen && <Modal title="写真を追加" className="photo-source-sheet" onClose={() => setSourceOpen(false)}>
+      <div className="photo-source-actions">
+        <button className="primary" onClick={() => pickSource(cameraFile)}>カメラで撮る</button>
+        <button onClick={() => pickSource(albumFile)}>アルバムから選ぶ</button>
+        <button className="quiet" onClick={() => setSourceOpen(false)}>やめる</button>
+      </div>
+    </Modal>}
     <p id="status" role="status" aria-live="polite">{status}</p>
     {settingsOpen && <Modal title="設定" busy={importing || exporting} onClose={() => setSettingsOpen(false)}>
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={backup}>
