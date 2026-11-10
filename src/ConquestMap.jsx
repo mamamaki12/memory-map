@@ -60,10 +60,10 @@ export default function ConquestMap({ photos }) {
         <button title="全国を表示" aria-label="全国を表示" onClick={()=>{setPrefecture('');setSelection(null);mapRef.current.setView([37,137],5);}}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6M3 3l6 6m12-6-6 6M3 21l6-6m12 6-6-6" /></svg>
         </button>
-        <span className="quest-legend"><i />攻略済 <i className="unvisited" />未攻略</span>
       </div>
     </div>
     <div className="conquest-map-wrap"><div ref={host} className="conquest-map" />
+      <span className="quest-legend"><i />攻略済 <i className="unvisited" />未攻略</span>
       {!dataset&&!error&&<p className="conquest-loading" role="status">全国の市を読み込んでいます…</p>}
       {error&&<div className="conquest-loading" role="alert">{error}<button className="has-icon icon-only" title="再読み込み" onClick={()=>setRetry(n=>n+1)}><IconLabel icon="refresh" label="再読み込み" /></button></div>}
       {selection&&<div className="conquest-city"><button className="conquest-close" aria-label="市の詳細を閉じる" onClick={()=>setSelection(null)}>×</button><small>{selection.prefecture}</small><h3>{selection.name}</h3>

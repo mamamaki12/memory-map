@@ -317,8 +317,8 @@ export default function App() {
     <FriendsDialog open={friendsOpen} onClose={() => setFriendsOpen(false)} photos={photos} onPhotos={setSharedPhotos} />
     <InstallNotice />
     {mapMode==='conquest' && <ConquestMap photos={photos} />}
-    <main className={mapMode==='conquest'?'photo-map-hidden':''}>
-      {memoriesOpen && <button className="memories-backdrop" aria-label="思い出の一覧を閉じる" onClick={() => setMemoriesOpen(false)} />}
+    <main className={mapMode==='conquest'?'photo-map-hidden':selecting?'is-picking':''}>
+      {memoriesOpen && !selecting && <button className="memories-backdrop" aria-label="思い出の一覧を閉じる" onClick={() => setMemoriesOpen(false)} />}
       <aside className={'memories-panel' + (memoriesOpen ? ' is-open' : '') + (drawer.dragOffset !== null ? ' is-dragging' : '')}
         style={{ '--drawer-drag': (drawer.dragOffset ?? 0) + 'px' }} onKeyDown={event => {
         if (event.key === 'Escape') { setMemoriesOpen(false); event.currentTarget.querySelector('.memories-toggle')?.focus(); }
@@ -352,8 +352,9 @@ export default function App() {
         </button>
         {selecting && <>
           <div className="pick-target" aria-hidden="true"><Icon name="pin" size={40} /></div>
-          <div id="place-hint" role="group" aria-label="保存場所を選ぶ">
-            <p>地図を動かして、印を保存する場所に合わせてください</p>
+          <p className="pick-hint" id="pick-hint">地図を動かして、印を保存する場所に合わせてください</p>
+          {/* The two buttons sit at the bottom, where the thumb reaches (where "写真を追加" was). */}
+          <div id="place-hint" className="pick-actions" role="group" aria-label="保存場所を選ぶ" aria-describedby="pick-hint">
             <button className="has-icon" onClick={() => setSelecting(false)}><IconLabel icon="close" label="やめる" short="やめる" /></button>
             <button className="primary has-icon" onClick={pickPlace}><IconLabel icon="check" label="ここに決める" short="決める" /></button>
           </div>

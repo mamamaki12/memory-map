@@ -1,4 +1,4 @@
-*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;color:#203d37;background:#f6f8f5}button,input{font:inherit}button{cursor:pointer;border:1px solid #dbe4de;border-radius:13px;background:white;color:#203d37;padding:11px 16px;min-height:44px}button:hover{filter:brightness(.96)}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #eaaa50;outline-offset:3px}[hidden]{display:none!important}header{height:86px;padding:0 34px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e3e9e3;background:#fff}.brand{display:flex;gap:12px;align-items:center;font-size:23px;font-weight:750;text-decoration:none;color:inherit;letter-spacing:-.7px}.brand small{display:block;font-size:11px;letter-spacing:2px;color:#5b6b60;margin-top:3px}.logo{display:block;width:45px;height:45px;flex-shrink:0;object-fit:contain;border-radius:15px}main{display:grid;grid-template-columns:330px 1fr;height:calc(100dvh - 86px)}aside{padding:32px 24px 18px;display:flex;flex-direction:column;min-height:0}.eyebrow{font-size:11px;letter-spacing:2px;color:#5b6b60;font-weight:700}h1{font-size:36px;line-height:1.5;font-weight:650;letter-spacing:1px;margin:16px 0}p{line-height:1.8}.intro p{font-size:13px;color:#5b6b60;margin:0 0 28px}.section-title{display:flex;justify-content:space-between;align-items:center}.section-title h2{font-size:15px}.section-title span{font-size:12px;background:#e6eee6;padding:5px 10px;border-radius:20px}.list{overflow:auto;flex:1;min-height:100px}.empty{border:1px dashed #cbd8ca;border-radius:15px;text-align:center;padding:30px 8px;font-size:13px;color:#5b6b60}.privacy{font-size:12px;color:#5b6b60;margin:18px 0 0}.map-wrap{position:relative;min-height:0}#map{height:100%;width:100%;background:#e8ede4}.map-tools{position:absolute;top:22px;right:22px;z-index:500;display:flex;gap:8px}.map-tools button{box-shadow:0 3px 14px #23472b16;font-size:13px}.capture-bar{position:absolute;z-index:500;bottom:32px;left:50%;transform:translateX(-50%);display:flex;align-items:center;flex-direction:column;gap:10px;white-space:nowrap}.primary{background:#167766;color:#fff;border:0;font-weight:650;box-shadow:0 6px 20px #135a4930}.capture-bar .primary{padding:17px 40px;border-radius:30px;font-size:16px}.capture-bar>span{font-size:11px;background:#ffffffdf;padding:5px 12px;border-radius:20px}.photo-pin{background:white;padding:4px;border-radius:12px;box-shadow:0 3px 12px #233c3650;position:relative}.photo-pin:after{content:"";position:absolute;bottom:-8px;left:23px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:9px solid white}.photo-pin img{width:54px;height:54px;object-fit:cover;border-radius:8px;display:block}.memory{width:100%;display:flex;text-align:left;align-items:center;gap:12px;margin:8px 0;padding:8px;border:0;background:#fff}.memory img{width:58px;height:58px;object-fit:cover;border-radius:10px}.memory span{min-width:0;font-size:13px;overflow-wrap:anywhere}.memory small{display:block;color:#5b6b60;font-size:12px;margin-top:5px}dialog{border:0;border-radius:22px;max-width:440px;width:calc(100% - 30px);padding:22px;box-shadow:0 20px 80px #0003;max-height:90dvh;overflow:auto}dialog::backdrop{background:#142e296b;backdrop-filter:blur(3px)}.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.dialog-head h2{font-size:19px;margin:0;overflow-wrap:anywhere}.dialog-head button{border:0;font-size:24px;padding:0;width:44px;height:44px;flex-shrink:0}dialog img{width:100%;max-height:42dvh;object-fit:contain;background:#f1f4ef;border-radius:12px}label{display:block;font-size:12px;margin-top:15px}input{width:100%;padding:12px;border:1px solid #d6e1d7;border-radius:10px;margin-top:7px}#location-label,#detail-date{font-size:12px;color:#5b6b60}#save{display:block;width:100%;margin-top:15px}.quiet{background:#f7f9f6;font-size:12px}.danger{color:#ac4545;margin-top:12px;font-size:12px}#status{position:fixed;z-index:2000;left:50%;top:92px;transform:translateX(-50%);max-width:90vw;background:#203d37;color:white;padding:12px 20px;border-radius:12px;font-size:13px;box-shadow:0 5px 20px #0002;margin:0}#status:empty{display:none}#place-hint{position:absolute;top:85px;left:50%;transform:translateX(-50%);z-index:600;background:#fff;padding:12px 18px;border-radius:12px;width:max-content;max-width:90%;font-size:13px}.leaflet-control-attribution{font-size:9px!important}@media(max-width:700px){header{height:72px;padding:0 16px}.brand{font-size:19px}.logo{width:36px;height:36px;border-radius:12px}main{height:calc(100dvh - 72px);display:flex;flex-direction:column-reverse}.map-wrap{flex:1;min-height:240px}aside{height:175px;padding:8px 16px;flex-shrink:0}.intro,.privacy{display:none}.section-title h2{margin:4px 0}.list{display:flex;gap:10px;overflow-x:auto;min-height:0}.memory{min-width:180px;width:180px;margin:6px 0}.empty{margin:5px 0;width:100%;padding:10px}.capture-bar{bottom:24px}.capture-bar>span{display:none}.capture-bar .primary{padding:13px 28px}.map-tools{top:14px;right:12px}.leaflet-control-zoom{margin-top:14px!important}#status{top:78px}aside{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;color:#203d37;background:#f6f8f5}button,input{font:inherit}button{cursor:pointer;border:1px solid #dbe4de;border-radius:13px;background:white;color:#203d37;padding:11px 16px;min-height:44px}button:hover{filter:brightness(.96)}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #eaaa50;outline-offset:3px}[hidden]{display:none!important}header{height:86px;padding:0 34px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e3e9e3;background:#fff}.brand{display:flex;gap:12px;align-items:center;font-size:23px;font-weight:750;text-decoration:none;color:inherit;letter-spacing:-.7px}.brand small{display:block;font-size:11px;letter-spacing:2px;color:#5b6b60;margin-top:3px}.logo{display:block;width:45px;height:45px;flex-shrink:0;object-fit:contain;border-radius:15px}main{display:grid;grid-template-columns:330px 1fr;height:calc(100dvh - 86px)}aside{padding:32px 24px 18px;display:flex;flex-direction:column;min-height:0}.eyebrow{font-size:11px;letter-spacing:2px;color:#5b6b60;font-weight:700}h1{font-size:36px;line-height:1.5;font-weight:650;letter-spacing:1px;margin:16px 0}p{line-height:1.8}.intro p{font-size:13px;color:#5b6b60;margin:0 0 28px}.section-title{display:flex;justify-content:space-between;align-items:center}.section-title h2{font-size:15px}.section-title span{font-size:12px;background:#e6eee6;padding:5px 10px;border-radius:20px}.list{overflow:auto;flex:1;min-height:100px}.empty{border:1px dashed #cbd8ca;border-radius:15px;text-align:center;padding:30px 8px;font-size:13px;color:#5b6b60}.privacy{font-size:12px;color:#5b6b60;margin:18px 0 0}.map-wrap{position:relative;min-height:0}#map{height:100%;width:100%;background:#e8ede4}.map-tools{position:absolute;top:22px;right:22px;z-index:500;display:flex;gap:8px}.map-tools button{box-shadow:0 3px 14px #23472b16;font-size:13px}.capture-bar{position:absolute;z-index:500;bottom:32px;left:50%;transform:translateX(-50%);display:flex;align-items:center;flex-direction:column;gap:10px;white-space:nowrap}.primary{background:#167766;color:#fff;border:0;font-weight:650;box-shadow:0 6px 20px #135a4930}.capture-bar .primary{padding:17px 40px;border-radius:30px;font-size:16px}.capture-bar>span{font-size:11px;background:#ffffffdf;padding:5px 12px;border-radius:20px}.photo-pin{background:white;padding:4px;border-radius:12px;box-shadow:0 3px 12px #233c3650;position:relative}.photo-pin:after{content:"";position:absolute;bottom:-8px;left:23px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:9px solid white}.photo-pin img{width:54px;height:54px;object-fit:cover;border-radius:8px;display:block}.memory{width:100%;display:flex;text-align:left;align-items:center;gap:12px;margin:8px 0;padding:8px;border:0;background:#fff}.memory img{width:58px;height:58px;object-fit:cover;border-radius:10px}.memory span{min-width:0;font-size:13px;overflow-wrap:anywhere}.memory small{display:block;color:#5b6b60;font-size:12px;margin-top:5px}dialog{border:0;border-radius:22px;max-width:440px;width:calc(100% - 30px);padding:22px;box-shadow:0 20px 80px #0003;max-height:90dvh;overflow:auto}dialog::backdrop{background:#142e296b;backdrop-filter:blur(3px)}.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.dialog-head h2{font-size:19px;margin:0;overflow-wrap:anywhere}.dialog-head button{border:0;font-size:24px;padding:0;width:44px;height:44px;flex-shrink:0}dialog img{width:100%;max-height:42dvh;object-fit:contain;background:#f1f4ef;border-radius:12px}label{display:block;font-size:12px;margin-top:15px}input{width:100%;padding:12px;border:1px solid #d6e1d7;border-radius:10px;margin-top:7px}#location-label,#detail-date{font-size:12px;color:#5b6b60}#save{display:block;width:100%;margin-top:15px}.quiet{background:#f7f9f6;font-size:12px}.danger{color:#ac4545;margin-top:12px;font-size:12px}#status{position:fixed;z-index:2000;left:50%;top:92px;transform:translateX(-50%);max-width:90vw;background:#203d37;color:white;padding:12px 20px;border-radius:12px;font-size:13px;box-shadow:0 5px 20px #0002;margin:0}#status:empty{display:none}.leaflet-control-attribution{font-size:9px!important}@media(max-width:700px){header{height:72px;padding:0 16px}.brand{font-size:19px}.logo{width:36px;height:36px;border-radius:12px}main{height:calc(100dvh - 72px);display:flex;flex-direction:column-reverse}.map-wrap{flex:1;min-height:240px}aside{height:175px;padding:8px 16px;flex-shrink:0}.intro,.privacy{display:none}.section-title h2{margin:4px 0}.list{display:flex;gap:10px;overflow-x:auto;min-height:0}.memory{min-width:180px;width:180px;margin:6px 0}.empty{margin:5px 0;width:100%;padding:10px}.capture-bar{bottom:24px}.capture-bar>span{display:none}.capture-bar .primary{padding:13px 28px}.map-tools{top:14px;right:12px}.leaflet-control-zoom{margin-top:14px!important}#status{top:78px}aside{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
 
 #root{height:100%}
 .current-location-dot{filter:drop-shadow(0 1px 3px #174ea660)}
@@ -237,8 +237,6 @@ dialog .danger{display:block;margin-top:24px}
   .icon-only{min-width:44px;min-height:44px;padding:0 10px}
   .friends-button.icon-only{width:44px;height:44px;padding:0;color:#203d37}
   .map-tools .icon-only{width:44px;height:44px;padding:0;background:#fff}
-  #place-hint{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px}
-  #place-hint .icon-only{width:44px;height:44px;padding:0}
   .capture-bar .primary.has-icon{gap:8px}
   .photo-source-actions .has-icon,#save.has-icon{display:flex;width:100%}
   dialog .quiet.has-icon{font-size:14px}
@@ -257,19 +255,30 @@ dialog .danger{display:block;margin-top:24px}
 #location-label{display:flex;align-items:center;gap:6px;margin:8px 0 12px;font-size:13px;color:#203d37;position:relative}
 #location-label .btn-icon{display:block;flex-shrink:0;color:#167766}
 
-/* Choosing the place on the big map: a bar with two clear buttons and a mark in the middle. */
-#place-hint{position:absolute;top:0;left:0;right:0;transform:none;width:auto;max-width:none;z-index:700;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;background:#fff;border-radius:0 0 16px 16px;box-shadow:0 4px 16px #203d3720}
-#place-hint p{flex:1 1 200px;margin:0;font-size:13px;line-height:1.4}
-#place-hint button{flex:0 0 auto;min-height:44px;padding:8px 18px;font-size:14px}
-.map-wrap.is-picking .leaflet-top{top:var(--pick-bar,60px)}
-.map-wrap.is-picking .map-tools{top:calc(var(--pick-bar,60px) + 14px)}
+/* Choosing the place on the big map: the hint on top, the two buttons at the bottom where the thumb reaches
+   (where "写真を追加" was), and a mark in the middle. The list is hidden until the place is decided. */
+.map-wrap{--pick-bar:44px;--pick-actions:72px;--pick-inset:env(safe-area-inset-bottom,0px)}
+.pick-hint{position:absolute;top:0;left:0;right:0;z-index:700;margin:0;padding:8px 14px;background:#fff;border-radius:0 0 16px 16px;box-shadow:0 4px 16px #203d3720;font-size:13px;line-height:1.4;text-align:center;text-wrap:balance}
+.pick-actions{position:absolute;left:0;right:0;bottom:0;z-index:700;display:flex;justify-content:center;gap:12px;padding:12px 16px calc(12px + var(--pick-inset));background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -4px 16px #203d3720}
+.pick-actions button{flex:1 1 0;min-width:max-content;max-width:180px;min-height:48px;padding:8px 14px;font-size:15px;white-space:nowrap}
+.pick-actions .primary{flex-grow:2;max-width:300px;font-weight:700;box-shadow:0 3px 10px #16776640}
+.map-wrap.is-picking .leaflet-top{top:var(--pick-bar)}
+.map-wrap.is-picking .map-tools{top:calc(var(--pick-bar) + 14px)}
+.map-wrap.is-picking .leaflet-bottom{bottom:calc(var(--pick-actions) + var(--pick-inset))}
+.map-wrap.is-picking .locate-fab{bottom:calc(var(--pick-actions) + var(--pick-inset) + 40px)}
+main.is-picking{grid-template-columns:1fr}
+main.is-picking .memories-panel,main.is-picking .memories-backdrop{display:none}
 .pick-target{position:absolute;left:50%;top:50%;z-index:650;transform:translate(-50%,calc(-100% + 3px));color:#167766;pointer-events:none;filter:drop-shadow(0 1px 1px #fff) drop-shadow(0 3px 6px #203d3770)}
 .pick-target .btn-icon{display:block;fill:#ffffffd9}
 @media(max-width:700px){
-  .map-wrap.is-picking{--pick-bar:92px}
-  #place-hint{padding:8px 12px}
-  #place-hint p{flex-basis:100%;font-size:12.5px}
-  #place-hint button{flex:1 1 0}
+  main.is-picking{padding-bottom:0}
+  .map-wrap{--pick-bar:56px}
+  .pick-hint{font-size:12.5px}
+}
+@media(max-height:500px){
+  .map-wrap{--pick-actions:62px}
+  .pick-actions{padding-top:9px;padding-bottom:calc(9px + var(--pick-inset))}
+  .pick-actions button{min-height:44px}
 }
 /* Leave room for the small map so the save button stays near. */
 dialog img.save-photo{max-height:30dvh}
@@ -331,3 +340,33 @@ dialog.confirm-dialog{max-width:380px}
 /* Low screens: no icon, so the card stays clear of the zoom, current-place and add buttons. */
 @media(max-height:600px){.map-empty{padding:12px 14px}.map-empty .btn-icon{display:none}.map-empty p{margin-top:4px}}
 @media(max-height:500px){.map-empty{top:14px;transform:translateX(-50%);width:min(290px,calc(100% - 140px))}}
+/* The colour key sits on the map itself, so the controls above take one line less. */
+.conquest-map-wrap .quest-legend{position:absolute;top:10px;right:10px;z-index:800;margin:0;padding:5px 9px;background:#fffffff0;border-radius:10px;box-shadow:0 2px 8px #203d3720;pointer-events:none}
+/* The city card stays above the zoom buttons and the map credits, so its words can always be read. */
+.conquest-city{z-index:1100;max-height:calc(100% - 20px);overflow:auto}
+@media(max-width:700px){.conquest-city{bottom:44px}}
+/* Low screens (phones held sideways, small phones): the conquest controls fit on one line and the city card is short,
+   so the map keeps as much height as it can. */
+@media(max-height:600px){
+  .quest-dashboard{position:relative;display:flex;align-items:center;gap:8px;padding:6px 12px 9px}
+  .quest-progress-row{flex:1 1 auto;min-width:0;flex-wrap:nowrap;gap:8px}
+  .quest-progress-row h2{white-space:nowrap}
+  .quest-progress-row strong{font-size:18px}
+  .quest-progress-row progress{position:absolute;left:0;right:0;bottom:0;width:100%;height:3px}
+  .quest-filter-row{margin-top:0;flex:0 1 auto;flex-wrap:nowrap;min-width:0}
+  .quest-filter-row select{min-width:96px;max-width:170px}
+  .conquest-map-wrap .quest-legend{top:8px;right:8px}
+  .conquest-city{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px;left:8px;bottom:8px;width:420px;max-width:calc(100% - 16px);max-height:calc(100% - 16px);padding:10px 48px 10px 14px;border-radius:14px}
+  .conquest-city h3{margin:0;font-size:18px}
+  .conquest-city small{font-size:12px}
+  .conquest-city strong{flex-basis:100%;margin-top:2px;font-size:13px}
+  .conquest-city p{flex-basis:100%;margin:2px 0 0;font-size:12px;line-height:1.5}
+  .install-lead{display:none}
+}
+@media(max-height:500px){.install-notice{padding-top:6px;padding-bottom:6px}}
+@media(max-height:600px) and (max-width:700px){.conquest-city{bottom:44px}}
+/* Narrow and low: the title is read out but not drawn, so the numbers, the prefecture and the button fit. */
+@media(max-height:600px) and (max-width:420px){
+  .quest-progress-row h2{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+  .quest-progress-row strong{margin-right:auto}
+}

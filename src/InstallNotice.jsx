@@ -37,7 +37,7 @@ export default function InstallNotice() {
   }
   return <section className="install-notice" aria-label="ホーム画面への追加">
     <div className="install-message"><strong>ホーム画面に追加してください</strong>
-      <p>思い出の地図を、アプリのようにすぐ開けます。</p>
+      <p className="install-lead">思い出の地図を、アプリのようにすぐ開けます。</p>
       {help && <p>{ios ? '共有メニュー →「ホーム画面に追加」→「追加」を選んでください。項目がない場合はSafariで開いてください。' : 'ブラウザのメニューから「ホーム画面に追加」または「アプリをインストール」を選んでください。項目がない場合はChromeなどの対応ブラウザで開いてください。'}</p>}
     </div>
     <button className="quiet has-icon" disabled={installing} onClick={install}><IconLabel icon="add" label={prompt ? '追加する' : '追加方法'} short="追加" /></button>
