@@ -216,17 +216,18 @@ export default function App() {
     if (!selected || operation.current) return;
     operation.current = true;
     setImporting(true);
-    setSettingsMessage('バックアップを確認しています…');
+    setSettingsMessage('ファイルを確かめています…');
     try {
       const incoming = await readBackup(selected);
-      if (!incoming.length) { setSettingsMessage('このバックアップには写真がありません。'); return; }
-      setSettingsMessage('写真を復元しています…');
+      if (!incoming.length) { setSettingsMessage('このファイルには写真が入っていません。'); return; }
+      setSettingsMessage('写真を戻しています…');
       const result = await restoreBackup(db.current, incoming);
       setPhotos(result.photos.sort((a, b) => b.createdAt - a.createdAt));
       setFitRequest(value => value + 1);
-      setSettingsMessage(result.added + '枚を復元しました。' + (result.skipped ? result.skipped + '枚は保存済みのためスキップしました。' : ''));
+      setSettingsMessage(!result.added ? 'このファイルの写真は、すべてもう入っていました（' + result.skipped + '枚）。'
+        : result.added + '枚の写真を戻しました。' + (result.skipped ? result.skipped + '枚はもう入っていたので、そのままにしました。' : ''));
     } catch (error) {
-      setSettingsMessage(error?.name === 'QuotaExceededError' ? '空き容量が不足しています。復元は行っていません。' : error?.message || '復元できませんでした。既存の写真は変更していません。');
+      setSettingsMessage(error?.name === 'QuotaExceededError' ? '端末の空きが足りないため、写真を戻せませんでした。今ある写真はそのままです。' : error?.message || '写真を戻せませんでした。今ある写真はそのままです。');
     } finally { operation.current = false; setImporting(false); }
   }
 
@@ -244,8 +245,8 @@ export default function App() {
       const done = { at: Date.now(), added: 0 };
       setBackupState(done);
       saveBackupState(done);
-      setSettingsMessage('写真と場所をJSON形式で書き出しました。ファイルは端末の「ダウンロード」などに保存されます。');
-    } catch { setSettingsMessage('書き出しに失敗しました。写真を個別にダウンロードしてください。'); }
+      setSettingsMessage('バックアップを保存しました。ファイルは端末の「ダウンロード」などに入っています。');
+    } catch { setSettingsMessage('バックアップを保存できませんでした。大切な写真は1枚ずつダウンロードしてください。'); }
     finally { setExporting(false); }
   }
 
@@ -353,18 +354,18 @@ export default function App() {
     <p id="status" role="status" aria-live="polite">{status}</p>
     {settingsOpen && <Modal title="設定" busy={importing || exporting} onClose={() => setSettingsOpen(false)}>
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={backup}>
-        <span className="has-icon"><Icon name="download" />{exporting ? '書き出し中…' : 'バックアップ'}</span>
-        <small>写真と撮影場所をファイルに保存</small>
+        <span className="has-icon"><Icon name="download" />{exporting ? '保存しています…' : 'バックアップを保存'}</span>
+        <small>写真と場所、ひとことを1つのファイルに保存します</small>
       </button>
-      {photos.length > 0 && <p className="settings-note">{backupState.at === null ? 'バックアップの記録はまだありません。'
-        : '前回のバックアップ：' + date(backupState.at) + (unbackedCount(backupState, photos.length) ? '（その後に保存した写真 ' + unbackedCount(backupState, photos.length) + '枚）' : '')}</p>}
+      {photos.length > 0 && <p className="settings-note">{backupState.at === null ? 'まだバックアップを保存していません。'
+        : '前回のバックアップ：' + date(backupState.at) + (unbackedCount(backupState, photos.length) ? '（そのあと増えた写真 ' + unbackedCount(backupState, photos.length) + '枚）' : '')}</p>}
       <input ref={importFile} type="file" accept=".json,application/json" hidden onChange={importBackup} />
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={() => importFile.current.click()}>
-        <span className="has-icon"><Icon name="upload" />{importing ? '復元中…' : <><span className="btn-label">バックアップをインポート</span><span className="btn-short" aria-hidden="true">インポート</span></>}</span>
-        <small>JSONから写真と場所を復元（100MBまで・既存写真は保持）</small>
+        <span className="has-icon"><Icon name="upload" />{importing ? '戻しています…' : 'バックアップから戻す'}</span>
+        <small>前に保存したファイルから写真を戻します（今ある写真は消えません）</small>
       </button>
       <p className="settings-result" role="status" aria-live="polite">{settingsMessage}</p>
-      <p className="settings-note">写真はこのブラウザに保存されています。大切な思い出は定期的にバックアップしてください。</p>
+      <p className="settings-note">写真はこのブラウザの中だけにあります。ブラウザのデータを消すと写真も消えるので、ときどき「バックアップを保存」をしておきましょう。</p>
     </Modal>}
     {pending && !selecting && <Modal title="思い出を保存" onClose={cancel} busy={busy}>
       <form onSubmit={save}>

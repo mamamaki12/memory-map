@@ -22,7 +22,7 @@ export function backupReminder(state, photoCount) {
   const count = unbackedCount(state, photoCount);
   if (!count || count % REMIND_EVERY) return '';
   return (state.at === null ? '写真が' + count + '枚になりました。' : '前回のバックアップから写真が' + count + '枚増えました。')
-    + '設定の「バックアップ」で保存しておくと安心です。';
+    + '設定の「バックアップを保存」で残しておくと安心です。';
 }
 export function backupFileName(time = Date.now()) {
   const day = new Date(time);

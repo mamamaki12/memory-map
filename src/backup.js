@@ -3,12 +3,12 @@ import { imageType } from './imageType.js';
 export const MAX_BACKUP_BYTES = 100 * 1024 * 1024;
 export function parseBackup(text) {
   let data;
-  try { data = JSON.parse(text); } catch { throw new Error('JSONを読み込めません。バックアップファイルを選んでください。'); }
-  if (data?.version !== 1 || !Array.isArray(data.photos)) throw new Error('対応していないバックアップ形式です。');
-  if (data.photos.length > 10000) throw new Error('一度に復元できる写真は10,000枚までです。');
+  try { data = JSON.parse(text); } catch { throw new Error('このファイルは読み込めません。「バックアップを保存」で作ったファイルを選んでください。'); }
+  if (data?.version !== 1 || !Array.isArray(data.photos)) throw new Error('このアプリのバックアップではないようです。「バックアップを保存」で作ったファイルを選んでください。');
+  if (data.photos.length > 10000) throw new Error('一度に戻せる写真は10,000枚までです。');
   const ids = new Set();
   return data.photos.map((p, index) => {
-    const fail = () => { throw new Error((index + 1) + '枚目の写真データが不正です。復元は行っていません。'); };
+    const fail = () => { throw new Error((index + 1) + '枚目の写真が壊れているため、戻すのをやめました。今ある写真はそのままです。'); };
     if (!p || typeof p.id !== 'string' || !p.id.trim() || p.id.length > 200 ||
         ids.has(p.id) || !Number.isFinite(p.lat) || Math.abs(p.lat) > 90 ||
         !Number.isFinite(p.lng) || Math.abs(p.lng) > 180 ||
@@ -30,7 +30,7 @@ export function parseBackup(text) {
   });
 }
 export async function readBackup(file) {
-  if (file.size > MAX_BACKUP_BYTES) throw new Error('100MB以下のバックアップを選んでください。');
+  if (file.size > MAX_BACKUP_BYTES) throw new Error('ファイルが大きすぎます。100MBまでのファイルを選んでください。');
   const photos = parseBackup(await file.text());
   // Validate all images before writing anything.
   for (const photo of photos) {
@@ -40,7 +40,7 @@ export async function readBackup(file) {
       image.src = url;
       await image.decode();
       if (!image.naturalWidth || !image.naturalHeight) throw new Error();
-    } catch { throw new Error('読み込めない画像が含まれています。復元は行っていません。'); }
+    } catch { throw new Error('読み込めない画像が入っているため、戻すのをやめました。今ある写真はそのままです。'); }
     finally { URL.revokeObjectURL(url); }
   }
   return photos;
@@ -52,7 +52,7 @@ export function restoreBackup(db, photos) {
     let added = 0, skipped = 0, all = [], failure;
     tx.oncomplete = () => resolve({ added, skipped, photos: all });
     tx.onerror = () => reject(failure || tx.error);
-    tx.onabort = () => reject(failure || tx.error || new Error('復元が中断されました。'));
+    tx.onabort = () => reject(failure || tx.error || new Error('途中で止まったため、戻すのをやめました。今ある写真はそのままです。'));
     function next(index) {
       try {
         if (index === photos.length) {
