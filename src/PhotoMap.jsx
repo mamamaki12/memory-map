@@ -2,14 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { addBaseMap } from './baseMap.js';
 import { animateLocation } from './animateLocation.js';
+import { groupPins, pinScale } from './pinGroups.js';
 
-export default function PhotoMap({ photos, onOpen, onCenter, selecting, view, currentLocation, fitRequest, onError }) {
+export default function PhotoMap({ photos, onOpen, onOpenGroup, onCenter, selecting, view, currentLocation, fitRequest, onError }) {
   const container = useRef(null);
   const mapRef = useRef(null);
   const locationLayers = useRef(null);
   const stopLocationAnimation = useRef(null);
-  const callbacks = useRef({ onOpen, onCenter, selecting, onError });
-  useEffect(() => { callbacks.current = { onOpen, onCenter, selecting, onError }; });
+  const callbacks = useRef({ onOpen, onOpenGroup, onCenter, selecting, onError });
+  useEffect(() => { callbacks.current = { onOpen, onOpenGroup, onCenter, selecting, onError }; });
   useEffect(() => {
     const map = L.map(container.current).setView([31.5966, 130.5571], 12);
     mapRef.current = map;
@@ -30,52 +31,91 @@ export default function PhotoMap({ photos, onOpen, onCenter, selecting, view, cu
   }, []);
   useEffect(() => {
     const map = mapRef.current;
-    const group = L.layerGroup().addTo(map);
-    const urls = [];
-    const pins = [];
-    // Shrink at regional/world zooms, with a readable minimum and a capped close-up size.
-    const updatePinSizes = () => {
-      const scale = Math.max(0.32, Math.min(1.15, 2 ** ((map.getZoom() - 16) / 6)));
-      pins.forEach(({ marker, pin }) => {
-        pin.style.width = '62px';
-        pin.style.height = '82px';
-        pin.style.transformOrigin = '0 0';
-        pin.style.transform = 'scale(' + scale + ')';
-        marker.setIcon(L.divIcon({
-          html: pin,
-          className: '',
-          iconSize: [62 * scale, 82 * scale],
-          iconAnchor: [31 * scale, 90 * scale],
-        }));
-      });
+    const layer = L.layerGroup().addTo(map);
+    // One picture address per photo, made once and reused each time the pins are regrouped.
+    const urls = new Map(photos.map(photo => [photo, URL.createObjectURL(photo.blob)]));
+    // Pins that would cover each other at this zoom become one pin with the number of photos.
+    const groupsAt = (items, zoom) => {
+      const scale = pinScale(zoom);
+      return groupPins(items.map(photo => {
+        const { x, y } = map.project([photo.lat, photo.lng], zoom);
+        return { x, y, item: photo };
+      }), { width: 62 * scale, height: 82 * scale });
     };
-    photos.forEach(photo => {
-      const url = URL.createObjectURL(photo.blob);
-      urls.push(url);
+    const makeIcon = (photo, count, scale) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'photo-pin-wrap' + (count > 1 ? ' is-group' : '');
+      // The pin's name comes from the marker's title (the caption, or the number of photos).
+      wrap.setAttribute('aria-hidden', 'true');
       const pin = document.createElement('div');
       pin.className = 'photo-pin';
+      pin.style.transformOrigin = '0 0';
+      pin.style.transform = 'scale(' + scale + ')';
       const image = document.createElement('img');
-      image.src = url;
-      image.alt = photo.caption || '思い出の写真';
+      image.src = urls.get(photo);
+      image.alt = '';
       const caption = document.createElement('span');
       caption.className = 'photo-pin-caption';
-      caption.textContent = photo.caption || '';
-      caption.title = photo.caption || '';
+      caption.textContent = count > 1 ? count + '枚' : photo.caption || '';
       pin.append(caption, image);
-      const marker = L.marker([photo.lat, photo.lng], {
-        icon: L.divIcon({ html: pin, className: '', iconSize: [62, 82], iconAnchor: [31, 90] }),
-        title: photo.caption || '写真を開く',
-      }).addTo(group).on('click', event => {
-        L.DomEvent.stopPropagation(event);
-        if (!callbacks.current.selecting) callbacks.current.onOpen(photo);
-      });
-      pins.push({ marker, pin });
-    });
-    updatePinSizes();
-    map.on('zoomend', updatePinSizes);
+      wrap.append(pin);
+      if (count > 1) {
+        // The number stays the same size at every zoom, so it can be read even on small pins.
+        const badge = document.createElement('span');
+        badge.className = 'photo-pin-count';
+        badge.textContent = count;
+        wrap.append(badge);
+      }
+      return L.divIcon({ html: wrap, className: '', iconSize: [62 * scale, 82 * scale], iconAnchor: [31 * scale, 90 * scale] });
+    };
+    // A pin with several photos: zoom in until they come apart; photos taken at one spot are listed instead.
+    const openGroup = items => {
+      const bounds = L.latLngBounds(items.map(photo => [photo.lat, photo.lng]));
+      const max = map.getMaxZoom();
+      // Room above each point for its photo, and below for the add button.
+      const height = map.getSize().y;
+      const fitting = { paddingTopLeft: [40, Math.min(100, height * .3)], paddingBottomRight: [40, Math.min(120, height * .3)] };
+      const fit = map.getBoundsZoom(bounds, false, L.point(fitting.paddingTopLeft).add(fitting.paddingBottomRight));
+      for (let zoom = Math.min(max, Math.max(map.getZoom() + 1, fit)); zoom <= max; zoom++) {
+        if (groupsAt(items, zoom).length < 2) continue;
+        if (zoom <= fit) map.fitBounds(bounds, { ...fitting, maxZoom: zoom });
+        else map.setView(bounds.getCenter(), zoom);
+        return;
+      }
+      callbacks.current.onOpenGroup?.(items);
+    };
+    const draw = () => {
+      // Regrouping replaces the pins; keep the keyboard on the pin that holds the same photo.
+      const focused = layer.getLayers().find(marker => marker.getElement() === document.activeElement);
+      layer.clearLayers();
+      const zoom = map.getZoom();
+      const scale = pinScale(zoom);
+      for (const { items } of groupsAt(photos, zoom)) {
+        const [face] = items;
+        const activate = () => {
+          if (callbacks.current.selecting) return;
+          if (items.length > 1) openGroup(items);
+          else callbacks.current.onOpen(face);
+        };
+        const marker = L.marker([face.lat, face.lng], {
+          icon: makeIcon(face, items.length, scale),
+          title: items.length > 1 ? 'この辺りの写真 ' + items.length + '枚' : face.caption || '写真を開く',
+        }).addTo(layer).on('click', event => { L.DomEvent.stopPropagation(event); activate(); })
+          // Leaflet only focuses pins; Enter and Space open them like a tap.
+          .on('keypress', event => {
+            if (event.originalEvent.key !== 'Enter' && event.originalEvent.key !== ' ') return;
+            event.originalEvent.preventDefault();
+            activate();
+          });
+        marker.photos = items;
+        if (focused && items.includes(focused.photos[0])) marker.getElement()?.focus({ preventScroll: true });
+      }
+    };
+    draw();
+    map.on('zoomend', draw);
     return () => {
-      map.off('zoomend', updatePinSizes);
-      group.remove();
+      map.off('zoomend', draw);
+      layer.remove();
       urls.forEach(url => URL.revokeObjectURL(url));
     };
   }, [photos]);

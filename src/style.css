@@ -383,3 +383,17 @@ dialog.confirm-dialog{max-width:380px}
   .quest-progress-row h2{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
   .quest-progress-row strong{margin-right:auto}
 }
+
+/* Several photos close together share one pin: a stack of cards with the number on top. */
+.photo-pin-wrap{position:relative;width:100%;height:100%}
+.photo-pin-wrap.is-group .photo-pin{box-shadow:5px -5px 0 -1px #fff,5px -5px 0 0 #b9cbc1,0 3px 12px #233c3650}
+.photo-pin-count{position:absolute;top:-12px;right:-14px;min-width:26px;height:26px;padding:0 6px;border-radius:13px;background:#167766;color:#fff;border:2px solid #fff;font-size:13px;font-weight:700;line-height:22px;text-align:center;box-shadow:0 2px 6px #233c3640;box-sizing:border-box}
+/* The list of photos taken at one spot. */
+.place-photo-list .memory{width:100%;min-width:0;margin:0 0 8px;background:#f3f6f2}
+dialog .place-photo-list .memory img{width:58px;height:58px;max-height:none;flex-shrink:0;object-fit:cover;border-radius:10px}
+
+/* Phones held sideways: the greeting gives its room to the list of memories, so the list can be seen. */
+@media(min-width:701px) and (max-height:600px){
+  aside{padding-top:12px}
+  .intro,.privacy{display:none}
+}

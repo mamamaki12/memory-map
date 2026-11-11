@@ -63,6 +63,7 @@ export default function App() {
   const mapPhotos = useMemo(() => [...photos, ...sharedPhotos].sort((a, b) => b.createdAt - a.createdAt), [photos, sharedPhotos]);
   const [pending, setPending] = useState(null);
   const [active, setActive] = useState(null);
+  const [placePhotos, setPlacePhotos] = useState(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [selecting, setSelecting] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -315,7 +316,7 @@ export default function App() {
         <p className="privacy">写真はこの端末のブラウザに保存されます。大切な写真はバックアップしてください。</p>
       </aside>
       <section className={'map-wrap' + (selecting ? ' is-picking' : '')} aria-label="写真の地図">
-        <PhotoMap photos={mapPhotos} onOpen={openPhoto} onCenter={reportCenter} selecting={selecting} view={view} currentLocation={currentLocation} fitRequest={fitRequest} onError={notify} />
+        <PhotoMap photos={mapPhotos} onOpen={openPhoto} onOpenGroup={setPlacePhotos} onCenter={reportCenter} selecting={selecting} view={view} currentLocation={currentLocation} fitRequest={fitRequest} onError={notify} />
         {ready && !mapPhotos.length && !selecting && <div className="map-empty">
           <Icon name="pin" size={28} />
           <h2>撮った場所に、写真を残す地図</h2>
@@ -380,6 +381,13 @@ export default function App() {
         <label>ひとこと<input value={pending.caption} disabled={busy} maxLength={100} placeholder="例：帰り道で見つけた夕焼け" onChange={event => setPending({ ...pending, caption: event.target.value })} /></label>
         <button id="save" className="primary has-icon" disabled={busy || !Number.isFinite(pending.lat)} type="submit">{busy ? '保存中…' : <IconLabel icon="check" label="この場所に保存" short="保存" />}</button>
       </form>
+    </Modal>}
+    {placePhotos && <Modal title={'この場所の写真 ' + placePhotos.length + '枚'} className="place-photos" onClose={() => setPlacePhotos(null)}>
+      <div className="place-photo-list">{placePhotos.map(photo =>
+        <button key={photo.id} className="memory" onClick={() => { setPlacePhotos(null); openPhoto(photo); }}>
+          <Photo blob={photo.blob} alt="" loading="lazy" />
+          <span>{photo.caption || '名前のない思い出'}<small>{photo.shared ? '友達の写真 · ' : ''}{date(photo.createdAt)}</small></span>
+        </button>)}</div>
     </Modal>}
     {active && <Modal title={active.caption || '名前のない思い出'} onClose={() => setActive(null)} busy={busy}>
       <Photo blob={active.blob} alt={active.caption || '思い出の写真'} /><p id="detail-date">{date(active.createdAt)}</p>
