@@ -1,4 +1,4 @@
-*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;color:#203d37;background:#f6f8f5}button,input{font:inherit}button{cursor:pointer;border:1px solid #dbe4de;border-radius:13px;background:white;color:#203d37;padding:11px 16px;min-height:44px}button:hover{filter:brightness(.96)}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #eaaa50;outline-offset:3px}[hidden]{display:none!important}header{height:86px;padding:0 34px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e3e9e3;background:#fff}.brand{display:flex;gap:12px;align-items:center;font-size:23px;font-weight:750;text-decoration:none;color:inherit;letter-spacing:-.7px}.brand small{display:block;font-size:11px;letter-spacing:2px;color:#5b6b60;margin-top:3px}.logo{display:block;width:45px;height:45px;flex-shrink:0;object-fit:contain;border-radius:15px}main{display:grid;grid-template-columns:330px 1fr;height:calc(100dvh - 86px)}aside{padding:32px 24px 18px;display:flex;flex-direction:column;min-height:0}.eyebrow{font-size:11px;letter-spacing:2px;color:#5b6b60;font-weight:700}h1{font-size:36px;line-height:1.5;font-weight:650;letter-spacing:1px;margin:16px 0}p{line-height:1.8}.intro p{font-size:13px;color:#5b6b60;margin:0 0 28px}.section-title{display:flex;justify-content:space-between;align-items:center}.section-title h2{font-size:15px}.section-title span{font-size:12px;background:#e6eee6;padding:5px 10px;border-radius:20px}.list{overflow:auto;flex:1;min-height:100px}.empty{border:1px dashed #cbd8ca;border-radius:15px;text-align:center;padding:30px 8px;font-size:13px;color:#5b6b60}.privacy{font-size:12px;color:#5b6b60;margin:18px 0 0}.map-wrap{position:relative;min-height:0}#map{height:100%;width:100%;background:#e8ede4}.map-tools{position:absolute;top:22px;right:22px;z-index:500;display:flex;gap:8px}.map-tools button{box-shadow:0 3px 14px #23472b16;font-size:13px}.capture-bar{position:absolute;z-index:500;bottom:32px;left:50%;transform:translateX(-50%);display:flex;align-items:center;flex-direction:column;gap:10px;white-space:nowrap}.primary{background:#167766;color:#fff;border:0;font-weight:650;box-shadow:0 6px 20px #135a4930}.capture-bar .primary{padding:17px 40px;border-radius:30px;font-size:16px}.capture-bar>span{font-size:11px;background:#ffffffdf;padding:5px 12px;border-radius:20px}.photo-pin{background:white;padding:4px;border-radius:12px;box-shadow:0 3px 12px #233c3650;position:relative}.photo-pin:after{content:"";position:absolute;bottom:-8px;left:23px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:9px solid white}.photo-pin img{width:54px;height:54px;object-fit:cover;border-radius:8px;display:block}.memory{width:100%;display:flex;text-align:left;align-items:center;gap:12px;margin:8px 0;padding:8px;border:0;background:#fff}.memory img{width:58px;height:58px;object-fit:cover;border-radius:10px}.memory span{min-width:0;font-size:13px;overflow-wrap:anywhere}.memory small{display:block;color:#5b6b60;font-size:12px;margin-top:5px}dialog{border:0;border-radius:22px;max-width:440px;width:calc(100% - 30px);padding:22px;box-shadow:0 20px 80px #0003;max-height:90dvh;overflow:auto}dialog::backdrop{background:#142e296b;backdrop-filter:blur(3px)}.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.dialog-head h2{font-size:19px;margin:0;overflow-wrap:anywhere}.dialog-head button{border:0;font-size:24px;padding:0;width:44px;height:44px;flex-shrink:0}dialog img{width:100%;max-height:42dvh;object-fit:contain;background:#f1f4ef;border-radius:12px}label{display:block;font-size:12px;margin-top:15px}input{width:100%;padding:12px;border:1px solid #d6e1d7;border-radius:10px;margin-top:7px}#location-label,#detail-date{font-size:12px;color:#5b6b60}#save{display:block;width:100%;margin-top:15px}.quiet{background:#f7f9f6;font-size:12px}.danger{color:#ac4545;margin-top:12px;font-size:12px}#status{position:fixed;z-index:2000;left:50%;top:92px;transform:translateX(-50%);max-width:90vw;background:#203d37;color:white;padding:12px 20px;border-radius:12px;font-size:13px;box-shadow:0 5px 20px #0002;margin:0}#status:empty{display:none}.leaflet-control-attribution{font-size:9px!important}@media(max-width:700px){header{height:72px;padding:0 16px}.brand{font-size:19px}.logo{width:36px;height:36px;border-radius:12px}main{height:calc(100dvh - 72px);display:flex;flex-direction:column-reverse}.map-wrap{flex:1;min-height:240px}aside{height:175px;padding:8px 16px;flex-shrink:0}.intro,.privacy{display:none}.section-title h2{margin:4px 0}.list{display:flex;gap:10px;overflow-x:auto;min-height:0}.memory{min-width:180px;width:180px;margin:6px 0}.empty{margin:5px 0;width:100%;padding:10px}.capture-bar{bottom:24px}.capture-bar>span{display:none}.capture-bar .primary{padding:13px 28px}.map-tools{top:14px;right:12px}.leaflet-control-zoom{margin-top:14px!important}#status{top:78px}aside{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;color:#203d37;background:#f6f8f5}button,input{font:inherit}button{cursor:pointer;border:1px solid #dbe4de;border-radius:13px;background:white;color:#203d37;padding:11px 16px;min-height:44px}button:hover{filter:brightness(.96)}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #eaaa50;outline-offset:3px}[hidden]{display:none!important}header{height:86px;padding:0 34px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e3e9e3;background:#fff}.brand{display:flex;gap:12px;align-items:center;font-size:23px;font-weight:750;text-decoration:none;color:inherit;letter-spacing:-.7px}.brand small{display:block;font-size:11px;letter-spacing:2px;color:var(--c-muted);margin-top:3px}.logo{display:block;width:45px;height:45px;flex-shrink:0;object-fit:contain;border-radius:15px}main{display:grid;grid-template-columns:330px 1fr;height:calc(100dvh - 86px)}aside{padding:32px 24px 18px;display:flex;flex-direction:column;min-height:0}.eyebrow{font-size:11px;letter-spacing:2px;color:var(--c-muted);font-weight:700}h1{font-size:36px;line-height:1.5;font-weight:650;letter-spacing:1px;margin:16px 0}p{line-height:1.8}.intro p{font-size:13px;color:var(--c-muted);margin:0 0 28px}.section-title{display:flex;justify-content:space-between;align-items:center}.section-title h2{font-size:15px}.section-title span{font-size:12px;background:#e6eee6;padding:5px 10px;border-radius:20px}.list{overflow:auto;flex:1;min-height:100px}.empty{border:1px dashed #cbd8ca;border-radius:15px;text-align:center;padding:30px 8px;font-size:13px;color:var(--c-muted)}.privacy{font-size:12px;color:var(--c-muted);margin:18px 0 0}.map-wrap{position:relative;min-height:0}#map{height:100%;width:100%;background:#e8ede4}.map-tools{position:absolute;top:22px;right:22px;z-index:500;display:flex;gap:8px}.map-tools button{box-shadow:0 3px 14px #23472b16;font-size:13px}.capture-bar{position:absolute;z-index:500;bottom:32px;left:50%;transform:translateX(-50%);display:flex;align-items:center;flex-direction:column;gap:10px;white-space:nowrap}.primary{background:#167766;color:#fff;border:0;font-weight:650;box-shadow:0 6px 20px #135a4930}.capture-bar .primary{padding:17px 40px;border-radius:30px;font-size:16px}.capture-bar>span{font-size:11px;background:#ffffffdf;padding:5px 12px;border-radius:20px}.photo-pin{background:white;padding:4px;border-radius:12px;box-shadow:0 3px 12px #233c3650;position:relative}.photo-pin:after{content:"";position:absolute;bottom:-8px;left:23px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:9px solid white}.photo-pin img{width:54px;height:54px;object-fit:cover;border-radius:8px;display:block}.memory{width:100%;display:flex;text-align:left;align-items:center;gap:12px;margin:8px 0;padding:8px;border:0;background:#fff}.memory img{width:58px;height:58px;object-fit:cover;border-radius:10px}.memory span{min-width:0;font-size:13px;overflow-wrap:anywhere}.memory small{display:block;color:var(--c-muted);font-size:12px;margin-top:5px}dialog{border:0;border-radius:22px;max-width:440px;width:calc(100% - 30px);padding:22px;box-shadow:0 20px 80px #0003;max-height:90dvh;overflow:auto}dialog::backdrop{background:#142e296b;backdrop-filter:blur(3px)}.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.dialog-head h2{font-size:19px;margin:0;overflow-wrap:anywhere}.dialog-head button{border:0;font-size:24px;padding:0;width:44px;height:44px;flex-shrink:0}dialog img{width:100%;max-height:42dvh;object-fit:contain;background:#f1f4ef;border-radius:12px}label{display:block;font-size:12px;margin-top:15px}input{width:100%;padding:12px;border:1px solid #d6e1d7;border-radius:10px;margin-top:7px}#location-label,#detail-date{font-size:12px;color:var(--c-muted)}#save{display:block;width:100%;margin-top:15px}.quiet{background:#f7f9f6;font-size:12px}.danger{color:var(--c-danger);margin-top:12px;font-size:12px}#status{position:fixed;z-index:2000;left:50%;top:92px;transform:translateX(-50%);max-width:90vw;background:#203d37;color:white;padding:12px 20px;border-radius:12px;font-size:13px;box-shadow:0 5px 20px #0002;margin:0}#status:empty{display:none}.leaflet-control-attribution{font-size:9px!important}@media(max-width:700px){header{height:72px;padding:0 16px}.brand{font-size:19px}.logo{width:36px;height:36px;border-radius:12px}main{height:calc(100dvh - 72px);display:flex;flex-direction:column-reverse}.map-wrap{flex:1;min-height:240px}aside{height:175px;padding:8px 16px;flex-shrink:0}.intro,.privacy{display:none}.section-title h2{margin:4px 0}.list{display:flex;gap:10px;overflow-x:auto;min-height:0}.memory{min-width:180px;width:180px;margin:6px 0}.empty{margin:5px 0;width:100%;padding:10px}.capture-bar{bottom:24px}.capture-bar>span{display:none}.capture-bar .primary{padding:13px 28px}.map-tools{top:14px;right:12px}.leaflet-control-zoom{margin-top:14px!important}#status{top:78px}aside{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
 
 #root{height:100%}
 .current-location-dot{filter:drop-shadow(0 1px 3px #174ea660)}
@@ -48,7 +48,7 @@
 .settings-button{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;background:transparent;box-shadow:none;flex-shrink:0}
 .settings-item{display:flex;flex-direction:column;gap:6px;width:100%;text-align:left;padding:16px;background:#f7f9f6}
 .settings-item span{font-weight:650}
-.settings-item small,.settings-note{font-size:13px;color:#5b6b60;line-height:1.7}
+.settings-item small,.settings-note{font-size:13px;color:var(--c-muted);line-height:1.7}
 @media(max-width:700px){
   .memories-toggle{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
   aside.memories-panel{transform:translateY(calc(100% - var(--memories-peek) - var(--bottom-inset) + var(--drawer-drag,0px)))}
@@ -116,18 +116,18 @@ main{height:auto;flex:1;min-height:0}
 .friend-incoming{background:#fff6e6;border-top:0;border-radius:14px;padding:14px 14px 4px;margin-bottom:8px}
 .friend-incoming .friend-row:last-child{border-bottom:0}
 /* Logging out sits at the end, apart from the everyday buttons. */
-.friend-account{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;font-size:12px;color:#5b6b60}
+.friend-account{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;font-size:12px;color:var(--c-muted)}
 /* Share rows: a small picture so unnamed photos can be told apart (grey until it is ready). */
 .friend-photo-row{gap:12px;padding:8px 0}
-.friend-row>.friend-thumb{flex:0 0 48px;width:48px;height:48px;border-radius:10px;background:#e6ebe5;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#8a9a8f}
+.friend-row>.friend-thumb{flex:0 0 48px;width:48px;height:48px;border-radius:10px;background:#e6ebe5;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--c-muted)}
 .friend-thumb img{display:block;width:100%;height:100%;max-height:none;object-fit:cover;border-radius:0;background:none}
-.friend-row>span small{display:block;color:#5b6b60;font-size:12px;margin-top:2px}
-.friend-message{position:sticky;bottom:0;z-index:2;margin:14px 0 0;padding:12px 14px;border-radius:12px;background:#e3f1ea;color:#14594c;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 6px 18px #23472b26}
-.friend-message.is-error{background:#fbeceb;color:#9b3434}
+.friend-row>span small{display:block;color:var(--c-muted);font-size:12px;margin-top:2px}
+.friend-message{position:sticky;bottom:0;z-index:2;margin:14px 0 0;padding:12px 14px;border-radius:12px;background:#e3f1ea;color:var(--c-success);font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 6px 18px #23472b26}
+.friend-message.is-error{background:#fbeceb;color:var(--c-danger)}
 .friend-message:empty{display:none}
 .friend-state{padding:16px 0;border-top:1px solid #dbe4de}
 .friend-state p{margin:0 0 10px}
-.friend-problem{color:#9b3434;font-weight:600}
+.friend-problem{color:var(--c-danger);font-weight:600}
 @media(max-width:700px){.header-actions{gap:2px}.friends-button{padding:8px}.brand{font-size:17px}.brand small{letter-spacing:1px}}
 
 main.photo-map-hidden{display:none}
@@ -138,7 +138,7 @@ main.photo-map-hidden .memories-panel{display:none}
 .conquest-summary>strong{font-size:30px;margin-left:auto}
 .conquest-summary strong small{font-size:13px;font-weight:400}
 .conquest-summary progress{width:100%;height:8px;accent-color:#167766}
-.conquest-summary>span{font-size:12px;color:#5b6b60}
+.conquest-summary>span{font-size:12px;color:var(--c-muted)}
 .conquest-tools{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 20px;background:white;flex-shrink:0}
 .conquest-tools label{display:flex;align-items:center;gap:8px;margin:0}
 .conquest-tools select{padding:8px;border:1px solid #dbe4de;border-radius:10px;font:inherit;color:inherit;background:white}
@@ -176,7 +176,7 @@ main.photo-map-hidden .memories-panel{display:none}
 .quest-progress-row h2{font-size:15px;margin:0 auto 0 0}
 .quest-progress-row strong{font-size:21px;white-space:nowrap}
 .quest-progress-row small{font-size:12px;font-weight:400}
-.quest-progress-row>span{font-size:12px;color:#5b6b60}
+.quest-progress-row>span{font-size:12px;color:var(--c-muted)}
 .quest-progress-row progress{width:100%;height:4px;accent-color:#167766}
 .quest-filter-row{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
 .quest-filter-row select{flex:1;min-width:90px;max-width:220px;min-height:44px;padding:6px 8px;border:1px solid #dbe4de;border-radius:10px;font:inherit;font-size:14px;color:inherit;background:white;margin:0}
@@ -188,7 +188,7 @@ main.photo-map-hidden .memories-panel{display:none}
 .quest-info summary{min-height:44px;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;list-style:none}
 .quest-info summary::-webkit-details-marker{display:none}
 .quest-info summary>span:first-child{font-weight:650}
-.quest-info-label{margin-left:auto;color:#5b6b60}
+.quest-info-label{margin-left:auto;color:var(--c-muted)}
 .quest-info summary::after{content:'⌃';font-size:18px}
 .quest-info[open] summary::after{content:'⌄'}
 .quest-info-body{padding-bottom:8px}
@@ -203,7 +203,7 @@ main.photo-map-hidden .memories-panel{display:none}
 /* Long messages use the screen width instead of wrapping into a narrow column. */
 #status{width:max-content;max-width:min(90vw,600px)}
 /* A gentle note when the current location may be far from the real place. */
-.location-warning{font-size:12px;line-height:1.6;color:#8a5a14;margin:-6px 0 12px}
+.location-warning{font-size:12px;line-height:1.6;color:var(--c-warn);margin:-6px 0 12px}
 
 /* Choosing between the camera and the album: a bottom sheet on phones. */
 .photo-source-actions{display:flex;flex-direction:column;gap:10px}
@@ -337,7 +337,7 @@ dialog.confirm-dialog{max-width:380px}
 .confirm-text{font-size:14px;line-height:1.7;margin:0 0 20px}
 .confirm-actions{display:flex;gap:12px}
 .confirm-actions button{flex:1;min-height:48px;font-size:15px;font-weight:650}
-.danger-fill{background:#b23b3b;color:#fff;border:0}
+.danger-fill{background:var(--c-danger);color:#fff;border:0}
 /* Small phones: the conquest map is low, so its zoom pair also sits side by side, clear of the map credits. */
 @media(max-height:600px){
   .conquest-map .leaflet-bar{display:flex}
@@ -349,7 +349,7 @@ dialog.confirm-dialog{max-width:380px}
 .map-empty{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);z-index:500;width:min(320px,calc(100% - 32px));padding:16px 18px;background:#fffffff2;border-radius:16px;box-shadow:0 4px 20px #203d3722;text-align:center;pointer-events:none}
 .map-empty .btn-icon{display:block;margin:0 auto 6px;color:#167766}
 .map-empty h2{margin:0;font-size:16px;line-height:1.5}
-.map-empty p{margin:6px 0 0;font-size:13px;line-height:1.6;color:#46564f}
+.map-empty p{margin:6px 0 0;font-size:13px;line-height:1.6;color:var(--c-muted)}
 /* Low screens: no icon, so the card stays clear of the zoom, current-place and add buttons. */
 @media(max-height:600px){.map-empty{padding:12px 14px}.map-empty .btn-icon{display:none}.map-empty p{margin-top:4px}}
 @media(max-height:500px){.map-empty{top:12px;transform:translateX(-50%);width:min(290px,calc(100% - 140px))}}
@@ -408,7 +408,7 @@ dialog .place-photo-list .memory img{width:58px;height:58px;max-height:none;flex
 /* Conquest map with no photos yet: how it starts, low on the map so Japan stays in view. Taps pass through to the map. */
 .conquest-empty{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);z-index:800;width:min(340px,calc(100% - 32px));padding:12px 16px;background:#fffffff2;border-radius:16px;box-shadow:0 4px 20px #203d3722;text-align:center;pointer-events:none}
 .conquest-empty h3{margin:0;font-size:15px;line-height:1.5}
-.conquest-empty p{margin:4px 0 0;font-size:13px;line-height:1.6;color:#46564f}
+.conquest-empty p{margin:4px 0 0;font-size:13px;line-height:1.6;color:var(--c-muted)}
 @media(max-height:600px){.conquest-empty{bottom:34px;padding:8px 12px}.conquest-empty p{font-size:12px}}
 /* Narrow phones: the map credits take two lines, so the card sits above them. */
 @media(max-width:420px){.conquest-empty{bottom:64px}}
@@ -426,7 +426,7 @@ dialog .place-photo-list .memory img{width:58px;height:58px;max-height:none;flex
 
 /* Settings: the last backup is a third line inside the save button. Green when up to date, amber when photos were added since. */
 .settings-item .settings-last{margin-top:2px;padding-top:8px;border-top:1px solid #e3e9e3;font-size:12px;line-height:1.5;color:#167766}
-.settings-item .settings-last.is-due{color:#8a5a14}
+.settings-item .settings-last.is-due{color:var(--c-warn)}
 /* Phones held sideways: a wider, tighter dialog so each line fits on one row and nothing has to scroll. */
 @media(max-height:500px){
   dialog.settings-dialog{max-width:600px;padding:16px 20px}
@@ -588,3 +588,26 @@ dialog .quiet.has-icon,dialog .danger.has-icon{min-height:44px;padding-top:8px;p
 }
 /* Very narrow phones: the map credits take two lines, so the city card sits higher to stay clear of them. */
 @media(max-width:380px){.conquest-city{bottom:56px}}
+
+/* Colours by role. Every text colour is at least 4.5 times brighter or darker than what is behind it.
+   Text #203d37, explanations #5b6b60, success and the app's green #167766, caution #8a5a14, danger #a83c3c. */
+:root{--c-text:#203d37;--c-muted:#5b6b60;--c-success:#167766;--c-warn:#8a5a14;--c-danger:#a83c3c}
+dialog{color:var(--c-text)}
+.leaflet-bar a,.leaflet-bar a:hover{color:var(--c-text)}
+
+/* Phones: the "add to home screen" notice is the same thin row as on low screens: one line of words (two on the
+   narrowest phones), a green "追加" without a box, and the close button. */
+@media(max-width:700px){
+  .install-notice{padding:2px 12px;gap:8px}
+  .install-lead{display:none}
+  .install-message{padding:4px 0}
+  .install-message strong{display:block;font-size:13px;line-height:1.4}
+  .install-message p{margin-top:2px}
+  .install-notice .quiet.has-icon{min-height:44px;padding:0 12px;font-size:13px;font-weight:650;color:var(--c-success);background:transparent;border:0;white-space:nowrap;flex-shrink:0}
+  .install-dismiss{height:44px;min-height:44px}
+}
+
+/* Friends: every button at the end of a row is 44px high and at least 80px wide, and they all end on one line on the right
+   (the light box of waiting requests reaches into the side space, so its rows line up with the rest). */
+.friend-row button{min-width:80px;height:44px;min-height:44px;justify-content:center}
+.friend-incoming{margin-left:-14px;margin-right:-14px}
