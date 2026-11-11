@@ -397,3 +397,18 @@ dialog .place-photo-list .memory img{width:58px;height:58px;max-height:none;flex
   aside{padding-top:12px}
   .intro,.privacy{display:none}
 }
+
+/* Phones held sideways (low screens): the add button is smaller and the line under it is hidden, so the map shows more. */
+@media(max-height:500px){
+  .capture-bar{bottom:34px}
+  .capture-bar>span{display:none}
+  .capture-bar .primary{min-height:44px;padding:0 20px;border-radius:22px;font-size:14px;box-shadow:0 3px 12px #135a4930}
+}
+
+/* Conquest map with no photos yet: how it starts, low on the map so Japan stays in view. Taps pass through to the map. */
+.conquest-empty{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);z-index:800;width:min(340px,calc(100% - 32px));padding:12px 16px;background:#fffffff2;border-radius:16px;box-shadow:0 4px 20px #203d3722;text-align:center;pointer-events:none}
+.conquest-empty h3{margin:0;font-size:15px;line-height:1.5}
+.conquest-empty p{margin:4px 0 0;font-size:13px;line-height:1.6;color:#46564f}
+@media(max-height:600px){.conquest-empty{bottom:34px;padding:8px 12px}.conquest-empty p{font-size:12px}}
+/* Narrow phones: the map credits take two lines, so the card sits above them. */
+@media(max-width:420px){.conquest-empty{bottom:64px}}

@@ -192,7 +192,11 @@ export default function PhotoMap({ photos, onOpen, onOpenGroup, onCenter, select
       // Room above for the photo on each pin, and below for the add button, so no pin hides under it.
       const bar = container.current.parentElement?.querySelector('.capture-bar');
       const below = bar ? Math.max(0, container.current.getBoundingClientRect().bottom - bar.getBoundingClientRect().top) + 12 : 24;
-      mapRef.current.fitBounds(L.latLngBounds(photos.map(p => [p.lat, p.lng])).pad(.2), { maxZoom: 16, paddingTopLeft: [24, 80], paddingBottomRight: [24, below] });
+      // Low screens (phones held sideways) keep a thinner edge, so the photos can spread over the short map.
+      // The sides stay wide enough that no pin ends up under the zoom pair (left) or "すべて表示" (right).
+      const low = window.matchMedia?.('(max-height: 500px)').matches;
+      mapRef.current.fitBounds(L.latLngBounds(photos.map(p => [p.lat, p.lng])).pad(low ? .05 : .2),
+        { maxZoom: 16, paddingTopLeft: [low ? 40 : 24, 80], paddingBottomRight: [low ? 72 : 24, below] });
     }
   }, [fitRequest, photos]);
   return <div id="map" ref={container} />;
