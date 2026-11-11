@@ -12,7 +12,7 @@
   aside.memories-panel{
     position:fixed;inset:auto 0 0;z-index:1100;
     height:min(65dvh,520px);max-height:calc(100dvh - 80px);
-    padding:0 16px var(--bottom-inset);background:#f6f8f5;
+    padding:0 12px var(--bottom-inset);background:#f6f8f5;
     border-radius:22px 22px 0 0;box-shadow:0 -4px 24px #203d3720;
     transform:translateY(calc(100% - var(--memories-peek) - var(--bottom-inset)));
     transition:transform .25s ease;overflow:hidden;
@@ -22,7 +22,7 @@
   .memories-toggle{
     position:relative;display:flex;align-items:center;gap:10px;
     flex:0 0 var(--memories-peek);height:var(--memories-peek);min-height:0;
-    width:100%;padding:14px 4px 0;border:0;background:transparent;
+    width:100%;padding:14px 0 0;border:0;background:transparent;
     border-radius:0;text-align:left;line-height:1.2;overflow:hidden;
   }
   .sheet-handle{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:36px;height:4px;background:#bccbc1;border-radius:4px}
@@ -276,7 +276,7 @@ dialog .danger{display:block;margin-top:24px}
 .pick-actions button{flex:1 1 0;min-width:max-content;max-width:180px;min-height:48px;padding:8px 14px;font-size:15px;white-space:nowrap}
 .pick-actions .primary{flex-grow:2;max-width:300px;font-weight:700;box-shadow:0 3px 10px #16776640}
 .map-wrap.is-picking .leaflet-top{top:var(--pick-bar)}
-.map-wrap.is-picking .map-tools{top:calc(var(--pick-bar) + 14px)}
+.map-wrap.is-picking .map-tools{top:calc(var(--pick-bar) + 12px)}
 .map-wrap.is-picking .leaflet-bottom{bottom:calc(var(--pick-actions) + var(--pick-inset))}
 .map-wrap.is-picking .locate-fab{bottom:calc(var(--pick-actions) + var(--pick-inset) + 40px)}
 main.is-picking{grid-template-columns:1fr}
@@ -352,7 +352,7 @@ dialog.confirm-dialog{max-width:380px}
 .map-empty p{margin:6px 0 0;font-size:13px;line-height:1.6;color:#46564f}
 /* Low screens: no icon, so the card stays clear of the zoom, current-place and add buttons. */
 @media(max-height:600px){.map-empty{padding:12px 14px}.map-empty .btn-icon{display:none}.map-empty p{margin-top:4px}}
-@media(max-height:500px){.map-empty{top:14px;transform:translateX(-50%);width:min(290px,calc(100% - 140px))}}
+@media(max-height:500px){.map-empty{top:12px;transform:translateX(-50%);width:min(290px,calc(100% - 140px))}}
 /* The colour key sits on the map itself, so the controls above take one line less. */
 .conquest-map-wrap .quest-legend{position:absolute;top:10px;right:10px;z-index:800;margin:0;padding:5px 9px;background:#fffffff0;border-radius:10px;box-shadow:0 2px 8px #203d3720;pointer-events:none}
 /* The city card stays above the zoom buttons and the map credits, so its words can always be read. */
@@ -450,3 +450,39 @@ dialog .place-photo-list .memory img{width:58px;height:58px;max-height:none;flex
 /* A phrase that should not be split across two lines (Japanese has no spaces to break at). */
 .phrase{display:inline-block}
 .settings-item .phrase{font-weight:inherit}
+
+/* Lining things up: the header, the notice and the list start at the same left edge (12px on phones and low screens,
+   24px on computers), and every button on the photo map sits 12px from the map's edge. */
+@media(min-width:701px){header{padding:0 24px}}
+@media(max-width:700px),(max-height:500px){header{padding:0 12px}}
+@media(min-width:701px) and (max-height:500px){aside{padding-left:12px;padding-right:12px}}
+.map-tools{top:12px;right:12px}
+#map .leaflet-top .leaflet-control{margin-top:12px}
+#map .leaflet-left .leaflet-control{margin-left:12px}
+#map .leaflet-control-zoom{margin-top:12px!important}
+@media(min-width:701px){.locate-fab{right:12px}}
+
+/* Low screens: the save screen and a photo's screen put the pictures on the left and the words and buttons on the right,
+   so the save button and the delete button can be seen without scrolling. */
+@media(max-height:500px){
+  dialog.save-dialog,dialog.detail-dialog{max-width:640px;padding:16px 20px}
+  .save-dialog .dialog-head,.detail-dialog .dialog-head{margin-bottom:6px}
+  .save-dialog form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:16px;align-items:start}
+  .save-dialog form>*{grid-column:2}
+  .save-dialog form>.save-visuals{grid-column:1;grid-row:1/span 8}
+  .save-dialog .save-visuals.has-map{grid-template-columns:1fr;gap:8px}
+  .save-dialog .save-visuals.has-map img.save-photo,.save-dialog .save-visuals.has-map .place-preview{height:calc((90dvh - 90px) / 2)}
+  .save-dialog .save-visuals img.save-photo{max-height:calc(90dvh - 82px)}
+  .save-dialog #location-label{margin-top:0}
+  .save-dialog label{margin-top:12px}
+  .save-dialog #save{margin-top:12px}
+  dialog.detail-dialog{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:auto auto auto auto 1fr;column-gap:16px;align-items:start}
+  .detail-dialog>*{grid-column:2}
+  .detail-dialog>.dialog-head{grid-column:1/-1}
+  .detail-dialog>img{grid-column:1;grid-row:2/-1;max-height:calc(90dvh - 82px)}
+  .detail-dialog>button{justify-self:start}
+  .detail-dialog #detail-date{margin:0 0 8px}
+  .detail-dialog .danger{margin-top:16px}
+}
+/* Computers with a shorter window: a little less photo, so the save button keeps its space at the bottom. */
+@media(min-height:701px) and (max-height:860px){dialog img.save-photo{max-height:26dvh}}

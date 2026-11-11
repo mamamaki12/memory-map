@@ -374,7 +374,7 @@ export default function App() {
       <p className="settings-result" role="status" aria-live="polite">{settingsMessage}</p>
       <p className="settings-note"><span className="phrase">写真はこのブラウザだけにあります。</span><span className="phrase">ときどき保存しておきましょう。</span></p>
     </Modal>}
-    {pending && !selecting && <Modal title="思い出を保存" onClose={cancel} busy={busy}>
+    {pending && !selecting && <Modal title="思い出を保存" className="save-dialog" onClose={cancel} busy={busy}>
       <form onSubmit={save}>
         <div className={'save-visuals' + (Number.isFinite(pending.lat) ? ' has-map' : '')}>
           <Photo className="save-photo" blob={pending.blob} alt="撮影した写真" />
@@ -397,7 +397,7 @@ export default function App() {
           <span>{photo.caption || '名前のない思い出'}<small>{photo.shared ? '友達の写真 · ' : ''}{date(photo.createdAt)}</small></span>
         </button>)}</div>
     </Modal>}
-    {active && <Modal title={active.caption || '名前のない思い出'} onClose={() => setActive(null)} busy={busy}>
+    {active && <Modal title={active.caption || '名前のない思い出'} className="detail-dialog" onClose={() => setActive(null)} busy={busy}>
       <Photo blob={active.blob} alt={active.caption || '思い出の写真'} /><p id="detail-date">{date(active.createdAt)}</p>
       <button className="quiet has-icon icon-only" title="写真をダウンロード" onClick={() => download(active.blob, 'memory-' + active.id + '.jpg')}><IconLabel icon="download" label="写真をダウンロード" /></button>
       {active.shared ? <p className="settings-note">友達が共有した写真です。</p> : <button className="danger has-icon" disabled={busy} onClick={() => setConfirmingDelete(true)}><IconLabel icon="trash" label="この写真を削除" short="削除" /></button>}
