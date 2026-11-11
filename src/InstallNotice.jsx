@@ -36,7 +36,7 @@ export default function InstallNotice() {
     finally { setPrompt(null); setInstalling(false); }
   }
   return <section className="install-notice" aria-label="ホーム画面への追加">
-    <div className="install-message"><strong>ホーム画面に追加してください</strong>
+    <div className="install-message"><strong>ホーム画面に<span className="phrase">追加してください</span></strong>
       <p className="install-lead">思い出の地図を、<span className="phrase">アプリのようにすぐ開けます。</span></p>
       {help && <p>{ios ? '共有メニュー →「ホーム画面に追加」→「追加」を選んでください。項目がない場合はSafariで開いてください。' : 'ブラウザのメニューから「ホーム画面に追加」または「アプリをインストール」を選んでください。項目がない場合はChromeなどの対応ブラウザで開いてください。'}</p>}
     </div>
