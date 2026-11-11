@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import InstallNotice from './InstallNotice.jsx';
 import { readBackup, restoreBackup } from './backup.js';
 import { loadBackupState, saveBackupState, unbackedCount, backupReminder, backupFileName } from './backupReminder.js';
@@ -12,6 +12,8 @@ import { openDB, transaction } from './storage.js';
 import { position, compress, date, download } from './media.js';
 import { readPhotoLocation } from './exifLocation.js';
 import { Icon, IconLabel } from './Icon.jsx';
+import { Modal, ConfirmDialog } from './Modal.jsx';
+import Photo from './Photo.jsx';
 
 // A short line saying where the saved place came from.
 function placeLabel(pending) {
@@ -26,30 +28,6 @@ function keepPhotos() {
   if (persistRequested || !navigator.storage?.persist) return;
   persistRequested = true;
   navigator.storage.persisted().then(done => done || navigator.storage.persist()).catch(() => {});
-}
-
-function Photo({ blob, ...props }) {
-  const [url, setUrl] = useState('');
-  useEffect(() => {
-    const value = URL.createObjectURL(blob);
-    setUrl(value);
-    return () => URL.revokeObjectURL(value);
-  }, [blob]);
-  return url ? <img {...props} src={url} /> : null;
-}
-
-function Modal({ title, onClose, busy, className, closeButton = true, role, children }) {
-  const ref = useRef(null);
-  const titleId = useId();
-  useEffect(() => {
-    const dialog = ref.current;
-    dialog.showModal();
-    return () => dialog.close();
-  }, []);
-  return <dialog ref={ref} className={className} role={role} aria-labelledby={titleId} onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}>
-    <div className="dialog-head"><h2 id={titleId}>{title}</h2>{closeButton && <button disabled={busy} onClick={onClose} aria-label="閉じる">×</button>}</div>
-    {children}
-  </dialog>;
 }
 
 // The photo count reads the same everywhere: just the number, or yours and your friends' when friends share photos.
@@ -408,12 +386,7 @@ export default function App() {
       <button className="quiet has-icon icon-only" title="写真をダウンロード" onClick={() => download(active.blob, 'memory-' + active.id + '.jpg')}><IconLabel icon="download" label="写真をダウンロード" /></button>
       {active.shared ? <p className="settings-note">友達が共有した写真です。</p> : <button className="danger has-icon" disabled={busy} onClick={() => setConfirmingDelete(true)}><IconLabel icon="trash" label="この写真を削除" short="削除" /></button>}
     </Modal>}
-    {active && confirmingDelete && <Modal title="この写真を削除しますか？" className="confirm-dialog" role="alertdialog" closeButton={false} busy={busy} onClose={() => setConfirmingDelete(false)}>
-      <p className="confirm-text">このブラウザから消え、元に戻せません。</p>
-      <div className="confirm-actions">
-        <button autoFocus disabled={busy} onClick={() => setConfirmingDelete(false)}>やめる</button>
-        <button className="danger-fill" disabled={busy} onClick={remove}>{busy ? '削除中…' : '削除する'}</button>
-      </div>
-    </Modal>}
+    {active && confirmingDelete && <ConfirmDialog title="この写真を削除しますか？" text="このブラウザから消え、元に戻せません。"
+      confirmLabel="削除する" busyLabel="削除中…" busy={busy} onCancel={() => setConfirmingDelete(false)} onConfirm={remove} />}
   </>;
 }

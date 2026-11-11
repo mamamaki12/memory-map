@@ -112,7 +112,16 @@ main{height:auto;flex:1;min-height:0}
 .friend-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #edf1ec}
 .friend-row>span{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px}
 .friend-row button{flex-shrink:0;font-size:12px;padding:8px 10px}
-.friend-toolbar{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+/* Requests waiting for an answer come first, on a light colour. */
+.friend-incoming{background:#fff6e6;border-top:0;border-radius:14px;padding:14px 14px 4px;margin-bottom:8px}
+.friend-incoming .friend-row:last-child{border-bottom:0}
+/* Logging out sits at the end, apart from the everyday buttons. */
+.friend-account{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;font-size:12px;color:#5b6b60}
+/* Share rows: a small picture so unnamed photos can be told apart (grey until it is ready). */
+.friend-photo-row{gap:12px;padding:8px 0}
+.friend-row>.friend-thumb{flex:0 0 48px;width:48px;height:48px;border-radius:10px;background:#e6ebe5;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#8a9a8f}
+.friend-thumb img{display:block;width:100%;height:100%;max-height:none;object-fit:cover;border-radius:0;background:none}
+.friend-row>span small{display:block;color:#5b6b60;font-size:12px;margin-top:2px}
 .friend-message{position:sticky;bottom:0;z-index:2;margin:14px 0 0;padding:12px 14px;border-radius:12px;background:#e3f1ea;color:#14594c;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 6px 18px #23472b26}
 .friend-message.is-error{background:#fbeceb;color:#9b3434}
 .friend-message:empty{display:none}

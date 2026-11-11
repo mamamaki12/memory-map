@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { IconLabel } from './Icon.jsx';
+import { Icon, IconLabel } from './Icon.jsx';
+import { ConfirmDialog } from './Modal.jsx';
+import Photo from './Photo.jsx';
+import { date } from './media.js';
 import { loadFriendsClient, loadFriendsData, friendPhotos, sharePhoto, unsharePhoto, result, friendlyMessage } from './friendsApi.js';
 
 function FriendsPanel({ photos, onPhotos }) {
@@ -16,6 +19,8 @@ function FriendsPanel({ photos, onPhotos }) {
   const [loadProblem, setLoadProblem] = useState('');
   const [attempt, setAttempt] = useState(0);
   const [busy, setBusy] = useState(false);
+  // The hard-to-undo action waiting for a yes in the confirm dialog.
+  const [confirming, setConfirming] = useState(null);
   const mounted = useRef(true);
   const version = useRef(0);
   const currentUser = useRef(null);
@@ -118,6 +123,24 @@ function FriendsPanel({ photos, onPhotos }) {
   const accepted = data?.relationships.filter(f => f.status === 'accepted') || [];
   // The result line sits at the end and sticks to the bottom of the screen, so it shows next to whichever button was pressed.
   const resultLine = <p className={'friend-message' + (notice.error ? ' is-error' : '')} role="status" aria-live="polite">{notice.text}</p>;
+  const outgoing = data?.relationships.filter(f => f.requester === user?.id && f.status === 'pending') || [];
+  const myShares = data?.shared.filter(row => row.owner === user?.id) || [];
+  const removeFriend = (f, done) => action(async () => { result(await client.rpc('remove_memory_friend', { request_id: f.id })); await refresh(); }, done);
+  // Requests from others come first when there are any: they are what waits for an answer.
+  const incomingSection = <section className={'friend-section' + (incoming.length ? ' friend-incoming' : '')}>
+    <h3>届いた申請{incoming.length ? ' ' + incoming.length + '件' : ''}</h3>{!incoming.length && <p>申請はありません。</p>}
+    {incoming.map(f => <div key={f.id} className="friend-row"><span>{profileName(f.requester)}</span>
+      <button disabled={busy} onClick={() => action(async () => { result(await client.rpc('accept_memory_friend', { request_id: f.id })); await refresh(); }, '友達になりました。')}>承認</button>
+      <button disabled={busy} onClick={() => removeFriend(f, '申請を削除しました。')}>拒否</button></div>)}
+  </section>;
+  const logout = () => action(async () => {
+    result(await client.auth.signOut()); images.current.clear(); shownPhotos.current = ''; onPhotos([]); setData(null); setLoadProblem(''); setUser(null);
+  }, 'ログアウトしました。');
+  // Hard-to-undo buttons ask first, in the app's own dialog.
+  async function confirmed() {
+    await confirming.run();
+    if (mounted.current) setConfirming(null);
+  }
   return <div className="friend-panel">
     {!user ? <form onSubmit={event => { event.preventDefault(); action(async () => {
       result(await client.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin + import.meta.env.BASE_URL } }));
@@ -126,55 +149,65 @@ function FriendsPanel({ photos, onPhotos }) {
       <label>メールアドレス<input type="email" required value={email} onChange={event => setEmail(event.target.value)} /></label>
       <button className="primary has-icon" disabled={busy}><IconLabel icon="mail" label="ログイン用メールを送る" short="送る" /></button>
     </form> : <>
-      <div className="friend-toolbar"><span>ログイン中</span><button disabled={busy} onClick={() => action(async () => {
-        result(await client.auth.signOut()); images.current.clear(); shownPhotos.current = ''; onPhotos([]); setData(null); setLoadProblem(''); setUser(null);
-      }, 'ログアウトしました。')}>ログアウト</button></div>
       {!data ? <div className="friend-state">{loadProblem ? <>
         <p className="friend-problem" role="alert">{loadProblem}</p>
         <p>友達・届いた申請・共有した写真は、読み込めたら表示します。</p>
         <button className="has-icon" onClick={() => { setLoadProblem(''); load(); }}><IconLabel icon="refresh" label="もう一度読み込む" short="読み込む" /></button>
       </> : <p role="status">友達の情報を読み込んでいます…</p>}</div> : <>
+      {incoming.length > 0 && incomingSection}
       <form onSubmit={event => { event.preventDefault(); action(async () => {
         result(await client.rpc('rename_memory_profile', { new_name: name.trim() })); await refresh();
       }, '名前を保存しました。'); }}>
         <label>友達に表示する名前<input required maxLength={30} value={name} onChange={event => setName(event.target.value)} /></label>
         <button className="has-icon" disabled={busy || !data}><IconLabel icon="check" label="名前を保存" short="保存" /></button>
       </form>
-      {data && <section className="friend-section"><h3>あなたの友達コード</h3><code className="friend-code">{data.profile.friend_code}</code>
+      <section className="friend-section"><h3>あなたの友達コード</h3><code className="friend-code">{data.profile.friend_code}</code>
         <button className="has-icon icon-only" title="コピー" disabled={busy} onClick={() => action(() => navigator.clipboard.writeText(data.profile.friend_code), 'コードをコピーしました。')}><IconLabel icon="copy" label="コピー" /></button>
         <p>このコードを友達に渡してください。申請を承認するまで写真は共有されません。知らない人から申請が届くときは、コードを作り直せます（今の友達はそのままです）。</p>
-        <button className="has-icon" disabled={busy} onClick={() => { if (confirm('今の友達コードは使えなくなります。新しいコードを作りますか？')) action(async () => { result(await client.rpc('regenerate_memory_friend_code')); await refresh(); }, '新しい友達コードを作りました。前のコードはもう使えません。'); }}><IconLabel icon="refresh" label="コードを作り直す" short="作り直す" /></button></section>}
+        <button className="has-icon" disabled={busy} onClick={() => setConfirming({ title: '友達コードを作り直しますか？',
+          text: '今のコードは使えなくなり、元に戻せません。今の友達はそのままです。', confirmLabel: '作り直す', busyLabel: '作り直し中…',
+          run: () => action(async () => { result(await client.rpc('regenerate_memory_friend_code')); await refresh(); }, '新しい友達コードを作りました。前のコードはもう使えません。') })}><IconLabel icon="refresh" label="コードを作り直す" short="作り直す" /></button></section>
       <form onSubmit={event => { event.preventDefault(); action(async () => {
         result(await client.rpc('request_memory_friend', { code: code.trim() })); setCode(''); await refresh();
       }, '友達申請を送りました。'); }}>
         <label>友達のコード<input required value={code} onChange={event => setCode(event.target.value)} placeholder="友達から受け取ったコード" /></label>
         <button className="has-icon" disabled={busy}><IconLabel icon="send" label="友達申請を送る" short="申請" /></button>
       </form>
-      <section className="friend-section"><h3>届いた申請</h3>{!incoming.length && <p>申請はありません。</p>}
-        {incoming.map(f => <div key={f.id} className="friend-row"><span>{profileName(f.requester)}</span>
-          <button disabled={busy} onClick={() => action(async () => { result(await client.rpc('accept_memory_friend', { request_id: f.id })); await refresh(); }, '友達になりました。')}>承認</button>
-          <button disabled={busy} onClick={() => action(async () => { result(await client.rpc('remove_memory_friend', { request_id: f.id })); await refresh(); }, '申請を削除しました。')}>拒否</button></div>)}
-      </section>
-      <section className="friend-section"><h3>友達 {accepted.length}人</h3>{accepted.map(f => <div key={f.id} className="friend-row">
-        <span>{profileName(f.requester === user.id ? f.recipient : f.requester)}</span>
-        <button disabled={busy} onClick={() => { if (confirm('友達を解除しますか？互いの写真共有も停止します。')) action(async () => { result(await client.rpc('remove_memory_friend', { request_id: f.id })); await refresh(); }, '友達を解除しました。'); }}>解除</button>
-      </div>)}
-      {data?.relationships.filter(f => f.requester === user.id && f.status === 'pending').map(f => <div className="friend-row" key={f.id}><span>{profileName(f.recipient)}（承認待ち）</span><button disabled={busy} onClick={() => action(async () => { result(await client.rpc('remove_memory_friend', { request_id: f.id })); await refresh(); }, '申請を取り消しました。')}>取消</button></div>)}
+      {!incoming.length && incomingSection}
+      <section className="friend-section"><h3>友達 {accepted.length}人</h3>{accepted.map(f => { const friend = profileName(f.requester === user.id ? f.recipient : f.requester);
+        return <div key={f.id} className="friend-row"><span>{friend}</span>
+          <button disabled={busy} onClick={() => setConfirming({ title: friend + 'さんとの友達を解除しますか？',
+            text: 'おたがいの写真の共有も止まり、元に戻せません。また友達になるには、申請からやり直します。', confirmLabel: '解除する', busyLabel: '解除中…',
+            run: () => removeFriend(f, '友達を解除しました。') })}>解除</button>
+        </div>; })}
+      {outgoing.map(f => <div className="friend-row" key={f.id}><span>{profileName(f.recipient)}（承認待ち）</span><button disabled={busy} onClick={() => removeFriend(f, '申請を取り消しました。')}>取消</button></div>)}
       </section>
       <section className="friend-section"><h3>写真を共有</h3><p>共有した写真と撮影場所は、承認済みの友達全員が見られます。共有はいつでも停止できます。</p>
         {!photos.length && <p>撮影した写真がありません。</p>}
-        {photos.map(photo => { const row = data?.shared.find(r => r.owner === user.id && r.local_id === photo.id);
-          return <div key={photo.id} className="friend-row"><span>{photo.caption || '名前のない思い出'}</span><button className="has-icon" disabled={busy || !data} onClick={() => action(async () => {
+        {photos.map(photo => { const row = myShares.find(r => r.local_id === photo.id);
+          return <div key={photo.id} className="friend-row friend-photo-row"><Thumb blob={photo.blob} />
+            <span>{photo.caption || '名前のない思い出'}<small>{date(photo.createdAt)}</small></span><button className="has-icon" disabled={busy} onClick={() => action(async () => {
             if (row) { const message = await unsharePhoto(client, row); await refresh(); return message; }
             await sharePhoto(client, user, photo); await refresh();
           }, '写真を共有しました。')}>{row ? <IconLabel icon="stop" label="共有を停止" short="停止" /> : <IconLabel icon="share" label="友達に共有" short="共有" />}</button></div>;
         })}
-        {data?.shared.filter(row => row.owner === user.id && !photos.some(p => p.id === row.local_id)).map(row => <div className="friend-row" key={row.id}><span>{row.caption || '端末にない共有写真'}</span><button className="has-icon" disabled={busy} onClick={() => action(async () => { const message = await unsharePhoto(client, row); await refresh(); return message; })}><IconLabel icon="stop" label="共有を停止" short="停止" /></button></div>)}
+        {myShares.filter(row => !photos.some(p => p.id === row.local_id)).map(row => <div className="friend-row friend-photo-row" key={row.id}><Thumb />
+          <span>{row.caption || '端末にない共有写真'}{row.captured_at && <small>{date(row.captured_at)}</small>}</span><button className="has-icon" disabled={busy} onClick={() => action(async () => { const message = await unsharePhoto(client, row); await refresh(); return message; })}><IconLabel icon="stop" label="共有を停止" short="停止" /></button></div>)}
       </section>
       <button className="has-icon" disabled={busy} onClick={() => action(async () => { const failed = await refresh(); if (failed) return { text: missingMessage(failed), error: true }; }, '友達の写真を更新しました。')}><IconLabel icon="refresh" label="写真・申請を更新" short="更新" /></button>
-    </>}</>}
+    </>}
+      {/* Logging out is rarely needed and hard to take back, so it sits at the end, apart from everyday buttons. */}
+      <section className="friend-section friend-account"><span>ログイン中</span><button disabled={busy} onClick={logout}>ログアウト</button></section>
+      {confirming && <ConfirmDialog title={confirming.title} text={confirming.text} confirmLabel={confirming.confirmLabel} busyLabel={confirming.busyLabel}
+        busy={busy} onCancel={() => setConfirming(null)} onConfirm={confirmed} />}
+    </>}
     {resultLine}
   </div>;
+}
+
+// A small picture of the photo, so rows without a name can still be told apart. Grey until the picture is ready.
+function Thumb({ blob }) {
+  return <span className="friend-thumb" aria-hidden="true">{blob ? <Photo blob={blob} alt="" loading="lazy" decoding="async" /> : <Icon name="album" size={20} />}</span>;
 }
 
 export default function FriendsDialog({ open, onClose, photos, onPhotos }) {
