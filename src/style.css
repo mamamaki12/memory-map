@@ -1,4 +1,4 @@
-*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;color:#203d37;background:#f6f8f5}button,input{font:inherit}button{cursor:pointer;border:1px solid #dbe4de;border-radius:13px;background:white;color:#203d37;padding:11px 16px;min-height:44px}button:hover{filter:brightness(.96)}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #eaaa50;outline-offset:3px}[hidden]{display:none!important}header{height:86px;padding:0 34px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e3e9e3;background:#fff}.brand{display:flex;gap:12px;align-items:center;font-size:23px;font-weight:750;text-decoration:none;color:inherit;letter-spacing:-.7px}.brand small{display:block;font-size:11px;letter-spacing:2px;color:var(--c-muted);margin-top:3px}.logo{display:block;width:45px;height:45px;flex-shrink:0;object-fit:contain;border-radius:15px}main{display:grid;grid-template-columns:330px 1fr;height:calc(100dvh - 86px)}aside{padding:32px 24px 18px;display:flex;flex-direction:column;min-height:0}.eyebrow{font-size:11px;letter-spacing:2px;color:var(--c-muted);font-weight:700}h1{font-size:36px;line-height:1.5;font-weight:650;letter-spacing:1px;margin:16px 0}p{line-height:1.8}.intro p{font-size:13px;color:var(--c-muted);margin:0 0 28px}.section-title{display:flex;justify-content:space-between;align-items:center}.section-title h2{font-size:15px}.section-title span{font-size:12px;background:#e6eee6;padding:5px 10px;border-radius:20px}.list{overflow:auto;flex:1;min-height:100px}.empty{border:1px dashed #cbd8ca;border-radius:15px;text-align:center;padding:30px 8px;font-size:13px;color:var(--c-muted)}.privacy{font-size:12px;color:var(--c-muted);margin:18px 0 0}.map-wrap{position:relative;min-height:0}#map{height:100%;width:100%;background:#e8ede4}.map-tools{position:absolute;top:22px;right:22px;z-index:500;display:flex;gap:8px}.map-tools button{box-shadow:0 3px 14px #23472b16;font-size:13px}.capture-bar{position:absolute;z-index:500;bottom:32px;left:50%;transform:translateX(-50%);display:flex;align-items:center;flex-direction:column;gap:10px;white-space:nowrap}.primary{background:#167766;color:#fff;border:0;font-weight:650;box-shadow:0 6px 20px #135a4930}.capture-bar .primary{padding:17px 40px;border-radius:30px;font-size:16px}.capture-bar>span{font-size:11px;background:#ffffffdf;padding:5px 12px;border-radius:20px}.photo-pin{background:white;padding:4px;border-radius:12px;box-shadow:0 3px 12px #233c3650;position:relative}.photo-pin:after{content:"";position:absolute;bottom:-8px;left:23px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:9px solid white}.photo-pin img{width:54px;height:54px;object-fit:cover;border-radius:8px;display:block}.memory{width:100%;display:flex;text-align:left;align-items:center;gap:12px;margin:8px 0;padding:8px;border:0;background:#fff}.memory img{width:58px;height:58px;object-fit:cover;border-radius:10px}.memory span{min-width:0;font-size:13px;overflow-wrap:anywhere}.memory small{display:block;color:var(--c-muted);font-size:12px;margin-top:5px}dialog{border:0;border-radius:22px;max-width:440px;width:calc(100% - 30px);padding:22px;box-shadow:0 20px 80px #0003;max-height:90dvh;overflow:auto}dialog::backdrop{background:#142e296b;backdrop-filter:blur(3px)}.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.dialog-head h2{font-size:19px;margin:0;overflow-wrap:anywhere}.dialog-head button{border:0;font-size:24px;padding:0;width:44px;height:44px;flex-shrink:0}dialog img{width:100%;max-height:42dvh;object-fit:contain;background:#f1f4ef;border-radius:12px}label{display:block;font-size:12px;margin-top:15px}input{width:100%;padding:12px;border:1px solid #d6e1d7;border-radius:10px;margin-top:7px}#location-label,#detail-date{font-size:12px;color:var(--c-muted)}#save{display:block;width:100%;margin-top:15px}.quiet{background:#f7f9f6;font-size:12px}.danger{color:var(--c-danger);margin-top:12px;font-size:12px}#status{position:fixed;z-index:2000;left:50%;top:92px;transform:translateX(-50%);max-width:90vw;background:#203d37;color:white;padding:12px 20px;border-radius:12px;font-size:13px;box-shadow:0 5px 20px #0002;margin:0}#status:empty{display:none}.leaflet-control-attribution{font-size:9px!important}@media(max-width:700px){header{height:72px;padding:0 16px}.brand{font-size:19px}.logo{width:36px;height:36px;border-radius:12px}main{height:calc(100dvh - 72px);display:flex;flex-direction:column-reverse}.map-wrap{flex:1;min-height:240px}aside{height:175px;padding:8px 16px;flex-shrink:0}.intro,.privacy{display:none}.section-title h2{margin:4px 0}.list{display:flex;gap:10px;overflow-x:auto;min-height:0}.memory{min-width:180px;width:180px;margin:6px 0}.empty{margin:5px 0;width:100%;padding:10px}.capture-bar{bottom:24px}.capture-bar>span{display:none}.capture-bar .primary{padding:13px 28px}.map-tools{top:14px;right:12px}.leaflet-control-zoom{margin-top:14px!important}#status{top:78px}aside{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;color:#203d37;background:var(--c-bg)}button,input{font:inherit}button{cursor:pointer;border:1px solid var(--c-line);border-radius:13px;background:white;color:#203d37;padding:11px 16px;min-height:44px}button:hover{filter:brightness(.96)}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #eaaa50;outline-offset:3px}[hidden]{display:none!important}header{height:86px;padding:0 34px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--c-divider);background:#fff}.brand{display:flex;gap:12px;align-items:center;font-size:23px;font-weight:750;text-decoration:none;color:inherit;letter-spacing:-.7px}.brand small{display:block;font-size:11px;letter-spacing:2px;color:var(--c-muted);margin-top:3px}.logo{display:block;width:45px;height:45px;flex-shrink:0;object-fit:contain;border-radius:15px}main{display:grid;grid-template-columns:330px 1fr;height:calc(100dvh - 86px)}aside{padding:32px 24px 18px;display:flex;flex-direction:column;min-height:0}.eyebrow{font-size:11px;letter-spacing:2px;color:var(--c-muted);font-weight:700}h1{font-size:36px;line-height:1.5;font-weight:650;letter-spacing:1px;margin:16px 0}p{line-height:1.8}.intro p{font-size:13px;color:var(--c-muted);margin:0 0 28px}.section-title{display:flex;justify-content:space-between;align-items:center}.section-title h2{font-size:15px}.section-title span{font-size:12px;background:var(--c-tint);padding:5px 10px;border-radius:20px}.list{overflow:auto;flex:1;min-height:100px}.empty{border:1px dashed var(--c-line);border-radius:15px;text-align:center;padding:30px 8px;font-size:13px;color:var(--c-muted)}.privacy{font-size:12px;color:var(--c-muted);margin:18px 0 0}.map-wrap{position:relative;min-height:0}#map{height:100%;width:100%;background:#e8ede4}.map-tools{position:absolute;top:22px;right:22px;z-index:500;display:flex;gap:8px}.map-tools button{box-shadow:0 3px 14px #23472b16;font-size:13px}.capture-bar{position:absolute;z-index:500;bottom:32px;left:50%;transform:translateX(-50%);display:flex;align-items:center;flex-direction:column;gap:10px;white-space:nowrap}.primary{background:#167766;color:#fff;border:0;font-weight:650;box-shadow:0 6px 20px #135a4930}.capture-bar .primary{padding:17px 40px;border-radius:30px;font-size:16px}.capture-bar>span{font-size:11px;background:#ffffffdf;padding:5px 12px;border-radius:20px}.photo-pin{background:white;padding:4px;border-radius:12px;box-shadow:0 3px 12px #233c3650;position:relative}.photo-pin:after{content:"";position:absolute;bottom:-8px;left:23px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:9px solid white}.photo-pin img{width:54px;height:54px;object-fit:cover;border-radius:8px;display:block}.memory{width:100%;display:flex;text-align:left;align-items:center;gap:12px;margin:8px 0;padding:8px;border:0;background:#fff}.memory img{width:58px;height:58px;object-fit:cover;border-radius:10px}.memory span{min-width:0;font-size:13px;overflow-wrap:anywhere}.memory small{display:block;color:var(--c-muted);font-size:12px;margin-top:5px}dialog{border:0;border-radius:22px;max-width:440px;width:calc(100% - 30px);padding:22px;box-shadow:0 20px 80px #0003;max-height:90dvh;overflow:auto}dialog::backdrop{background:#142e296b;backdrop-filter:blur(3px)}.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.dialog-head h2{font-size:19px;margin:0;overflow-wrap:anywhere}.dialog-head button{border:0;font-size:24px;padding:0;width:44px;height:44px;flex-shrink:0}dialog img{width:100%;max-height:42dvh;object-fit:contain;background:var(--c-bg);border-radius:12px}label{display:block;font-size:12px;margin-top:15px}input{width:100%;padding:12px;border:1px solid var(--c-line);border-radius:10px;margin-top:7px}#location-label,#detail-date{font-size:12px;color:var(--c-muted)}#save{display:block;width:100%;margin-top:15px}.quiet{background:var(--c-bg);font-size:12px}.danger{color:var(--c-danger);margin-top:12px;font-size:12px}#status{position:fixed;z-index:2000;left:50%;top:92px;transform:translateX(-50%);max-width:90vw;background:#203d37;color:white;padding:12px 20px;border-radius:12px;font-size:13px;box-shadow:0 5px 20px #0002;margin:0}#status:empty{display:none}.leaflet-control-attribution{font-size:9px!important}@media(max-width:700px){header{height:72px;padding:0 16px}.brand{font-size:19px}.logo{width:36px;height:36px;border-radius:12px}main{height:calc(100dvh - 72px);display:flex;flex-direction:column-reverse}.map-wrap{flex:1;min-height:240px}aside{height:175px;padding:8px 16px;flex-shrink:0}.intro,.privacy{display:none}.section-title h2{margin:4px 0}.list{display:flex;gap:10px;overflow-x:auto;min-height:0}.memory{min-width:180px;width:180px;margin:6px 0}.empty{margin:5px 0;width:100%;padding:10px}.capture-bar{bottom:24px}.capture-bar>span{display:none}.capture-bar .primary{padding:13px 28px}.map-tools{top:14px;right:12px}.leaflet-control-zoom{margin-top:14px!important}#status{top:78px}aside{padding-bottom:max(8px,env(safe-area-inset-bottom))}}
 
 #root{height:100%}
 .current-location-dot{filter:drop-shadow(0 1px 3px #174ea660)}
@@ -12,7 +12,7 @@
   aside.memories-panel{
     position:fixed;inset:auto 0 0;z-index:1100;
     height:min(65dvh,520px);max-height:calc(100dvh - 80px);
-    padding:0 12px var(--bottom-inset);background:#f6f8f5;
+    padding:0 12px var(--bottom-inset);background:var(--c-bg);
     border-radius:22px 22px 0 0;box-shadow:0 -4px 24px #203d3720;
     transform:translateY(calc(100% - var(--memories-peek) - var(--bottom-inset)));
     transition:transform .25s ease;overflow:hidden;
@@ -27,7 +27,7 @@
   }
   .sheet-handle{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:36px;height:4px;background:#bccbc1;border-radius:4px}
   .sheet-title{font-size:1rem;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-  .sheet-count{font-size:.75rem;white-space:nowrap;background:#e6eee6;padding:4px 9px;border-radius:16px}
+  .sheet-count{font-size:.75rem;white-space:nowrap;background:var(--c-tint);padding:4px 9px;border-radius:16px}
   .sheet-chevron{margin-left:auto;flex-shrink:0;font-size:24px}
   .memories-panel .list{
     display:block;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;
@@ -46,7 +46,7 @@
 }
 @media(prefers-reduced-motion:reduce){aside.memories-panel{transition:none}}
 .settings-button{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;background:transparent;box-shadow:none;flex-shrink:0}
-.settings-item{display:flex;flex-direction:column;gap:6px;width:100%;text-align:left;padding:16px;background:#f7f9f6}
+.settings-item{display:flex;flex-direction:column;gap:6px;width:100%;text-align:left;padding:16px;background:var(--c-bg)}
 .settings-item span{font-weight:650}
 .settings-item small,.settings-note{font-size:13px;color:var(--c-muted);line-height:1.7}
 @media(max-width:700px){
@@ -62,7 +62,7 @@
 #root{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 header{flex-shrink:0}
 main{height:auto;flex:1;min-height:0}
-.install-notice{display:flex;align-items:center;gap:10px;padding:12px 24px;background:#eaf3ee;border-bottom:1px solid #d6e5db;flex-shrink:0;max-height:30dvh;overflow:auto}
+.install-notice{display:flex;align-items:center;gap:10px;padding:12px 24px;background:var(--c-tint);border-bottom:1px solid var(--c-line);flex-shrink:0;max-height:30dvh;overflow:auto}
 .install-message{flex:1;min-width:0}
 .install-message strong{font-size:14px}
 .install-message p{font-size:12px;line-height:1.5;margin:4px 0 0}
@@ -101,15 +101,15 @@ main{height:auto;flex:1;min-height:0}
 }
 
 .header-actions{display:flex;align-items:center;gap:8px}
-.friends-button{font-size:13px;padding:8px 12px;background:#eaf3ee;border:0}
+.friends-button{font-size:13px;padding:8px 12px;background:var(--c-tint);border:0}
 .friend-dialog{max-width:540px}
 .friend-panel p,.friend-section p{font-size:13px;line-height:1.7}
 .friend-panel form{margin:16px 0}
 .friend-panel form button{margin-top:10px}
-.friend-section{padding:16px 0;border-top:1px solid #dbe4de}
+.friend-section{padding:16px 0;border-top:1px solid var(--c-line)}
 .friend-section h3{font-size:16px;margin:0 0 12px}
-.friend-code{display:block;font-size:13px;overflow-wrap:anywhere;background:#eaf3ee;padding:12px;border-radius:10px;margin-bottom:8px}
-.friend-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #edf1ec}
+.friend-code{display:block;font-size:13px;overflow-wrap:anywhere;background:var(--c-tint);padding:12px;border-radius:10px;margin-bottom:8px}
+.friend-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--c-divider)}
 .friend-row>span{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px}
 .friend-row button{flex-shrink:0;font-size:12px;padding:8px 10px}
 /* Requests waiting for an answer come first, on a light colour. */
@@ -119,13 +119,13 @@ main{height:auto;flex:1;min-height:0}
 .friend-account{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;font-size:12px;color:var(--c-muted)}
 /* Share rows: a small picture so unnamed photos can be told apart (grey until it is ready). */
 .friend-photo-row{gap:12px;padding:8px 0}
-.friend-row>.friend-thumb{flex:0 0 48px;width:48px;height:48px;border-radius:10px;background:#e6ebe5;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--c-muted)}
+.friend-row>.friend-thumb{flex:0 0 48px;width:48px;height:48px;border-radius:10px;background:var(--c-tint);overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--c-muted)}
 .friend-thumb img{display:block;width:100%;height:100%;max-height:none;object-fit:cover;border-radius:0;background:none}
 .friend-row>span small{display:block;color:var(--c-muted);font-size:12px;margin-top:2px}
-.friend-message{position:sticky;bottom:0;z-index:2;margin:14px 0 0;padding:12px 14px;border-radius:12px;background:#e3f1ea;color:var(--c-success);font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 6px 18px #23472b26}
+.friend-message{position:sticky;bottom:0;z-index:2;margin:14px 0 0;padding:12px 14px;border-radius:12px;background:var(--c-tint);color:var(--c-success);font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:0 6px 18px #23472b26}
 .friend-message.is-error{background:#fbeceb;color:var(--c-danger)}
 .friend-message:empty{display:none}
-.friend-state{padding:16px 0;border-top:1px solid #dbe4de}
+.friend-state{padding:16px 0;border-top:1px solid var(--c-line)}
 .friend-state p{margin:0 0 10px}
 .friend-problem{color:var(--c-danger);font-weight:600}
 @media(max-width:700px){.header-actions{gap:2px}.friends-button{padding:8px}.brand{font-size:17px}.brand small{letter-spacing:1px}}
@@ -133,7 +133,7 @@ main{height:auto;flex:1;min-height:0}
 main.photo-map-hidden{display:none}
 main.photo-map-hidden .memories-panel{display:none}
 .conquest-view{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
-.conquest-summary{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:16px 24px;background:#f6f8f5;flex-shrink:0}
+.conquest-summary{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:16px 24px;background:var(--c-bg);flex-shrink:0}
 .conquest-summary h2{font-size:19px;margin:5px 0}
 .conquest-summary>strong{font-size:30px;margin-left:auto}
 .conquest-summary strong small{font-size:13px;font-weight:400}
@@ -141,7 +141,7 @@ main.photo-map-hidden .memories-panel{display:none}
 .conquest-summary>span{font-size:12px;color:var(--c-muted)}
 .conquest-tools{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 20px;background:white;flex-shrink:0}
 .conquest-tools label{display:flex;align-items:center;gap:8px;margin:0}
-.conquest-tools select{padding:8px;border:1px solid #dbe4de;border-radius:10px;font:inherit;color:inherit;background:white}
+.conquest-tools select{padding:8px;border:1px solid var(--c-line);border-radius:10px;font:inherit;color:inherit;background:white}
 .conquest-tools button{min-height:36px;padding:8px 10px;font-size:12px}
 .conquest-legend{display:flex;align-items:center;gap:6px;font-size:11px;margin-left:auto}
 .conquest-legend i{width:10px;height:10px;background:#24ae82;border-radius:3px}
@@ -154,7 +154,7 @@ main.photo-map-hidden .memories-panel{display:none}
 .conquest-city strong{color:#167766;font-size:14px}
 .conquest-city p{font-size:12px;margin:6px 0 0}
 .conquest-close{position:absolute;right:2px;top:2px;border:0;background:transparent;font-size:20px;padding:0;width:44px;height:44px}
-.conquest-footer{padding:8px 20px;background:#f6f8f5;flex-shrink:0;max-height:18dvh;overflow:auto}
+.conquest-footer{padding:8px 20px;background:var(--c-bg);flex-shrink:0;max-height:18dvh;overflow:auto}
 .conquest-footer>span{font-size:13px;font-weight:650}
 .conquest-footer p{font-size:12px;line-height:1.6;margin:4px 0}
 @media(max-width:700px){.conquest-summary{padding:10px 14px}.conquest-summary h2{font-size:15px}.conquest-tools{padding:6px 12px}.conquest-legend{width:100%;margin-left:0}.conquest-summary>strong{font-size:25px}}
@@ -171,7 +171,7 @@ main.photo-map-hidden .memories-panel{display:none}
 }
 
 /* Compact conquest controls leave most of the screen to the map. */
-.quest-dashboard{flex-shrink:0;padding:8px 14px;background:#fff;border-bottom:1px solid #e3e9e3}
+.quest-dashboard{flex-shrink:0;padding:8px 14px;background:#fff;border-bottom:1px solid var(--c-divider)}
 .quest-progress-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .quest-progress-row h2{font-size:15px;margin:0 auto 0 0}
 .quest-progress-row strong{font-size:21px;white-space:nowrap}
@@ -179,12 +179,12 @@ main.photo-map-hidden .memories-panel{display:none}
 .quest-progress-row>span{font-size:12px;color:var(--c-muted)}
 .quest-progress-row progress{width:100%;height:4px;accent-color:#167766}
 .quest-filter-row{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
-.quest-filter-row select{flex:1;min-width:90px;max-width:220px;min-height:44px;padding:6px 8px;border:1px solid #dbe4de;border-radius:10px;font:inherit;font-size:14px;color:inherit;background:white;margin:0}
+.quest-filter-row select{flex:1;min-width:90px;max-width:220px;min-height:44px;padding:6px 8px;border:1px solid var(--c-line);border-radius:10px;font:inherit;font-size:14px;color:inherit;background:white;margin:0}
 .quest-filter-row button{display:grid;place-items:center;width:44px;height:44px;min-height:44px;padding:0;flex-shrink:0}
 .quest-legend{display:flex;align-items:center;gap:4px;margin-left:auto;font-size:11px;white-space:nowrap}
 .quest-legend i{width:9px;height:9px;background:#24ae82;border-radius:2px}
 .quest-legend i.unvisited{background:#e4ece7;border:1px solid #98afa6;margin-left:5px}
-.quest-info{flex-shrink:0;background:#f6f8f5;padding:0 14px env(safe-area-inset-bottom,0px);max-height:30dvh;overflow:auto}
+.quest-info{flex-shrink:0;background:var(--c-bg);padding:0 14px env(safe-area-inset-bottom,0px);max-height:30dvh;overflow:auto}
 .quest-info summary{min-height:44px;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;list-style:none}
 .quest-info summary::-webkit-details-marker{display:none}
 .quest-info summary>span:first-child{font-weight:650}
@@ -234,7 +234,7 @@ dialog .danger{display:block;margin-top:24px}
 /* On short screens (phones held sideways) the zoom pair sits side by side to fit the low map. */
 @media(max-height:500px){
   .leaflet-bar{display:flex}
-  .leaflet-bar a,.leaflet-touch .leaflet-bar a{border-bottom:0;border-right:1px solid #ccc}
+  .leaflet-bar a,.leaflet-touch .leaflet-bar a{border-bottom:0;border-right:1px solid var(--c-line)}
   .leaflet-bar a:first-child,.leaflet-touch .leaflet-bar a:first-child{border-radius:4px 0 0 4px}
   .leaflet-bar a:last-child,.leaflet-touch .leaflet-bar a:last-child{border-right:0;border-radius:0 4px 4px 0}
 }
@@ -309,7 +309,7 @@ dialog img.save-photo{max-height:30dvh}
 }
 
 /* Map switch: two choices with words; the map that is showing is filled in green. */
-.map-switch{display:flex;padding:2px;border-radius:14px;background:#eef3ef;flex-shrink:0}
+.map-switch{display:flex;padding:2px;border-radius:14px;background:var(--c-tint);flex-shrink:0}
 .map-switch button{min-height:44px;padding:0 14px;border:0;border-radius:12px;background:transparent;color:#203d37;font-size:14px;font-weight:600;white-space:nowrap;box-shadow:none}
 .map-switch button[aria-pressed=true]{background:#167766;color:#fff;box-shadow:0 2px 8px #135a4930}
 .map-switch button:disabled{cursor:default}
@@ -341,7 +341,7 @@ dialog.confirm-dialog{max-width:380px}
 /* Small phones: the conquest map is low, so its zoom pair also sits side by side, clear of the map credits. */
 @media(max-height:600px){
   .conquest-map .leaflet-bar{display:flex}
-  .conquest-map .leaflet-bar a{border-bottom:0;border-right:1px solid #ccc}
+  .conquest-map .leaflet-bar a{border-bottom:0;border-right:1px solid var(--c-line)}
   .conquest-map .leaflet-bar a:first-child{border-radius:4px 0 0 4px}
   .conquest-map .leaflet-bar a:last-child{border-right:0;border-radius:0 4px 4px 0}
 }
@@ -389,7 +389,7 @@ dialog.confirm-dialog{max-width:380px}
 .photo-pin-wrap.is-group .photo-pin{box-shadow:5px -5px 0 -1px #fff,5px -5px 0 0 #b9cbc1,0 3px 12px #233c3650}
 .photo-pin-count{position:absolute;top:-12px;right:-14px;min-width:26px;height:26px;padding:0 6px;border-radius:13px;background:#167766;color:#fff;border:2px solid #fff;font-size:13px;font-weight:700;line-height:22px;text-align:center;box-shadow:0 2px 6px #233c3640;box-sizing:border-box}
 /* The list of photos taken at one spot. */
-.place-photo-list .memory{width:100%;min-width:0;margin:0 0 8px;background:#f3f6f2}
+.place-photo-list .memory{width:100%;min-width:0;margin:0 0 8px;background:var(--c-bg)}
 dialog .place-photo-list .memory img{width:58px;height:58px;max-height:none;flex-shrink:0;object-fit:cover;border-radius:10px}
 
 /* Phones held sideways: the greeting gives its room to the list of memories, so the list can be seen. */
@@ -425,7 +425,7 @@ dialog .place-photo-list .memory img{width:58px;height:58px;max-height:none;flex
 }
 
 /* Settings: the last backup is a third line inside the save button. Green when up to date, amber when photos were added since. */
-.settings-item .settings-last{margin-top:2px;padding-top:8px;border-top:1px solid #e3e9e3;font-size:12px;line-height:1.5;color:#167766}
+.settings-item .settings-last{margin-top:2px;padding-top:8px;border-top:1px solid var(--c-divider);font-size:12px;line-height:1.5;color:#167766}
 .settings-item .settings-last.is-due{color:var(--c-warn)}
 /* Phones held sideways: a wider, tighter dialog so each line fits on one row and nothing has to scroll. */
 @media(max-height:500px){
@@ -524,7 +524,7 @@ dialog .place-photo-list .memory img{width:58px;height:58px;max-height:none;flex
   .friend-panel.is-full>form{margin:0 0 12px;padding-top:4px}
   .friend-panel.is-full>.friend-message{column-span:all}
   /* Lines go under each part instead of over it, so both columns start at the same height without a line on top. */
-  .friend-panel.is-full .friend-section{border-top:0;padding:4px 0 12px;margin-bottom:12px;border-bottom:1px solid #dbe4de}
+  .friend-panel.is-full .friend-section{border-top:0;padding:4px 0 12px;margin-bottom:12px;border-bottom:1px solid var(--c-line)}
   .friend-panel.is-full .friend-incoming{padding:14px 14px 4px;border-bottom:0}
   .friend-panel.is-full .friend-account{border-bottom:0;margin:0}
 }
@@ -590,8 +590,10 @@ dialog .quiet.has-icon,dialog .danger.has-icon{min-height:44px;padding-top:8px;p
 @media(max-width:380px){.conquest-city{bottom:56px}}
 
 /* Colours by role. Every text colour is at least 4.5 times brighter or darker than what is behind it.
-   Text #203d37, explanations #5b6b60, success and the app's green #167766, caution #8a5a14, danger #a83c3c. */
-:root{--c-text:#203d37;--c-muted:#5b6b60;--c-success:#167766;--c-warn:#8a5a14;--c-danger:#a83c3c}
+   Text #203d37, explanations #5b6b60, success and the app's green #167766, caution #8a5a14, danger #a83c3c.
+   Surfaces: white cards, a light page colour, a light green tint; lines: borders of controls and softer dividers. */
+:root{--c-text:#203d37;--c-muted:#5b6b60;--c-success:#167766;--c-warn:#8a5a14;--c-danger:#a83c3c;
+  --c-card:#fff;--c-bg:#f6f8f5;--c-tint:#eaf3ee;--c-line:#dbe4de;--c-divider:#e3e9e3;--c-focus:#b86e00}
 dialog{color:var(--c-text)}
 .leaflet-bar a,.leaflet-bar a:hover{color:var(--c-text)}
 
@@ -611,3 +613,17 @@ dialog{color:var(--c-text)}
    (the light box of waiting requests reaches into the side space, so its rows line up with the rest). */
 .friend-row button{min-width:80px;height:44px;min-height:44px;justify-content:center}
 .friend-incoming{margin-left:-14px;margin-right:-14px}
+
+/* Keyboard focus: one ring everywhere, 3px, 2px away from the element, in a colour that stands out at least 3:1
+   from the light backgrounds and the map. Things inside a scrolling list draw it just inside so it is not cut off. */
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,
+[tabindex]:focus-visible,.quest-info summary:focus-visible,.quest-filter-row select:focus-visible{outline:3px solid var(--c-focus);outline-offset:2px}
+.list .memory:focus-visible,.place-photo-list .memory:focus-visible,.settings-item:focus-visible,.install-notice button:focus-visible,
+.leaflet-control-attribution a:focus-visible,.leaflet-container:focus-visible{outline-offset:-3px}
+
+/* Many photos: a heading for each month in the list, staying at the top while that month scrolls by. */
+.list-month{position:sticky;top:0;z-index:1;display:flex;align-items:baseline;gap:8px;margin:0 0 4px;padding:10px 0 6px;background:var(--c-bg);box-shadow:0 1px 0 var(--c-divider);font-size:14px;font-weight:650}
+.list-month small{font-size:12px;font-weight:400;color:var(--c-muted)}
+/* The number on a pin of several photos: one size for every pin, digits of equal width. */
+.photo-pin-count{min-width:24px;height:24px;padding:0 6px;border-radius:var(--r-pill);font-size:12px;line-height:20px;font-variant-numeric:tabular-nums;letter-spacing:-.2px;background:var(--c-success)}
+.leaflet-marker-icon:focus-visible{border-radius:var(--r-button)}
