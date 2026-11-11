@@ -24,7 +24,8 @@ export function Modal({ title, onClose, busy, className, closeButton = true, rol
 // Asking before something that is hard to undo: "やめる" is chosen first, Esc also stops.
 export function ConfirmDialog({ title, text, confirmLabel, busyLabel, busy, onCancel, onConfirm }) {
   return <Modal title={title} className="confirm-dialog" role="alertdialog" closeButton={false} busy={busy} onClose={onCancel}>
-    <p className="confirm-text">{text}</p>
+    {/* Each part up to a 、 or 。 stays on one line, so a line never ends with one or two lonely characters. */}
+    <p className="confirm-text">{text.split(/(?<=[、。])/).map((part, index) => <span key={index} className="phrase">{part}</span>)}</p>
     <div className="confirm-actions">
       <button autoFocus disabled={busy} onClick={onCancel}>やめる</button>
       <button className="danger-fill" disabled={busy} onClick={onConfirm}>{busy ? busyLabel : confirmLabel}</button>

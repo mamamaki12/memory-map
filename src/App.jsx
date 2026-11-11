@@ -338,7 +338,7 @@ export default function App() {
         </button>
         {selecting && <>
           <div className="pick-target" aria-hidden="true"><Icon name="pin" size={40} /></div>
-          <p className="pick-hint" id="pick-hint">地図を動かして、印を保存する場所に合わせてください</p>
+          <p className="pick-hint" id="pick-hint">地図を動かして、<span className="phrase">印を保存する場所に</span><span className="phrase">合わせてください</span></p>
           {/* The two buttons sit at the bottom, where the thumb reaches (where "写真を追加" was). */}
           <div id="place-hint" className="pick-actions" role="group" aria-label="保存場所を選ぶ" aria-describedby="pick-hint">
             <button className="has-icon" onClick={() => setSelecting(false)}><IconLabel icon="close" label="やめる" short="やめる" /></button>
