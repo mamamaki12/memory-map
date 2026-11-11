@@ -1,3 +1,6 @@
 node_modules/
 dist/
 *.local
+# npm run build（scripts/prepare-*.mjs）が作るファイル
+public/city-boundaries.json
+public/icon-landscape-*.png
