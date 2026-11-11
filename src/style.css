@@ -412,3 +412,41 @@ dialog .place-photo-list .memory img{width:58px;height:58px;max-height:none;flex
 @media(max-height:600px){.conquest-empty{bottom:34px;padding:8px 12px}.conquest-empty p{font-size:12px}}
 /* Narrow phones: the map credits take two lines, so the card sits above them. */
 @media(max-width:420px){.conquest-empty{bottom:64px}}
+
+/* Empty conquest map: a button that goes to the photo map, where photos are added. Only the button takes taps. */
+.conquest-empty{display:grid;justify-items:center;row-gap:4px}
+.conquest-empty p{margin:0}
+.conquest-empty button{pointer-events:auto;margin-top:6px;min-height:44px;padding:0 18px;border-radius:22px;font-size:14px;box-shadow:0 3px 10px #16776633}
+/* Low screens: words on the left, the button on the right, so the card stays one row high. */
+@media(max-height:600px){
+  .conquest-empty{grid-template-columns:1fr auto;column-gap:14px;row-gap:0;align-items:center;justify-items:start;text-align:left;width:min(440px,calc(100% - 32px));padding:8px 8px 8px 14px}
+  .conquest-empty h3,.conquest-empty p{grid-column:1}
+  .conquest-empty button{grid-column:2;grid-row:1/span 2;margin:0}
+}
+
+/* Settings: the last backup is a third line inside the save button. Green when up to date, amber when photos were added since. */
+.settings-item .settings-last{margin-top:2px;padding-top:8px;border-top:1px solid #e3e9e3;font-size:12px;line-height:1.5;color:#167766}
+.settings-item .settings-last.is-due{color:#8a5a14}
+/* Phones held sideways: a wider, tighter dialog so each line fits on one row and nothing has to scroll. */
+@media(max-height:500px){
+  dialog.settings-dialog{max-width:600px;padding:16px 20px}
+  .settings-dialog .dialog-head{margin-bottom:6px}
+  .settings-dialog .settings-item{margin-top:10px;padding:12px 16px}
+  .settings-dialog .settings-note{margin:10px 0 0}
+}
+
+/* Phones held sideways: the "add to home screen" notice is one thin row (about the height of its buttons),
+   lined up with the header, so the map gets the height back. */
+@media(max-height:500px){
+  /* 2px above and below keeps 8px between these buttons and the ones in the header and under the strip. */
+  .install-notice{padding:2px 12px;gap:8px}
+  .install-message{padding:6px 0}
+  .install-message strong{display:block;font-size:13px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .install-message p{margin-top:2px}
+  /* Without a box the button does not touch the header line; green words show it can be pressed. */
+  .install-notice .quiet.has-icon{min-height:44px;padding:0 12px;font-size:13px;font-weight:650;color:#167766;background:transparent;border:0}
+  .install-dismiss{height:44px;min-height:44px}
+}
+/* A phrase that should not be split across two lines (Japanese has no spaces to break at). */
+.phrase{display:inline-block}
+.settings-item .phrase{font-weight:inherit}

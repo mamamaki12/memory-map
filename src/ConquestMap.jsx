@@ -3,7 +3,7 @@ import L from 'leaflet';
 import { addBaseMap } from './baseMap.js';
 import { computeProgress, indexCities } from './cityProgress.js';
 import { IconLabel } from './Icon.jsx';
-export default function ConquestMap({ photos }) {
+export default function ConquestMap({ photos, onShowPhotos }) {
   const host = useRef(null), mapRef=useRef(null), citiesLayer=useRef(null);
   const [dataset,setDataset]=useState(null), [error,setError]=useState(''), [retry,setRetry]=useState(0);
   const [prefecture,setPrefecture]=useState(''), [selection,setSelection]=useState(null);
@@ -67,8 +67,9 @@ export default function ConquestMap({ photos }) {
       {!dataset&&!error&&<p className="conquest-loading" role="status">全国の市を読み込んでいます…</p>}
       {error&&<div className="conquest-loading" role="alert">{error}<button className="has-icon icon-only" title="再読み込み" onClick={()=>setRetry(n=>n+1)}><IconLabel icon="refresh" label="再読み込み" /></button></div>}
       {dataset&&!photos.length&&!selection&&<div className="conquest-empty">
-        <h3>写真を撮った市が、緑になります</h3>
-        <p>「写真」の地図で写真を追加しましょう</p>
+        <h3>写真を撮った市が、<span className="phrase">緑になります</span></h3>
+        <p>写真の地図で、<span className="phrase">写真を追加しましょう</span></p>
+        {onShowPhotos&&<button className="primary has-icon" onClick={onShowPhotos}><IconLabel icon="album" label="写真の地図へ" short="写真へ" /></button>}
       </div>}
       {selection&&<div className="conquest-city"><button className="conquest-close" aria-label="市の詳細を閉じる" onClick={()=>setSelection(null)}>×</button><small>{selection.prefecture}</small><h3>{selection.name}</h3>
         <strong>{entry?'✓ コンプリート':'まだ訪れていません'}</strong><p>{entry?entry.photos.length+'枚の写真があります。':'この市で写真を保存すると攻略済みになります。'}</p>

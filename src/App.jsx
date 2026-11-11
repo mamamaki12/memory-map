@@ -276,6 +276,12 @@ export default function App() {
     return () => window.removeEventListener('keydown', escape);
   }, [selecting]);
   const cancel = () => { setPending(null); setSelecting(false); };
+  // From the empty conquest map: show the photo map and put the keyboard on "写真を追加".
+  const showPhotoMap = () => {
+    setMapMode('photos');
+    setMemoriesOpen(false);
+    requestAnimationFrame(() => document.querySelector('.capture-bar .primary')?.focus());
+  };
   const addPhoto = () => touchDevice() ? setSourceOpen(true) : albumFile.current.click();
   // Open the picker during the tap itself so phones allow it, then close the sheet.
   const pickSource = input => { input.current.click(); setSourceOpen(false); };
@@ -296,7 +302,7 @@ export default function App() {
       </button></div></header>
     <FriendsDialog open={friendsOpen} onClose={() => setFriendsOpen(false)} photos={photos} onPhotos={setSharedPhotos} />
     <InstallNotice />
-    {mapMode==='conquest' && <ConquestMap photos={photos} />}
+    {mapMode==='conquest' && <ConquestMap photos={photos} onShowPhotos={showPhotoMap} />}
     <main className={mapMode==='conquest'?'photo-map-hidden':selecting?'is-picking':''}>
       {memoriesOpen && !selecting && <button className="memories-backdrop" aria-label="思い出の一覧を閉じる" onClick={() => setMemoriesOpen(false)} />}
       <aside className={'memories-panel' + (memoriesOpen ? ' is-open' : '') + (drawer.dragOffset !== null ? ' is-dragging' : '')}
@@ -352,20 +358,21 @@ export default function App() {
       </div>
     </Modal>}
     <p id="status" role="status" aria-live="polite">{status}</p>
-    {settingsOpen && <Modal title="設定" busy={importing || exporting} onClose={() => setSettingsOpen(false)}>
+    {settingsOpen && <Modal title="設定" className="settings-dialog" busy={importing || exporting} onClose={() => setSettingsOpen(false)}>
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={backup}>
         <span className="has-icon"><Icon name="download" />{exporting ? '保存しています…' : 'バックアップを保存'}</span>
-        <small>写真と場所、ひとことを1つのファイルに保存します</small>
+        <small>写真と場所、ひとことをファイルに保存します</small>
+        {/* When the last backup was made sits inside the button it belongs to, one line less in the dialog. */}
+        {photos.length > 0 && <small className={'settings-last' + (backupState.at === null || unbackedCount(backupState, photos.length) ? ' is-due' : '')}>{backupState.at === null ? 'まだ一度も保存していません'
+          : '前回：' + date(backupState.at) + (unbackedCount(backupState, photos.length) ? '・そのあと増えた写真 ' + unbackedCount(backupState, photos.length) + '枚' : '')}</small>}
       </button>
-      {photos.length > 0 && <p className="settings-note">{backupState.at === null ? 'まだバックアップを保存していません。'
-        : '前回のバックアップ：' + date(backupState.at) + (unbackedCount(backupState, photos.length) ? '（そのあと増えた写真 ' + unbackedCount(backupState, photos.length) + '枚）' : '')}</p>}
       <input ref={importFile} type="file" accept=".json,application/json" hidden onChange={importBackup} />
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={() => importFile.current.click()}>
         <span className="has-icon"><Icon name="upload" />{importing ? '戻しています…' : 'バックアップから戻す'}</span>
-        <small>前に保存したファイルから写真を戻します（今ある写真は消えません）</small>
+        <small>前に保存したファイルから写真を戻します<span className="phrase">（今ある写真は消えません）</span></small>
       </button>
       <p className="settings-result" role="status" aria-live="polite">{settingsMessage}</p>
-      <p className="settings-note">写真はこのブラウザの中だけにあります。ブラウザのデータを消すと写真も消えるので、ときどき「バックアップを保存」をしておきましょう。</p>
+      <p className="settings-note"><span className="phrase">写真はこのブラウザだけにあります。</span><span className="phrase">ときどき保存しておきましょう。</span></p>
     </Modal>}
     {pending && !selecting && <Modal title="思い出を保存" onClose={cancel} busy={busy}>
       <form onSubmit={save}>
