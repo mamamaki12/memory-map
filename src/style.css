@@ -528,3 +528,63 @@ dialog .place-photo-list .memory img{width:58px;height:58px;max-height:none;flex
   .friend-panel.is-full .friend-incoming{padding:14px 14px 4px;border-bottom:0}
   .friend-panel.is-full .friend-account{border-bottom:0;margin:0}
 }
+
+/* Corners, shadows and the height of the finishing buttons, by role, so every screen is drawn the same way.
+   Corners: 10px small parts (inputs, chips, thumbnails), 12px buttons, 16px cards, 22px dialogs and sheets, round pills.
+   Shadows: map controls, floating cards, sheets from below, dialogs, and green buttons (small; the big one only on the map). */
+:root{
+  --r-small:10px;--r-button:12px;--r-card:16px;--r-sheet:22px;--r-pill:999px;
+  --shadow-control:0 2px 10px #203d3726;
+  --shadow-card:0 4px 20px #203d3722;
+  --shadow-sheet:0 -4px 24px #203d3720;
+  --shadow-primary:0 3px 10px #135a4933;
+  --shadow-primary-big:0 6px 20px #135a4930;
+  --h-action:48px;
+}
+button{border-radius:var(--r-button)}
+.primary{box-shadow:var(--shadow-primary)}
+.memory,.settings-item,.place-preview{border-radius:var(--r-button)}
+.conquest-city,.map-empty,.conquest-empty,.friend-incoming,.friend-message,#status{border-radius:var(--r-card)}
+.conquest-city,.map-empty,.conquest-empty,.friend-message,#status,.pick-hint{box-shadow:var(--shadow-card)}
+.pick-hint{border-radius:0 0 var(--r-card) var(--r-card)}
+.pick-actions{border-radius:var(--r-card) var(--r-card) 0 0;box-shadow:var(--shadow-sheet)}
+@media(max-width:700px){aside.memories-panel{box-shadow:var(--shadow-sheet)}}
+.map-switch{border-radius:calc(var(--r-button) + 2px)}
+.map-switch button{border-radius:var(--r-button)}
+.map-switch button[aria-pressed=true]{box-shadow:var(--shadow-primary)}
+/* Round pills: the big add button, counts and small labels. */
+.capture-bar .primary,.conquest-empty button,.capture-bar>span,.section-title span,.sheet-count,.sheet-handle{border-radius:var(--r-pill)}
+.capture-bar .primary{box-shadow:var(--shadow-primary-big)}
+.pick-actions .primary,.conquest-empty button{box-shadow:var(--shadow-primary)}
+@media(max-height:500px){.capture-bar .primary{box-shadow:var(--shadow-primary)}}
+/* Things that float on the map share one shadow and the button corner. */
+.map-tools button,.locate-fab,.conquest-map-wrap .quest-legend{box-shadow:var(--shadow-control)}
+.conquest-map-wrap .quest-legend{border-radius:var(--r-small)}
+.leaflet-bar,.leaflet-touch .leaflet-bar{border:0;border-radius:var(--r-button);box-shadow:var(--shadow-control)}
+.leaflet-bar a:first-child,.leaflet-touch .leaflet-bar a:first-child{border-radius:var(--r-button) var(--r-button) 0 0}
+.leaflet-bar a:last-child,.leaflet-touch .leaflet-bar a:last-child{border-radius:0 0 var(--r-button) var(--r-button)}
+@media(max-height:500px){
+  .leaflet-bar a:first-child,.leaflet-touch .leaflet-bar a:first-child{border-radius:var(--r-button) 0 0 var(--r-button)}
+  .leaflet-bar a:last-child,.leaflet-touch .leaflet-bar a:last-child{border-radius:0 var(--r-button) var(--r-button) 0}
+}
+@media(max-height:600px){
+  .conquest-map .leaflet-bar a:first-child{border-radius:var(--r-button) 0 0 var(--r-button)}
+  .conquest-map .leaflet-bar a:last-child{border-radius:0 var(--r-button) var(--r-button) 0}
+}
+input,select,.friend-code,.friend-row>.friend-thumb,.memory img,dialog .place-photo-list .memory img{border-radius:var(--r-small)}
+dialog{border-radius:var(--r-sheet)}
+@media(max-width:700px){dialog.photo-source-sheet{border-radius:var(--r-sheet) var(--r-sheet) 0 0}}
+/* The button that finishes a screen (save, decide, delete, choose camera or album) is always 48px high. */
+.confirm-actions button,.pick-actions button,.photo-source-actions button,#save{min-height:var(--h-action);height:var(--h-action)}
+/* Low screens: the bar keeps its 62px height; the 48px buttons take the room from its inner space. */
+@media(max-height:500px){.pick-actions button{min-height:var(--h-action)}.pick-actions{padding-top:7px;padding-bottom:calc(7px + var(--pick-inset))}}
+/* Other buttons in a screen are 44px, also with an icon in front. */
+dialog .quiet.has-icon,dialog .danger.has-icon{min-height:44px;padding-top:8px;padding-bottom:8px}
+
+/* Conquest map on a low, mid-width phone (held sideways): the city card starts to the right of the zoom pair and just above
+   the one-line map credits, so it never covers the zoom buttons. */
+@media(min-width:421px) and (max-width:700px) and (max-height:600px){
+  .conquest-city{left:112px;bottom:36px;max-width:calc(100% - 124px)}
+}
+/* Very narrow phones: the map credits take two lines, so the city card sits higher to stay clear of them. */
+@media(max-width:380px){.conquest-city{bottom:56px}}
