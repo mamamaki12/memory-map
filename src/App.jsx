@@ -8,6 +8,7 @@ import ConquestMap from './ConquestMap.jsx';
 import PhotoMap from './PhotoMap.jsx';
 import PlacePreview from './PlacePreview.jsx';
 import useDrawerGesture from './useDrawerGesture.js';
+import { monthGroups } from './monthGroups.js';
 import { openDB, transaction } from './storage.js';
 import { position, compress, date, download } from './media.js';
 import { readPhotoLocation } from './exifLocation.js';
@@ -61,6 +62,7 @@ export default function App() {
   const [sharedPhotos, setSharedPhotos] = useState([]);
   const [friendsOpen, setFriendsOpen] = useState(false);
   const mapPhotos = useMemo(() => [...photos, ...sharedPhotos].sort((a, b) => b.createdAt - a.createdAt), [photos, sharedPhotos]);
+  const months = useMemo(() => monthGroups(mapPhotos), [mapPhotos]);
   const [pending, setPending] = useState(null);
   const [active, setActive] = useState(null);
   const [placePhotos, setPlacePhotos] = useState(null);
@@ -315,11 +317,14 @@ export default function App() {
         </button>
         <div className="intro"><span className="eyebrow">YOUR PERSONAL ATLAS</span><h1>ここにいた、<br />を残そう。</h1><p>いつもの道も、初めての街も。<br />写真から広がる、あなただけの地図。</p></div>
         <div className="section-title"><h2>思い出</h2><span>{photoCount(photos.length, sharedPhotos.length)}</span></div>
-        <div className="list" id="memories-list" {...drawer.listProps}>{mapPhotos.length ? mapPhotos.map(photo =>
+        {/* Newest first, with a heading for each month that stays at the top while its photos scroll by. */}
+        <div className="list" id="memories-list" {...drawer.listProps}>{mapPhotos.length ? months.map(month => <React.Fragment key={month.key}>
+          <h3 className="list-month">{month.label}<small>{month.photos.length}枚</small></h3>
+          {month.photos.map(photo =>
           <button key={photo.id} className="memory" onClick={() => openPhoto(photo)} disabled={selecting}>
             <Photo blob={photo.blob} alt={photo.caption || '思い出の写真'} loading="lazy" />
             <span>{photo.caption || '名前のない思い出'}<small>{photo.shared ? '友達の写真 · ' : ''}{date(photo.createdAt)}</small></span>
-          </button>) : <p className="empty">{ready ? 'まだ写真がありません。最初の一枚を撮ってみましょう。' : '保存した写真を読み込んでいます…'}</p>}</div>
+          </button>)}</React.Fragment>) : <p className="empty">{ready ? 'まだ写真がありません。最初の一枚を撮ってみましょう。' : '保存した写真を読み込んでいます…'}</p>}</div>
         <p className="privacy">写真はこの端末のブラウザに保存されます。大切な写真はバックアップしてください。</p>
       </aside>
       <section className={'map-wrap' + (selecting ? ' is-picking' : '')} aria-label="写真の地図">
