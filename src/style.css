@@ -622,7 +622,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .leaflet-control-attribution a:focus-visible,.leaflet-container:focus-visible{outline-offset:-3px}
 
 /* Many photos: a heading for each month in the list, staying at the top while that month scrolls by. */
-.list-month{position:sticky;top:0;z-index:1;display:flex;align-items:baseline;gap:8px;margin:0;padding:10px 0 4px;background:var(--c-bg);font-size:14px;font-weight:650}
+.list-month{position:sticky;top:0;z-index:1;display:flex;align-items:baseline;gap:8px;margin:0 0 4px;padding:10px 0 6px;background:var(--c-bg);box-shadow:0 1px 0 var(--c-divider);font-size:14px;font-weight:650}
 .list-month small{font-size:12px;font-weight:400;color:var(--c-muted)}
 /* The number on a pin of several photos: one size for every pin, digits of equal width. */
 .photo-pin-count{min-width:24px;height:24px;padding:0 6px;border-radius:var(--r-pill);font-size:12px;line-height:20px;font-variant-numeric:tabular-nums;letter-spacing:-.2px;background:var(--c-success)}
