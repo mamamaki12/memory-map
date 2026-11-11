@@ -141,7 +141,7 @@ function FriendsPanel({ photos, onPhotos }) {
     await confirming.run();
     if (mounted.current) setConfirming(null);
   }
-  return <div className="friend-panel">
+  return <div className={'friend-panel' + (user && data ? ' is-full' : '')}>
     {!user ? <form onSubmit={event => { event.preventDefault(); action(async () => {
       result(await client.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin + import.meta.env.BASE_URL } }));
     }, 'ログイン用リンクを送りました。メールを確認してください。'); }}>
