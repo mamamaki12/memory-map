@@ -10,3 +10,9 @@ export function monthGroups(photos) {
   }
   return groups;
 }
+
+// Month headings help only with a good number of photos that share months; a few, or one per month, stay a plain list.
+export function showMonthHeadings(groups) {
+  const count = groups.reduce((sum, group) => sum + group.photos.length, 0);
+  return count >= 8 && count >= groups.length * 2;
+}

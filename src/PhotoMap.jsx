@@ -69,20 +69,38 @@ export default function PhotoMap({ photos, onOpen, onOpenGroup, onCenter, select
       return L.divIcon({ html: wrap, className: '', iconSize: [62 * scale, 82 * scale], iconAnchor: [31 * scale, 90 * scale] });
     };
     // A pin with several photos: zoom in until they come apart; photos taken at one spot are listed instead.
+    // Each tap goes deep enough that no single pin keeps more than half of the photos, as long as three in five
+    // of them stay on the screen (centred on the middle photo), so a large pile comes apart in a few taps.
     const openGroup = items => {
       const bounds = L.latLngBounds(items.map(photo => [photo.lat, photo.lng]));
       const max = map.getMaxZoom();
+      // Photos within a few dozen metres of each other (at most three pins even fully zoomed in) are listed instead.
+      if (groupsAt(items, max).length <= 3) { callbacks.current.onOpenGroup?.(items); return; }
       // Room above each point for its photo, and below for the add button.
-      const height = map.getSize().y;
-      const fitting = { paddingTopLeft: [40, Math.min(100, height * .3)], paddingBottomRight: [40, Math.min(120, height * .3)] };
+      const { x: width, y: height } = map.getSize();
+      const top = Math.min(100, height * .3), bottom = Math.min(120, height * .3);
+      const fitting = { paddingTopLeft: [40, top], paddingBottomRight: [40, bottom] };
       const fit = map.getBoundsZoom(bounds, false, L.point(fitting.paddingTopLeft).add(fitting.paddingBottomRight));
+      // Up to 24 photos within a couple of kilometres (they fit on the screen at zoom 14): a list is quicker than more taps.
+      if (items.length <= 24 && fit >= 14) { callbacks.current.onOpenGroup?.(items); return; }
+      const middle = values => values.sort((a, b) => a - b)[Math.floor(values.length / 2)];
+      const centre = L.latLng(middle(items.map(photo => photo.lat)), middle(items.map(photo => photo.lng)));
+      const shown = zoom => {
+        const c = map.project(centre, zoom);
+        return items.filter(photo => { const p = map.project([photo.lat, photo.lng], zoom);
+          return Math.abs(p.x - c.x) <= width / 2 - 40 && p.y - c.y >= top - height / 2 && p.y - c.y <= height / 2 - bottom; }).length / items.length;
+      };
+      let chosen = null;
       for (let zoom = Math.min(max, Math.max(map.getZoom() + 1, fit)); zoom <= max; zoom++) {
-        if (groupsAt(items, zoom).length < 2) continue;
-        if (zoom <= fit) map.fitBounds(bounds, { ...fitting, maxZoom: zoom });
-        else map.setView(bounds.getCenter(), zoom);
-        return;
+        const groups = groupsAt(items, zoom);
+        if (groups.length < 2) continue;
+        if (chosen !== null && zoom > fit && shown(zoom) < .6) break;
+        chosen = zoom;
+        if (Math.max(...groups.map(group => group.items.length)) <= items.length / 2) break;
       }
-      callbacks.current.onOpenGroup?.(items);
+      if (chosen === null) callbacks.current.onOpenGroup?.(items);
+      else if (chosen <= fit) map.fitBounds(bounds, { ...fitting, maxZoom: chosen });
+      else map.setView(centre, chosen);
     };
     const draw = () => {
       // Regrouping replaces the pins; keep the keyboard on the pin that holds the same photo.

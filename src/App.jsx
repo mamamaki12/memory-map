@@ -8,7 +8,7 @@ import ConquestMap from './ConquestMap.jsx';
 import PhotoMap from './PhotoMap.jsx';
 import PlacePreview from './PlacePreview.jsx';
 import useDrawerGesture from './useDrawerGesture.js';
-import { monthGroups } from './monthGroups.js';
+import { monthGroups, showMonthHeadings } from './monthGroups.js';
 import { openDB, transaction } from './storage.js';
 import { position, compress, date, download } from './media.js';
 import { readPhotoLocation } from './exifLocation.js';
@@ -66,6 +66,7 @@ export default function App() {
   const [pending, setPending] = useState(null);
   const [active, setActive] = useState(null);
   const [placePhotos, setPlacePhotos] = useState(null);
+  const placeMonths = useMemo(() => placePhotos && monthGroups(placePhotos), [placePhotos]);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [selecting, setSelecting] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -319,10 +320,10 @@ export default function App() {
         <div className="section-title"><h2>思い出</h2><span>{photoCount(photos.length, sharedPhotos.length)}</span></div>
         {/* Newest first, with a heading for each month that stays at the top while its photos scroll by. */}
         <div className="list" id="memories-list" {...drawer.listProps}>{mapPhotos.length ? months.map(month => <React.Fragment key={month.key}>
-          <h3 className="list-month">{month.label}<small>{month.photos.length}枚</small></h3>
+          {showMonthHeadings(months) && <h3 className="list-month">{month.label}<small>{month.photos.length}枚</small></h3>}
           {month.photos.map(photo =>
           <button key={photo.id} className="memory" onClick={() => openPhoto(photo)} disabled={selecting}>
-            <Photo blob={photo.blob} alt={photo.caption || '思い出の写真'} loading="lazy" />
+            <Photo blob={photo.blob} thumb={192} alt={photo.caption || '思い出の写真'} />
             <span>{photo.caption || '名前のない思い出'}<small>{photo.shared ? '友達の写真 · ' : ''}{date(photo.createdAt)}</small></span>
           </button>)}</React.Fragment>) : <p className="empty">{ready ? 'まだ写真がありません。最初の一枚を撮ってみましょう。' : '保存した写真を読み込んでいます…'}</p>}</div>
         <p className="privacy">写真はこの端末のブラウザに保存されます。大切な写真はバックアップしてください。</p>
@@ -395,12 +396,14 @@ export default function App() {
         <button id="save" className="primary has-icon" disabled={busy || !Number.isFinite(pending.lat)} type="submit">{busy ? '保存中…' : <IconLabel icon="check" label="この場所に保存" short="保存" />}</button>
       </form>
     </Modal>}
-    {placePhotos && <Modal title={'この場所の写真 ' + placePhotos.length + '枚'} className="place-photos" onClose={() => setPlacePhotos(null)}>
-      <div className="place-photo-list">{placePhotos.map(photo =>
+    {placePhotos && <Modal title={'この辺りの写真 ' + placePhotos.length + '枚'} className="place-photos" onClose={() => setPlacePhotos(null)}>
+      <div className="place-photo-list">{placeMonths.map(month => <React.Fragment key={month.key}>
+        {showMonthHeadings(placeMonths) && <h3 className="list-month">{month.label}<small>{month.photos.length}枚</small></h3>}
+        {month.photos.map(photo =>
         <button key={photo.id} className="memory" onClick={() => { setPlacePhotos(null); openPhoto(photo); }}>
-          <Photo blob={photo.blob} alt="" loading="lazy" />
+          <Photo blob={photo.blob} thumb={192} alt="" />
           <span>{photo.caption || '名前のない思い出'}<small>{photo.shared ? '友達の写真 · ' : ''}{date(photo.createdAt)}</small></span>
-        </button>)}</div>
+        </button>)}</React.Fragment>)}</div>
     </Modal>}
     {active && <Modal title={active.caption || '名前のない思い出'} className="detail-dialog" onClose={() => setActive(null)} busy={busy}>
       <Photo blob={active.blob} alt={active.caption || '思い出の写真'} /><p id="detail-date">{date(active.createdAt)}</p>
