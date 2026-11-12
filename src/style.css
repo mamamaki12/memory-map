@@ -633,3 +633,36 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .friend-thumb .photo-placeholder{width:100%;height:100%;border-radius:0}
 /* The list of photos at one spot: month headings on white, staying at the top of the screen while it scrolls. */
 .place-photo-list .list-month{top:-22px;background:var(--c-card);margin:0 0 6px}
+
+/* Messages: a zero-height strip under the header and the "add to home screen" notice holds them, so they never cover
+   the notice or its close button. They stay clear of the map's corner buttons and let taps through. */
+.status-anchor{position:relative;flex:none;height:0;z-index:2000}
+#status{position:absolute;top:8px;max-width:min(600px,calc(100vw - 128px));pointer-events:none;line-height:1.6;word-break:auto-phrase;text-wrap:balance}
+@media(max-width:420px){#status{padding-left:16px;padding-right:16px}}
+
+/* Phones held sideways: the conquest controls and "攻略について" sit in a column on the left (like the photo list),
+   so the map keeps the full height and the whole country stays in view even with the explanation open. */
+@media(max-height:500px) and (min-width:560px){
+  .conquest-view{display:grid;grid-template-columns:min(330px,40%) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  .quest-dashboard{grid-column:1;grid-row:1;display:block;padding-top:10px;padding-bottom:10px;border-bottom:0;border-right:1px solid var(--c-divider)}
+  .quest-progress-row{flex-wrap:wrap;gap:4px 8px}
+  .quest-progress-row progress{position:static;width:100%;height:4px}
+  .quest-filter-row{margin-top:8px}
+  .quest-filter-row select{max-width:none}
+  .conquest-map-wrap{grid-column:2;grid-row:1/span 2}
+  .quest-info{grid-column:1;grid-row:2;max-height:none;border-right:1px solid var(--c-divider);border-top:1px solid var(--c-divider)}
+  /* The narrower map has its credits on one line at the bottom; the city card sits just above them. */
+  .conquest-city{left:12px;bottom:36px;max-width:calc(100% - 24px)}
+}
+
+/* Save screen, photo and small map side by side: the map credits sit on one line under the pictures, not over the map. */
+.place-credit{display:none;margin:-6px 0 0;font-size:11px;line-height:1.5;color:var(--c-muted);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.place-credit a{color:#0078a8;text-decoration:none}
+@media(max-height:700px) and (min-height:501px){
+  .save-visuals.has-map .place-credit{display:block;grid-column:1/-1}
+  .save-visuals.has-map .place-preview .leaflet-control-attribution{display:none}
+}
+
+/* Friends, "写真を共有": the name and the day each keep to one line, so every row has the same height. */
+.friend-photo-row>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.friend-photo-row>span small{overflow:hidden;text-overflow:ellipsis}

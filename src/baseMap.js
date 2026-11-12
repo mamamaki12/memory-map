@@ -3,6 +3,8 @@ import config from './map-config.json';
 
 const osmAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const key = typeof config.cartoApiKey === 'string' ? config.cartoApiKey.trim() : '';
+// Whether the map tiles come from CARTO (then CARTO is credited too).
+export const usesCarto = Boolean(key);
 
 // Keep the map usable until the site's browser API key has been configured.
 export function addBaseMap(map, { attribution = '', onError } = {}) {

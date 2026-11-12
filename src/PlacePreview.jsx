@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
-import { addBaseMap } from './baseMap.js';
+import { addBaseMap, usesCarto } from './baseMap.js';
 
 // A small, still map in the save screen showing where the photo will be pinned.
 export default function PlacePreview({ lat, lng, blob }) {
@@ -49,5 +49,10 @@ export default function PlacePreview({ lat, lng, blob }) {
     centre();
     return () => { marker.remove(); URL.revokeObjectURL(url); };
   }, [lat, lng, blob]);
-  return <div className="place-preview" ref={container} />;
+  // In the narrow side-by-side layout the map credits do not fit on the small map, so they sit on one line under it instead.
+  return <>
+    <div className="place-preview" ref={container} />
+    <p className="place-credit">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors
+      {usesCarto && <> &copy; <a href="https://carto.com/attribution/">CARTO</a></>}</p>
+  </>;
 }

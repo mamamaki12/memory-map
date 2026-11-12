@@ -3,8 +3,19 @@ import L from 'leaflet';
 import { addBaseMap } from './baseMap.js';
 import { computeProgress, indexCities } from './cityProgress.js';
 import { IconLabel } from './Icon.jsx';
+// The four main islands, from Kyushu's south to Hokkaido's east, so the whole country fits whatever the map's size.
+const JAPAN = [[30.9, 129.4], [45.6, 145.9]];
 export default function ConquestMap({ photos, onShowPhotos }) {
   const host = useRef(null), mapRef=useRef(null), citiesLayer=useRef(null);
+  // While the whole country is shown and not moved by hand, it stays whole when the map changes size (e.g. "攻略について" opens).
+  const national = useRef(true), fitting = useRef(false);
+  const fit = (bounds, options) => { fitting.current = true; mapRef.current.fitBounds(bounds, { animate: false, ...options }); fitting.current = false; };
+  const showJapan = () => {
+    national.current = true;
+    // Room at the top for the colour key and at the bottom for the map credits (two lines on the narrowest phones).
+    const credits = mapRef.current.attributionControl?.getContainer().offsetHeight || 16;
+    fit(JAPAN, { paddingTopLeft: [12, 36], paddingBottomRight: [12, credits + 8] });
+  };
   const [dataset,setDataset]=useState(null), [error,setError]=useState(''), [retry,setRetry]=useState(0);
   const [prefecture,setPrefecture]=useState(''), [selection,setSelection]=useState(null);
   useEffect(() => {
@@ -25,10 +36,13 @@ export default function ConquestMap({ photos, onShowPhotos }) {
   const visibleCities=useMemo(()=>index.filter(c=>!prefecture||c.feature.properties.prefecture===prefecture),[index,prefecture]);
   const completedVisible=visibleCities.filter(c=>progress.completed.has(c.feature.properties.code)).length;
   useEffect(()=>{
-    const map=L.map(host.current,{preferCanvas:true}).setView([37,137],5);
+    const map=L.map(host.current,{preferCanvas:true,zoomSnap:.25});
     mapRef.current=map;
+    showJapan();
+    map.on('dragstart',()=>{national.current=false;});
+    map.on('zoomstart',()=>{if(!fitting.current)national.current=false;});
     addBaseMap(map, { attribution: ' · <a href="https://nlftp.mlit.go.jp/ksj/">国土数値情報（加工）</a>' });
-    const resize=new ResizeObserver(()=>map.invalidateSize());resize.observe(host.current);
+    const resize=new ResizeObserver(()=>{map.invalidateSize();if(national.current)showJapan();});resize.observe(host.current);
     return()=>{resize.disconnect();map.remove();mapRef.current=null;};
   },[]);
   useEffect(()=>{
@@ -41,7 +55,7 @@ export default function ConquestMap({ photos, onShowPhotos }) {
       },
     }).addTo(mapRef.current);
     citiesLayer.current=layer;
-    if(prefecture&&layer.getBounds().isValid())mapRef.current.fitBounds(layer.getBounds(),{padding:[15,15],maxZoom:10});
+    if(prefecture&&layer.getBounds().isValid()){national.current=false;fit(layer.getBounds(),{padding:[15,15],maxZoom:10,animate:true});}
     return()=>{layer.remove();citiesLayer.current=null;};
   },[dataset,visibleCities,progress,prefecture]);
   const entry=selection?progress.completed.get(selection.code):null;
@@ -57,7 +71,7 @@ export default function ConquestMap({ photos, onShowPhotos }) {
         <select aria-label="都道府県を選択" value={prefecture} onChange={e=>{setPrefecture(e.target.value);setSelection(null);}}>
           <option value="">全国</option>{prefectures.map(p=><option key={p}>{p}</option>)}
         </select>
-        <button title="全国を表示" aria-label="全国を表示" onClick={()=>{setPrefecture('');setSelection(null);mapRef.current.setView([37,137],5);}}>
+        <button title="全国を表示" aria-label="全国を表示" onClick={()=>{setPrefecture('');setSelection(null);showJapan();}}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6M3 3l6 6m12-6-6 6M3 21l6-6m12 6-6-6" /></svg>
         </button>
       </div>
