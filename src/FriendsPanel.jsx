@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Icon, IconLabel } from './Icon.jsx';
 import { ConfirmDialog } from './Modal.jsx';
 import Photo from './Photo.jsx';
-import { date } from './media.js';
+import { day } from './media.js';
 import { loadFriendsClient, loadFriendsData, friendPhotos, sharePhoto, unsharePhoto, result, friendlyMessage } from './friendsApi.js';
 
 function FriendsPanel({ photos, onPhotos }) {
@@ -186,13 +186,13 @@ function FriendsPanel({ photos, onPhotos }) {
         {!photos.length && <p>撮影した写真がありません。</p>}
         {photos.map(photo => { const row = myShares.find(r => r.local_id === photo.id);
           return <div key={photo.id} className="friend-row friend-photo-row"><Thumb blob={photo.blob} />
-            <span>{photo.caption || '名前のない思い出'}<small>{date(photo.createdAt)}</small></span><button className="has-icon" disabled={busy} onClick={() => action(async () => {
+            <span>{photo.caption || '名前のない思い出'}<small>{day(photo.createdAt)}</small></span><button className="has-icon" disabled={busy} onClick={() => action(async () => {
             if (row) { const message = await unsharePhoto(client, row); await refresh(); return message; }
             await sharePhoto(client, user, photo); await refresh();
           }, '写真を共有しました。')}>{row ? <IconLabel icon="stop" label="共有を停止" short="停止" /> : <IconLabel icon="share" label="友達に共有" short="共有" />}</button></div>;
         })}
         {myShares.filter(row => !photos.some(p => p.id === row.local_id)).map(row => <div className="friend-row friend-photo-row" key={row.id}><Thumb />
-          <span>{row.caption || '端末にない共有写真'}{row.captured_at && <small>{date(row.captured_at)}</small>}</span><button className="has-icon" disabled={busy} onClick={() => action(async () => { const message = await unsharePhoto(client, row); await refresh(); return message; })}><IconLabel icon="stop" label="共有を停止" short="停止" /></button></div>)}
+          <span>{row.caption || '端末にない共有写真'}{row.captured_at && <small>{day(row.captured_at)}</small>}</span><button className="has-icon" disabled={busy} onClick={() => action(async () => { const message = await unsharePhoto(client, row); await refresh(); return message; })}><IconLabel icon="stop" label="共有を停止" short="停止" /></button></div>)}
       </section>
       <button className="has-icon" disabled={busy} onClick={() => action(async () => { const failed = await refresh(); if (failed) return { text: missingMessage(failed), error: true }; }, '友達の写真を更新しました。')}><IconLabel icon="refresh" label="写真・申請を更新" short="更新" /></button>
     </>}

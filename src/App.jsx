@@ -262,6 +262,8 @@ export default function App() {
   const reportCenter = useCallback(center => { mapCenter.current = center; }, []);
   // Choosing a place again: show the current choice in the middle of the big map.
   const startPicking = () => {
+    // A message about the save screen does not belong over the map where the place is chosen.
+    setStatus('');
     if (Number.isFinite(pending?.lat)) { setFitRequest(0); setView({ lat: pending.lat, lng: pending.lng }); }
     setSelecting(true);
   };
@@ -278,11 +280,12 @@ export default function App() {
     window.addEventListener('keydown', escape);
     return () => window.removeEventListener('keydown', escape);
   }, [selecting]);
-  const cancel = () => { setPending(null); setSelecting(false); };
+  const cancel = () => { setPending(null); setSelecting(false); setStatus(''); };
+  // Each map starts without the other one's message.
+  const switchMap = mode => { setMapMode(mode); setMemoriesOpen(false); setStatus(''); };
   // From the empty conquest map: show the photo map and put the keyboard on "写真を追加".
   const showPhotoMap = () => {
-    setMapMode('photos');
-    setMemoriesOpen(false);
+    switchMap('photos');
     requestAnimationFrame(() => document.querySelector('.capture-bar .primary')?.focus());
   };
   const addPhoto = () => touchDevice() ? setSourceOpen(true) : albumFile.current.click();
@@ -295,7 +298,7 @@ export default function App() {
       <button className="friends-button has-icon icon-only" title="友達" onClick={() => setFriendsOpen(true)}><IconLabel icon="friends" label="友達" /></button>
       <div className="map-switch" role="group" aria-label="地図の切り替え">{mapModes.map(item =>
         <button key={item.mode} className="has-icon" aria-pressed={mapMode === item.mode} disabled={busy || selecting}
-          onClick={() => { if (mapMode !== item.mode) { setMapMode(item.mode); setMemoriesOpen(false); } }}>
+          onClick={() => { if (mapMode !== item.mode) switchMap(item.mode); }}>
           <IconLabel icon={item.icon} label={item.label} short={item.short} /></button>)}</div>
       <button className="settings-button" aria-label="設定を開く" aria-haspopup="dialog" onClick={() => setSettingsOpen(true)}>
         <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -305,6 +308,8 @@ export default function App() {
       </button></div></header>
     <FriendsDialog open={friendsOpen} onClose={() => setFriendsOpen(false)} photos={photos} onPhotos={setSharedPhotos} />
     <InstallNotice />
+    {/* Messages appear just under the header and the "add to home screen" notice, never on top of them. */}
+    <div className="status-anchor"><p id="status" role="status" aria-live="polite">{status}</p></div>
     {mapMode==='conquest' && <ConquestMap photos={photos} onShowPhotos={showPhotoMap} />}
     <main className={mapMode==='conquest'?'photo-map-hidden':selecting?'is-picking':''}>
       {memoriesOpen && !selecting && <button className="memories-backdrop" aria-label="思い出の一覧を閉じる" onClick={() => setMemoriesOpen(false)} />}
@@ -363,7 +368,6 @@ export default function App() {
         <button className="quiet" onClick={() => setSourceOpen(false)}>やめる</button>
       </div>
     </Modal>}
-    <p id="status" role="status" aria-live="polite">{status}</p>
     {settingsOpen && <Modal title="設定" className="settings-dialog" busy={importing || exporting} onClose={() => setSettingsOpen(false)}>
       <button className="settings-item" disabled={!ready || exporting || importing} onClick={backup}>
         <span className="has-icon"><Icon name="download" />{exporting ? '保存しています…' : 'バックアップを保存'}</span>
