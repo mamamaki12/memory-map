@@ -627,3 +627,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* The number on a pin of several photos: one size for every pin, digits of equal width. */
 .photo-pin-count{min-width:24px;height:24px;padding:0 6px;border-radius:var(--r-pill);font-size:12px;line-height:20px;font-variant-numeric:tabular-nums;letter-spacing:-.2px;background:var(--c-success)}
 .leaflet-marker-icon:focus-visible{border-radius:var(--r-button)}
+
+/* Until a small picture is ready, an empty box of the same size keeps the list from jumping. */
+.photo-placeholder{display:block;flex-shrink:0;width:58px;height:58px;border-radius:var(--r-small);background:var(--c-tint)}
+.friend-thumb .photo-placeholder{width:100%;height:100%;border-radius:0}
+/* The list of photos at one spot: month headings on white, staying at the top of the screen while it scrolls. */
+.place-photo-list .list-month{top:-22px;background:var(--c-card);margin:0 0 6px}

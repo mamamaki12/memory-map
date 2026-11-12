@@ -207,7 +207,7 @@ function FriendsPanel({ photos, onPhotos }) {
 
 // A small picture of the photo, so rows without a name can still be told apart. Grey until the picture is ready.
 function Thumb({ blob }) {
-  return <span className="friend-thumb" aria-hidden="true">{blob ? <Photo blob={blob} alt="" loading="lazy" decoding="async" /> : <Icon name="album" size={20} />}</span>;
+  return <span className="friend-thumb" aria-hidden="true">{blob ? <Photo blob={blob} thumb={144} alt="" /> : <Icon name="album" size={20} />}</span>;
 }
 
 export default function FriendsDialog({ open, onClose, photos, onPhotos }) {
