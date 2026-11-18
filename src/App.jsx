@@ -293,7 +293,7 @@ export default function App() {
   const pickSource = input => { input.current.click(); setSourceOpen(false); };
 
   return <>
-    <header><a className="brand" href={import.meta.env.BASE_URL}><img className="logo" src={import.meta.env.BASE_URL + 'icon-landscape.svg'} width="45" height="45" alt="" /><span>Memory Map<small>思い出を、地図に。</small></span></a>
+    <header><a className="brand" href={import.meta.env.BASE_URL}><img className="logo" src={import.meta.env.BASE_URL + 'icon-landscape.svg'} width="45" height="45" alt="" /><span>記憶地図<small>思い出を、地図に。</small></span></a>
       <div className="header-actions">
       <button className="friends-button has-icon icon-only" title="友達" onClick={() => setFriendsOpen(true)}><IconLabel icon="friends" label="友達" /></button>
       <div className="map-switch" role="group" aria-label="地図の切り替え">{mapModes.map(item =>
