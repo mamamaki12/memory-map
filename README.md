@@ -1,4 +1,4 @@
-# Memory Map
+# 記憶地図（memory-map）
 React + Vite + Leafletで作る写真地図アプリです。サーバー処理・ログインはありません。
 
 ## 開発
