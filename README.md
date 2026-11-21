@@ -5,11 +5,13 @@ React + Vite + Leafletで作る写真地図アプリです。サーバー処理�
 Node.js 22.12以上（推奨24）で実行します。
 ```sh
 npm install
-npm run dev
+npm run dev      # http://localhost:5173/memory-map/ で起動
 npm test
 npm run build
 ```
-ビルド確認は `npm run preview` です。
+ビルド確認は `npm run preview` です。手元で起動するサーバーはありません（友達交換だけ、クラウドの Supabase につなぎます。設定は [supabase/README.md](supabase/README.md)）。
+
+手元（`localhost`）では、地図の絵（タイル）が表示されず「地図を読み込めません」と出ます。地図用のキー（CARTO）の利用先を `mamamaki12.github.io` に制限しているためです（下の「地図のデザイン」）。写真の追加・場所の指定・保存などは、地図の絵が無くても動きます。手元でも地図を出したいときは、CARTO のキーの利用先に `localhost` を足すか、`src/map-config.json` の `cartoApiKey` を一時的に空にします（OpenStreetMap の表示になる。コミットしない）。
 
 ## GitHub Pages
 Settings → Pages → Build and deployment → Source を **GitHub Actions** に設定してください。
