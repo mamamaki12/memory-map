@@ -5,11 +5,11 @@ React + Vite + Leafletで作る写真地図アプリです。サーバー処理�
 Node.js 22.12以上（推奨24）で実行します。
 ```sh
 npm install
-npm run dev
+npm run dev      # http://localhost:5173/memory-map/ で起動
 npm test
 npm run build
 ```
-ビルド確認は `npm run preview` です。
+ビルド確認は `npm run preview` です。手元で起動するサーバーはありません（友達交換だけ、クラウドの Supabase につなぎます。設定は [supabase/README.md](supabase/README.md)）。
 
 ## GitHub Pages
 Settings → Pages → Build and deployment → Source を **GitHub Actions** に設定してください。
